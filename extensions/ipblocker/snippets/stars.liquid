@@ -1,0 +1,19 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('This is a product page');
+    // Product page specific JavaScript here
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          console.log("IP: " + data.ip)
+          fetch('https://api.ipgeolocation.io/ipgeo?apiKey=a7e7c2388c494c4e9546d083fd547e2c&ip='+data.ip)
+            .then(response => response.json())
+            .then(data => {
+              const country = data["country_name"]
+              alert(country)
+            })
+        })
+        .catch(error => console.error('Error fetching IP address:', error));
+  });
+  
+</script>
