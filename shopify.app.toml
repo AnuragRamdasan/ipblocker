@@ -3,7 +3,7 @@
 client_id = "c32fa88b423044f414bf606d4cd737d3"
 name = "ipblocker"
 handle = "ipblocker"
-application_url = "https://example.com/"
+application_url = "https://ipblocker.shopifyplugins.pro/"
 embedded = true
 
 [build]
@@ -13,7 +13,7 @@ include_config_on_deploy = true
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://ipblocker.shopifyplugins.pro/api/auth" ]
 
 [webhooks]
 api_version = "2024-04"
