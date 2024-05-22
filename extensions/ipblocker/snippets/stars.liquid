@@ -6,7 +6,7 @@
         .then(response => response.json())
         .then(data => {
           console.log("IP: " + data.ip)
-          fetch('https://api.ipgeolocation.io/ipgeo?apiKey=a7e7c2388c494c4e9546d083fd547e2c&ip='+data.ip)
+          fetch('http://ip-api.com/json/'+data.ip)
             .then(response => response.json())
             .then(data => {
               const country = data["country_name"]
