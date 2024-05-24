@@ -10,7 +10,7 @@
             .then(response => response.json())
             .then(data => {
               const country = data["country_name"]
-              alert(country)
+              alert(data)
             })
         })
         .catch(error => console.error('Error fetching IP address:', error));

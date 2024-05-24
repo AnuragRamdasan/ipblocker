@@ -3,12 +3,23 @@
 client_id = "c32fa88b423044f414bf606d4cd737d3"
 name = "ipblocker"
 handle = "ipblocker"
-application_url = "https://ipblocker.shopifyplugins.pro/"
+application_url = "https://ipblocker.shopifyplugins.pro"
 embedded = true
 
 [build]
+automatically_update_urls_on_dev = true
+dev_store_url = "mvllp.myshopify.com"
 include_config_on_deploy = true
+
+[access_scopes]
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://ipblocker.shopifyplugins.pro/auth/callback",
+  "https://ipblocker.shopifyplugins.pro/auth/shopify/callback",
+  "https://ipblocker.shopifyplugins.pro/api/auth/callback"
+]
 
 [webhooks]
 api_version = "2024-04"
-
