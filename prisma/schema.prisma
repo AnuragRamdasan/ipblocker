@@ -24,3 +24,10 @@ model Session {
   accessToken String
   userId      BigInt?
 }
+
+model Country {
+  id          String    @id
+  shop        String
+  country     String
+  countryCode String
+}
