@@ -43,7 +43,7 @@ export const action = async ({ request }) => {
     });
   }
 
-  return redirect('/');
+  return redirect(`/app?shop=${shop}`);
 };
 
 export default function CountriesAdmin() {
