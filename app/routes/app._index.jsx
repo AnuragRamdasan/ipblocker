@@ -55,7 +55,7 @@ export default function CountriesAdmin() {
   );
 
   return (
-    <Page title="Manage Countries">
+    <Page title="Manage Blocked Countries">
       <Layout>
         <Layout.Section>
           <CountryList countries={countries} />
