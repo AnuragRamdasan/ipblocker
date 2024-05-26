@@ -26,7 +26,7 @@ model Session {
 }
 
 model Country {
-  id          String    @id
+  id          Int       @id @default(autoincrement())
   shop        String
   country     String
   countryCode String

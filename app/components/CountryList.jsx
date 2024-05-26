@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, ResourceList, TextStyle, Button, Modal, TextContainer } from '@shopify/polaris';
+import { Card, ResourceList, Text, Button, Modal, TextContainer } from '@shopify/polaris';
 import { useFetcher } from '@remix-run/react';
 
 export function CountryList({ countries }) {
@@ -25,7 +25,7 @@ export function CountryList({ countries }) {
         renderItem={(item) => {
           return (
             <ResourceList.Item id={item.id}>
-              <TextStyle variation="strong">{item.name}</TextStyle> ({item.code})
+              <Text variation="strong">{item.name}</Text> ({item.code})
               <Button onClick={() => handleDelete(item.id)} destructive>X</Button>
             </ResourceList.Item>
           );

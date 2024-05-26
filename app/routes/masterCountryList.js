@@ -1,4 +1,4 @@
-[
+const masterCountryList = [
   {"country": "Afghanistan", "code": "AF"},
   {"country": "Albania", "code": "AL"},
   {"country": "Algeria", "code": "DZ"},
@@ -195,3 +195,5 @@
   {"country": "Zambia", "code": "ZM"},
   {"country": "Zimbabwe", "code": "ZW"}
 ]
+
+export default masterCountryList

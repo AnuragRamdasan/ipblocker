@@ -1,15 +1,20 @@
 import { useLoaderData, Form, useFetcher } from '@remix-run/react';
-import { Page, Layout, Card, TextField, Button } from '@shopify/polaris';
-import { CountryList } from '~/components/CountryList';
+import { Page, Layout, Card, Select, Button } from '@shopify/polaris';
+import { CountryList } from '../components/CountryList';
 import { PrismaClient } from '@prisma/client';
 import { json, redirect } from '@remix-run/node';
+import masterCountryList from "./masterCountryList"
+import { useCallback } from 'react';
+import { useState } from 'react';
 
 const prisma = new PrismaClient();
 
-export const loader = async ({ params }) => {
-  const shopId = 1; // Replace with actual shop ID
+
+export const loader = async ({ request }) => {
+  const url = new URL(request.url)
+  const shop = url.searchParams.get("shop")
   const countries = await prisma.country.findMany({
-    where: { shopId: shopId },
+    where: { shop: shop },
   });
   return json({ countries });
 };
@@ -19,18 +24,18 @@ export const action = async ({ request }) => {
   const actionType = formData.get('_action');
   const url = new URL(request.url)
   const shop = url.searchParams.get("shop")
-  const shopId = 1; // Replace with actual shop ID
 
   if (actionType === 'create') {
-    const countryName = formData.get('countryName');
-    const countryCode = formData.get('countryCode');
-    await prisma.country.create({
+    const countryName = formData.get('country');
+    const countryCode = masterCountryList.filter(mk => mk['country'] === countryName)[0]["code"]
+    const res = await prisma.country.create({
       data: {
         country: countryName,
         countryCode: countryCode,
         shop: shop,
       },
     });
+    console.log(res)
   } else if (actionType === 'delete') {
     const countryId = parseInt(formData.get('countryId'));
     await prisma.country.delete({
@@ -43,7 +48,11 @@ export const action = async ({ request }) => {
 
 export default function CountriesAdmin() {
   const { countries } = useLoaderData();
-  const fetcher = useFetcher();
+  const [selected, setSelected] = useState();  
+  const handleSelectChange = useCallback(
+    (value) => setSelected(value),
+    [],
+  );
 
   return (
     <Page title="Manage Countries">
@@ -54,9 +63,13 @@ export default function CountriesAdmin() {
         <Layout.Section>
           <Card sectioned>
             <Form method="post">
-              <input type="hidden" name="_action" value="create" />
-              <TextField label="Country Name" name="countryName" />
-              <TextField label="Country Code" name="countryCode" />
+            <input type="hidden" name="_action" value="create" />
+            <Select
+              name="country"
+              options={masterCountryList.map(c => { return {label: c["country"], value: c["country"]}})}
+              onChange={handleSelectChange}
+              value={selected}
+            />
               <Button submit primary>Add Country</Button>
             </Form>
           </Card>
