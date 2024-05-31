@@ -14,7 +14,7 @@ datasource db {
 }
 
 
-model Session {
+model IpblockerSession {
   id          String    @id
   shop        String
   state       String
