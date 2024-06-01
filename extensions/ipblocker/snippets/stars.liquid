@@ -2,7 +2,7 @@
 <script>
   const shop = "{{ shop_domain }}";
   async function fetchCountries() {
-    const response = await fetch("https://head-forever-periods-mime.trycloudflare.com/countries?shop="+shop);
+    const response = await fetch("https://ipblocker.shopifyplugins.pro/countries?shop="+shop);
     const countries = await response.json();
 
     const data = await fetch("https://api.ipify.org?format=json")
