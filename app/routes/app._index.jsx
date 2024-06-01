@@ -10,7 +10,7 @@ import { authenticate } from '../shopify.server';
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-  const countries = await getCountriesForShop(session)
+  const countries = await getCountriesForShop(session.accessToken)
   return json({ countries });
 };
 
@@ -24,9 +24,9 @@ export const action = async ({ request }) => {
   if (actionType === 'create') {
     const countryName = formData.get('country');
     const countryCode = masterCountryList.filter(mk => mk['country'] === countryName)[0]["code"]
-    const res = await addCountryToShop(session, countryName, countryCode)    
+    const res = await addCountryToShop(session.accessToken, countryName, countryCode)    
   } else if (actionType === 'delete') {
-    const res = await removeCountryFromShop(session, countryName)
+    const res = await removeCountryFromShop(session.accessToken, countryName)
   }
 
   return redirect(`/app?shop=${shop}`);
