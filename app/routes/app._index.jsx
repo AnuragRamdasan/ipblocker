@@ -1,23 +1,17 @@
 import { useLoaderData, Form, useFetcher } from '@remix-run/react';
 import { Page, Layout, Card, Select, Button } from '@shopify/polaris';
 import { CountryList } from '../components/CountryList';
-import { PrismaClient } from '@prisma/client';
 import { json, redirect } from '@remix-run/node';
 import masterCountryList from "./masterCountryList"
 import { useCallback } from 'react';
 import { useState } from 'react';
-import { addCountryToShop, removeCountryFromShop } from '../models/countries';
-
-const prisma = new PrismaClient();
-
+import { addCountryToShop, getCountriesForShop, removeCountryFromShop } from '../models/countries';
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url)
   const shop = url.searchParams.get("shop")
-  const countries = await prisma.country.findMany({
-    where: { shop: shop },
-  });
-  return json({ countries });
+  const countries = await getCountriesForShop(shop)
+  return json({ countries: countries["countries"] });
 };
 
 export const action = async ({ request }) => {

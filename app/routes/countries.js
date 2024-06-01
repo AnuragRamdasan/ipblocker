@@ -1,8 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { json, redirect } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import { getCountriesForShop } from '../models/countries';
-
-const prisma = new PrismaClient();
 
 export const loader = async ({ params }) => {
   const shop = params.shop;
