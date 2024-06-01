@@ -6,15 +6,16 @@ import masterCountryList from "./masterCountryList"
 import { useCallback } from 'react';
 import { useState } from 'react';
 import { addCountryToShop, getCountriesForShop, removeCountryFromShop } from '../models/countries';
+import { authenticate } from '../shopify.server';
 
 export const loader = async ({ request }) => {
-  const url = new URL(request.url)
-  const shop = url.searchParams.get("shop")
-  const countries = await getCountriesForShop(shop)
-  return json({ countries: countries["countries"] });
+  const { session } = await authenticate.admin(request);
+  const countries = await getCountriesForShop(session)
+  return json({ countries });
 };
 
 export const action = async ({ request }) => {
+  const { session } = await authenticate.admin(request);
   const formData = await request.formData();
   const actionType = formData.get('_action');
   const url = new URL(request.url)
@@ -23,9 +24,9 @@ export const action = async ({ request }) => {
   if (actionType === 'create') {
     const countryName = formData.get('country');
     const countryCode = masterCountryList.filter(mk => mk['country'] === countryName)[0]["code"]
-    const res = await addCountryToShop(shop, countryName, countryCode)    
+    const res = await addCountryToShop(session, countryName, countryCode)    
   } else if (actionType === 'delete') {
-    const res = await removeCountryFromShop(shop, countryName)
+    const res = await removeCountryFromShop(session, countryName)
   }
 
   return redirect(`/app?shop=${shop}`);
