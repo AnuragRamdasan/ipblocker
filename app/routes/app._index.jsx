@@ -6,6 +6,7 @@ import { json, redirect } from '@remix-run/node';
 import masterCountryList from "./masterCountryList"
 import { useCallback } from 'react';
 import { useState } from 'react';
+import { addCountryToShop, removeCountryFromShop } from '../models/countries';
 
 const prisma = new PrismaClient();
 
@@ -28,19 +29,9 @@ export const action = async ({ request }) => {
   if (actionType === 'create') {
     const countryName = formData.get('country');
     const countryCode = masterCountryList.filter(mk => mk['country'] === countryName)[0]["code"]
-    const res = await prisma.country.create({
-      data: {
-        country: countryName,
-        countryCode: countryCode,
-        shop: shop,
-      },
-    });
-    console.log(res)
+    const res = await addCountryToShop(shop, countryName, countryCode)    
   } else if (actionType === 'delete') {
-    const countryId = parseInt(formData.get('countryId'));
-    await prisma.country.delete({
-      where: { id: countryId },
-    });
+    const res = await removeCountryFromShop(shop, countryName)
   }
 
   return redirect(`/app?shop=${shop}`);
