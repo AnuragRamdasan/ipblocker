@@ -1,9 +1,13 @@
 const getCountriesForShop = async session => {
+  console.log(process.env.SERVER_URL)
+  console.log(process.env)
   const res = await fetch(process.env.SERVER_URL + "ipblocker/countries.json?token=" + session)
   const countries = await res.json()
   return countries["countries"]
 }
 const addCountryToShop = async (token, country, countryCode) => {
+  console.log(process.env.SERVER_URL)
+  console.log(process.env)
   fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
     method: 'POST',
     headers: {
