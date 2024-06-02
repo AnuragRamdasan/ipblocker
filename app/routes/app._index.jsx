@@ -1,4 +1,4 @@
-import { useLoaderData, Form, useFetcher } from '@remix-run/react';
+import { useLoaderData, Form } from '@remix-run/react';
 import { Page, Layout, Card, Select, Button } from '@shopify/polaris';
 import { CountryList } from '../components/CountryList';
 import { json, redirect } from '@remix-run/node';
@@ -26,7 +26,8 @@ export const action = async ({ request }) => {
     const countryCode = masterCountryList.filter(mk => mk['country'] === countryName)[0]["code"]
     const res = await addCountryToShop(session.accessToken, countryName, countryCode)    
   } else if (actionType === 'delete') {
-    const res = await removeCountryFromShop(session.accessToken, countryName)
+    const countryId = formData.get("countryId")
+    const res = await removeCountryFromShop(session.accessToken, countryId)
   }
 
   return redirect(`/app?shop=${shop}`);

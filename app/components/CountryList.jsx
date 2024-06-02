@@ -25,7 +25,7 @@ export function CountryList({ countries }) {
         renderItem={(item) => {
           return (
             <ResourceList.Item id={item.id}>
-              <Text variation="strong">{item.country} ({item.countryCode})</Text> 
+              <Text variation="strong">{item.country} ({item.country_code})</Text> 
               <Button onClick={() => handleDelete(item.id)} destructive>X</Button>
             </ResourceList.Item>
           );
