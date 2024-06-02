@@ -1,5 +1,5 @@
 const getCountriesForShop = async token => {
-  const res = await fetch("https://core-backend-70dfd44a255b.herokuapp.com/" + "ipblocker/countries.json", {
+  const res = await fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -10,7 +10,7 @@ const getCountriesForShop = async token => {
   return countries["countries"]
 }
 const addCountryToShop = async (token, country, countryCode) => {
-  fetch("https://core-backend-70dfd44a255b.herokuapp.com/" + "ipblocker/countries.json", {
+  fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -21,7 +21,7 @@ const addCountryToShop = async (token, country, countryCode) => {
   });
 }
 const removeCountryFromShop = async (token, country) => {
-  fetch("https://core-backend-70dfd44a255b.herokuapp.com/" + "ipblocker/countries/" + country + ".json", {
+  fetch(process.env.SERVER_URL + "ipblocker/countries/" + country + ".json", {
     method: 'DELETE',
     headers: {
       'Accept': 'application/json',
