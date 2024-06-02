@@ -12,6 +12,14 @@ export const loader = async ({ params }) => {
 
   const countries = await getCountriesForShop(session[0].accessToken)
    return json(
-     { countries }    
+     { countries },
+     {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        'Content-Type': 'application/json',
+      }
+    }    
    );
 };
