@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "prisma generate && prisma migrate deploy && remix vite:build",
+    "build:extension": "cd ipblocker_extension && npm run build",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
