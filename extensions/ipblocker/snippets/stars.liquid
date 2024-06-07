@@ -14,7 +14,20 @@
       const blockedCountries = countries.countries.map(c => c["country_code"])
 
       if(blockedCountries.includes(currentCountry)) {
-        alert("This website is not accessible in your country.")
+        // Erase all content on the page
+        document.body.innerHTML = '';
+
+        // Example usage
+        const newContent = `
+          <div>
+            <h1>This shopify store is not available in your country.</h1>
+            <p>Sorry about that.</p>
+          </div>
+        `;
+
+        // Inject the new HTML string
+        document.body.innerHTML = newContent;
+
       }
     } catch(err) {
       console.log("err")
