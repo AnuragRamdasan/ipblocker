@@ -43,23 +43,23 @@ export default function CountriesAdmin() {
 
   return (
     <Page title="Manage Blocked Countries">
-      <Layout>
-        <Layout.Section>
-          <CountryList countries={countries} />
-        </Layout.Section>
+      <Layout>       
         <Layout.Section>
           <Card sectioned>
             <Form method="post">
             <input type="hidden" name="_action" value="create" />
             <Select
               name="country"
-              options={masterCountryList.map(c => { return {label: c["country"], value: c["country"]}})}
+              options={masterCountryList.filter(c => !countries.map(c => c.country).includes(c.country) ).map(c => { return {label: c["country"], value: c["country"]}})}
               onChange={handleSelectChange}
               value={selected}
             />
               <Button submit primary>Add Country</Button>
             </Form>
           </Card>
+        </Layout.Section>
+        <Layout.Section>
+          <CountryList countries={countries} />
         </Layout.Section>
       </Layout>
     </Page>
