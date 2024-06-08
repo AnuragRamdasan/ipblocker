@@ -1,18 +1,26 @@
 import React, { useEffect } from 'react';
 
 const App = () => {
+  const fetchWithRetry = async (url, options = {}, retries = 3, backoff = 300) => {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return await response.json();
+    } catch (error) {
+      if (retries === 0) throw error;
+      await new Promise(resolve => setTimeout(resolve, backoff));
+      return fetchWithRetry(url, options, retries - 1, backoff * 2);
+    }
+  };
 
   useEffect(() => {
     async function fetchCountries() {
       try {
-        const response = await fetch("https://ipblocker.shopifyplugins.pro/countries");
-        const countries = await response.json();
-        
-        const data = await fetch("https://api.ipify.org?format=json");
-        const ipData = await data.json();
-
-        const countryData = await fetch('https://ipapi.co/' + ipData.ip + '/json/');
-        const country = await countryData.json();
+        const countries = await fetchWithRetry("https://ipblocker.shopifyplugins.pro/countries");
+        const ipData = await fetchWithRetry("https://api.ipify.org?format=json");
+        const country = await fetchWithRetry(`https://ipapi.co/${ipData.ip}/json/`);
 
         const currentCountry = country["country_code"];
         const blockedCountries = countries.countries.map(c => c["country_code"]);
