@@ -3,7 +3,7 @@
 client_id = "c32fa88b423044f414bf606d4cd737d3"
 name = "ipblocker"
 handle = "ipblocker"
-application_url = "https://ipblocker.vercel.app"
+application_url = "https://ipblocker.valuecommerce.info"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_themes"
 
 [auth]
 redirect_urls = [
-  "https://ipblocker.vercel.app/auth/callback",
-  "https://ipblocker.vercel.app/auth/shopify/callback",
-  "https://ipblocker.vercel.app/api/auth/callback"
+  "https://ipblocker.valuecommerce.info/auth/callback",
+  "https://ipblocker.valuecommerce.info/auth/shopify/callback",
+  "https://ipblocker.valuecommerce.info/api/auth/callback"
 ]
 
 [webhooks]
