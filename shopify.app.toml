@@ -3,7 +3,7 @@
 client_id = "c32fa88b423044f414bf606d4cd737d3"
 name = "ipblocker"
 handle = "ipblocker"
-application_url = "https://ipblocker.shopifyplugins.pro"
+application_url = "https://ipblocker.vercel.app"
 embedded = true
 
 [build]
@@ -17,15 +17,15 @@ scopes = "read_themes"
 
 [auth]
 redirect_urls = [
-  "https://ipblocker.shopifyplugins.pro/auth/callback",
-  "https://ipblocker.shopifyplugins.pro/auth/shopify/callback",
-  "https://ipblocker.shopifyplugins.pro/api/auth/callback"
+  "https://ipblocker.vercel.app/auth/callback",
+  "https://ipblocker.vercel.app/auth/shopify/callback",
+  "https://ipblocker.vercel.app/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-04"
 
 [webhooks.privacy_compliance]
-customer_deletion_url = "https://ipblocker.shopifyplugins.pro/compliances/customers_redact"
-customer_data_request_url = "https://ipblocker.shopifyplugins.pro/compliances/customers_data_request"
-shop_deletion_url = "https://ipblocker.shopifyplugins.pro/compliances/shop_redact"
+customer_deletion_url = "https://ipblocker.vercel.app/compliances/customers_redact"
+customer_data_request_url = "https://ipblocker.vercel.app/compliances/customers_data_request"
+shop_deletion_url = "https://ipblocker.vercel.app/compliances/shop_redact"
