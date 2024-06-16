@@ -46,7 +46,6 @@ export default function CountriesAdmin() {
     <Page title="Manage Blocked Countries">
       <Layout>    
         {showBanner && <Layout.Section>
-          <Card sectioned>
             <Banner
               title="IP Blocker App Embed"
               tone="info"
@@ -57,7 +56,6 @@ export default function CountriesAdmin() {
             <Text variant="headingMd" as="h5">
               
             </Text>            
-          </Card>
         </Layout.Section>    }
         <Layout.Section>
           <Card sectioned>
