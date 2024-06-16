@@ -1,5 +1,5 @@
 import { useLoaderData, Form } from '@remix-run/react';
-import { Page, Layout, Card, Select, Button, Text, TextField } from '@shopify/polaris';
+import { Page, Layout, Card, Select, Button, Text, TextField, Banner } from '@shopify/polaris';
 import { CountryList } from '../components/CountryList';
 import { json, redirect } from '@remix-run/node';
 import masterCountryList from "./masterCountryList"
@@ -36,6 +36,7 @@ export const action = async ({ request }) => {
 export default function CountriesAdmin() {
   const { countries } = useLoaderData();
   const [selected, setSelected] = useState();  
+  const [showBanner, setShowBanner] = useState(true)
   const handleSelectChange = useCallback(
     (value) => setSelected(value),
     [],
@@ -44,13 +45,20 @@ export default function CountriesAdmin() {
   return (
     <Page title="Manage Blocked Countries">
       <Layout>    
-        <Layout.Section>
+        {showBanner && <Layout.Section>
           <Card sectioned>
+            <Banner
+              title="IP Blocker App Embed"
+              tone="info"
+              onDismiss={() => setShowBanner(false)}
+            >
+              <p>Enable the app block in your theme header to start blocking fraudulent traffic.</p>
+            </Banner>
             <Text variant="headingMd" as="h5">
-              Enable the app embed in your theme header to start blocking fraudulent traffic.
+              
             </Text>            
           </Card>
-        </Layout.Section>    
+        </Layout.Section>    }
         <Layout.Section>
           <Card sectioned>
             <Text variant="headingMd" as="h5">
