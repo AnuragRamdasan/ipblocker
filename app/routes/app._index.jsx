@@ -1,5 +1,5 @@
 import { useLoaderData, Form } from '@remix-run/react';
-import { Page, Layout, Card, Select, Button } from '@shopify/polaris';
+import { Page, Layout, Card, Select, Button, Text, TextField } from '@shopify/polaris';
 import { CountryList } from '../components/CountryList';
 import { json, redirect } from '@remix-run/node';
 import masterCountryList from "./masterCountryList"
@@ -46,6 +46,9 @@ export default function CountriesAdmin() {
       <Layout>       
         <Layout.Section>
           <Card sectioned>
+            <Text variant="headingMd" as="h5">
+              Select the countries that you want to block access to.
+            </Text>
             <Form method="post">
             <input type="hidden" name="_action" value="create" />
             <Select

@@ -19,6 +19,10 @@ export function CountryList({ countries }) {
 
   return (
     <Card>
+      <Text variant="headingMd" as="h5">
+        All your blocked countries appear here. You can modify them anytime.
+      </Text>
+
       <ResourceList
         resourceName={{ singular: 'country', plural: 'countries' }}
         items={countries}
