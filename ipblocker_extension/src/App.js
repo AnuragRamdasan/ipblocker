@@ -18,7 +18,8 @@ const App = () => {
   useEffect(() => {
     async function fetchCountries() {
       try {
-        const countries = await fetchWithRetry("https://ipblocker.shopifyplugins.pro/countries");
+        // TODO cleanup url
+        const countries = await fetchWithRetry("https://ipblocker.valuecommerce.info/countries");
         const ipData = await fetchWithRetry("https://api.ipify.org?format=json");
         const country = await fetchWithRetry(`https://ipapi.co/${ipData.ip}/json/`);
 
