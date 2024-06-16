@@ -43,7 +43,14 @@ export default function CountriesAdmin() {
 
   return (
     <Page title="Manage Blocked Countries">
-      <Layout>       
+      <Layout>    
+        <Layout.Section>
+          <Card sectioned>
+            <Text variant="headingMd" as="h5">
+              Enable the app embed in your theme header to start blocking fraudulent traffic.
+            </Text>            
+          </Card>
+        </Layout.Section>    
         <Layout.Section>
           <Card sectioned>
             <Text variant="headingMd" as="h5">
