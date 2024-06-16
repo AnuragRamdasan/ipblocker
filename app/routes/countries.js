@@ -2,8 +2,8 @@ import { json } from '@remix-run/node';
 import { getCountriesForShop } from '../models/countries';
 import prisma from '../db.server';
 
-export const loader = async ({ params }) => {
-  const shop = params.shop
+export const loader = async ({ request }) => {
+  const shop = request.headers.get('origin').split("//")[1]
   const session = await prisma.ipblockerSession.findMany({
     where: {
       shop: shop
