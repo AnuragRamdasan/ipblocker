@@ -13,7 +13,6 @@ export const loader = async ({ request }) => {
     }
   })
 
-  console.log(session)
   const countries = await getCountriesForShop(session[0].accessToken)
    return json(
      { countries },
