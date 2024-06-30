@@ -4,6 +4,7 @@ import prisma from '../db.server';
 
 export const loader = async ({ request }) => {
   const shop = request.headers.get('origin').split("//")[1]
+  console.log(shop)
   const session = await prisma.ipblockerSession.findMany({
     where: {
       shop: shop
