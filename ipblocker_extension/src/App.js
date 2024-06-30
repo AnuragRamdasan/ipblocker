@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const App = () => {
   const fetchWithRetry = async (url, options = {}, retries = 3, backoff = 300) => {
@@ -19,7 +19,8 @@ const App = () => {
     async function fetchCountries() {
       try {
         // TODO cleanup url
-        const countries = await fetchWithRetry("https://ipblocker.valuecommerce.info/countries");
+        const shop = document.getElementById('root').getAttribute('data-shop-name')
+        const countries = await fetchWithRetry("https://dale-needed-astrology-devil.trycloudflare.com/countries?shop=" + shop);
         const ipData = await fetchWithRetry("https://api.ipify.org?format=json");
         const country = await fetchWithRetry(`https://ipapi.co/${ipData.ip}/json/`);
 

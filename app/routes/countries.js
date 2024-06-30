@@ -3,11 +3,13 @@ import { getCountriesForShop } from '../models/countries';
 import prisma from '../db.server';
 
 export const loader = async ({ request }) => {
-  const shop = request.headers.get('origin').split("//")[1]
-  console.log(request.headers)
+  const url = new URL(request.url)
+  const urlParams = new URLSearchParams(url.search);
+  const shop = urlParams.get('shop')
+
   const session = await prisma.ipblockerSession.findMany({
     where: {
-      shop: shop
+      shop: shop.toLowerCase() + ".myshopify.com"
     }
   })
 
