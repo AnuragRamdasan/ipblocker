@@ -9,7 +9,7 @@ export const loader = async ({ request }) => {
 
   const session = await prisma.ipblockerSession.findMany({
     where: {
-      shop: shop.toLowerCase() + ".myshopify.com"
+      shop: shop
     }
   })
 
