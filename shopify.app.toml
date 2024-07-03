@@ -26,6 +26,6 @@ redirect_urls = [
 api_version = "2024-04"
 
 [webhooks.privacy_compliance]
-customer_deletion_url = "https://core-backend-70dfd44a255b.herokuapp.com/compliances/customers_redact"
-customer_data_request_url = "https://core-backend-70dfd44a255b.herokuapp.com/compliances/customers_data_request"
-shop_deletion_url = "https://core-backend-70dfd44a255b.herokuapp.com/compliances/shop_redact"
+customer_deletion_url = "https://ipblocker.valuecommerce.pro/compliances/customers_redact"
+customer_data_request_url = "https://ipblocker.valuecommerce.pro/compliances/customers_data_request"
+shop_deletion_url = "https://ipblocker.valuecommerce.pro/compliances/shop_redact"
