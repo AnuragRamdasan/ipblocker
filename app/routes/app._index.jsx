@@ -3,7 +3,7 @@ import { Page, Layout, Card, Select, Button, Text, TextField, Banner } from '@sh
 import { CountryList } from '../components/CountryList';
 import { json, redirect } from '@remix-run/node';
 import masterCountryList from "./masterCountryList"
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useState } from 'react';
 import { addCountryToShop, getCountriesForShop, removeCountryFromShop } from '../models/countries';
 import { authenticate } from '../shopify.server';
@@ -41,6 +41,25 @@ export default function CountriesAdmin() {
     (value) => setSelected(value),
     [],
   );
+
+  useEffect(() => {
+    // Function to add the script
+    const addCrispScript = () => {
+      window.$crisp = [];
+      window.CRISP_WEBSITE_ID = "6158cfeb-f135-4382-abcd-80c96b8fa3ab";
+      const d = document;
+      const s = d.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = 1;
+      d.getElementsByTagName("head")[0].appendChild(s);
+    };
+
+    // Check if the script is already present
+    const existingScript = document.querySelector(`script[src="https://client.crisp.chat/l.js"]`);
+    if (!existingScript) {
+      addCrispScript();
+    }
+  }, []);
 
   return (
     <Page title="Manage Blocked Countries">
