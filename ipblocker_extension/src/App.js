@@ -59,7 +59,6 @@ const App = () => {
   return (
     <Provider config={rollbarConfig}>
       <ErrorBoundary>
-        <TestError />
       </ErrorBoundary>
     </Provider>
   )
