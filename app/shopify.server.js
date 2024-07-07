@@ -22,7 +22,7 @@ const shopify = shopifyApp({
   webhooks: {
     APP_UNINSTALLED: {
       deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/webhooks",
+      callbackUrl: "https://ipblocker.valuecommerce.pro//compliances/app_uninstalled",
     },
   },
   hooks: {
