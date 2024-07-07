@@ -1,4 +1,10 @@
 import { useEffect } from 'react';
+import { Provider, ErrorBoundary } from '@rollbar/react' // Provider imports 'rollbar'
+
+const rollbarConfig = {
+  accessToken: 'c5b3fd43148e4e258eadef336137b298',
+  environment: 'production',
+}
 
 const App = () => {
   const fetchWithRetry = async (url, options = {}, retries = 3, backoff = 300) => {
@@ -50,7 +56,13 @@ const App = () => {
     fetchCountries();
   }, []);
 
-  return null;
+  return (
+    <Provider config={rollbarConfig}>
+      <ErrorBoundary>
+        <TestError />
+      </ErrorBoundary>
+    </Provider>
+  )
 };
 
 export default App;
