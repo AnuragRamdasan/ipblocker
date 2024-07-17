@@ -23,6 +23,7 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
+        <Link to="/app/roadmap">Roadmap</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

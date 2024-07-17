@@ -1,4 +1,4 @@
-import { useLoaderData, Form } from '@remix-run/react';
+import { useLoaderData, Form, Link } from '@remix-run/react';
 import { Page, Layout, Card, Select, Button, Text, TextField, Banner } from '@shopify/polaris';
 import { CountryList } from '../components/CountryList';
 import { json, redirect } from '@remix-run/node';
@@ -95,6 +95,11 @@ export default function CountriesAdmin() {
         </Layout.Section>
         <Layout.Section>
           <CountryList countries={countries} />
+        </Layout.Section>
+        <Layout.Section>
+          <Card sectioned>
+            <Text>View our <Link to="/app/roadmap">Roadmap</Link> to see what we are working on to make IPBlocker even more powerful for you.</Text>
+          </Card>
         </Layout.Section>
       </Layout>
     </Page>
