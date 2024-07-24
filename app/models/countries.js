@@ -10,7 +10,7 @@ const getCountriesForShop = async token => {
   return countries["countries"]
 }
 const addCountryToShop = async (token, country, countryCode) => {
-  fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
+  return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -21,7 +21,7 @@ const addCountryToShop = async (token, country, countryCode) => {
   });
 }
 const removeCountryFromShop = async (token, country) => {
-  fetch(process.env.SERVER_URL + "ipblocker/countries/" + country + ".json", {
+  return fetch(process.env.SERVER_URL + "ipblocker/countries/" + country + ".json", {
     method: 'DELETE',
     headers: {
       'Accept': 'application/json',

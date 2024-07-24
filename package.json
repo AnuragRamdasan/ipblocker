@@ -5,6 +5,7 @@
     "build": "prisma generate && prisma migrate deploy && remix vite:build",
     "build:extension": "cd ipblocker_extension && npm run build",
     "dev": "shopify app dev",
+    "prettier": "npx prettier . --write",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
@@ -49,7 +50,7 @@
     "@types/react-dom": "^18.2.14",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.1.0",
-    "prettier": "^3.2.4",
+    "prettier": "^3.3.3",
     "typescript": "^5.2.2",
     "vite": "^5.1.3"
   },
