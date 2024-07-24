@@ -4,7 +4,10 @@ const path = require("path");
 module.exports = {
   mode: "production",
   entry: "./src/index.js",
-  output: { path: path.resolve(__dirname, "../extensions/ipblocker/assets"), filename: "react-extension.js" },
+  output: {
+    path: path.resolve(__dirname, "../extensions/ipblocker/assets"),
+    filename: "react-extension.js",
+  },
   module: {
     rules: [
       {
@@ -19,16 +22,16 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|woff|woff2|otf|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
         use: [
-            {
-                loader: 'url-loader',
-                options: {
-                    limit: 1000,
-                    name : 'assets/img/[name].[ext]'
-                }
-            }
-        ]
-    },
-    ]
+          {
+            loader: "url-loader",
+            options: {
+              limit: 1000,
+              name: "assets/img/[name].[ext]",
+            },
+          },
+        ],
+      },
+    ],
   },
   optimization: {
     minimizer: [

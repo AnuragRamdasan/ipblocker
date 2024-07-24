@@ -1,5 +1,5 @@
-import { Page } from '@shopify/polaris';
-import Roadmap from '../components/Roadmap';
+import { Page } from "@shopify/polaris";
+import Roadmap from "../components/Roadmap";
 
 export default function RoadmapPage() {
   return (

@@ -1,6 +1,13 @@
-import React from 'react';
-import { Card, ResourceList, Text, Button, Modal, TextContainer } from '@shopify/polaris';
-import { useFetcher } from '@remix-run/react';
+import React from "react";
+import {
+  Card,
+  ResourceList,
+  Text,
+  Button,
+  Modal,
+  TextContainer,
+} from "@shopify/polaris";
+import { useFetcher } from "@remix-run/react";
 
 export function CountryList({ countries }) {
   const fetcher = useFetcher();
@@ -13,7 +20,10 @@ export function CountryList({ countries }) {
   };
 
   const handleConfirmDelete = () => {
-    fetcher.submit({ countryId: countryToDelete, _action: 'delete' }, { method: 'post' });
+    fetcher.submit(
+      { countryId: countryToDelete, _action: "delete" },
+      { method: "post" },
+    );
     setActive(false);
   };
 
@@ -24,13 +34,17 @@ export function CountryList({ countries }) {
       </Text>
 
       <ResourceList
-        resourceName={{ singular: 'country', plural: 'countries' }}
+        resourceName={{ singular: "country", plural: "countries" }}
         items={countries}
         renderItem={(item) => {
           return (
             <ResourceList.Item id={item.id}>
-              <Text variation="strong">{item.country} ({item.country_code})</Text> 
-              <Button onClick={() => handleDelete(item.id)} destructive>X</Button>
+              <Text variation="strong">
+                {item.country} ({item.country_code})
+              </Text>
+              <Button onClick={() => handleDelete(item.id)} destructive>
+                X
+              </Button>
             </ResourceList.Item>
           );
         }}
@@ -40,13 +54,13 @@ export function CountryList({ countries }) {
         onClose={() => setActive(false)}
         title="Delete Country"
         primaryAction={{
-          content: 'Delete',
+          content: "Delete",
           onAction: handleConfirmDelete,
           destructive: true,
         }}
         secondaryActions={[
           {
-            content: 'Cancel',
+            content: "Cancel",
             onAction: () => setActive(false),
           },
         ]}

@@ -1,22 +1,27 @@
-import { useEffect } from 'react';
-import { Provider, ErrorBoundary } from '@rollbar/react' // Provider imports 'rollbar'
+import { useEffect } from "react";
+import { Provider, ErrorBoundary } from "@rollbar/react"; // Provider imports 'rollbar'
 
 const rollbarConfig = {
-  accessToken: 'c5b3fd43148e4e258eadef336137b298',
-  environment: 'production',
-}
+  accessToken: "c5b3fd43148e4e258eadef336137b298",
+  environment: "production",
+};
 
 const App = () => {
-  const fetchWithRetry = async (url, options = {}, retries = 3, backoff = 300) => {
+  const fetchWithRetry = async (
+    url,
+    options = {},
+    retries = 3,
+    backoff = 300,
+  ) => {
     try {
       const response = await fetch(url, options);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       return await response.json();
     } catch (error) {
       if (retries === 0) throw error;
-      await new Promise(resolve => setTimeout(resolve, backoff));
+      await new Promise((resolve) => setTimeout(resolve, backoff));
       return fetchWithRetry(url, options, retries - 1, backoff * 2);
     }
   };
@@ -25,17 +30,27 @@ const App = () => {
     async function fetchCountries() {
       try {
         // TODO cleanup url
-        const shop = document.getElementById('root').getAttribute('data-shop-domain')
-        const countries = await fetchWithRetry("https://ipblocker.valuecommerce.info/countries?shop=" + shop);
-        const ipData = await fetchWithRetry("https://api.ipify.org?format=json");
-        const country = await fetchWithRetry(`https://ipapi.co/${ipData.ip}/json/`);
+        const shop = document
+          .getElementById("root")
+          .getAttribute("data-shop-domain");
+        const countries = await fetchWithRetry(
+          "https://ipblocker.valuecommerce.info/countries?shop=" + shop,
+        );
+        const ipData = await fetchWithRetry(
+          "https://api.ipify.org?format=json",
+        );
+        const country = await fetchWithRetry(
+          `https://ipapi.co/${ipData.ip}/json/`,
+        );
 
         const currentCountry = country["country_code"];
-        const blockedCountries = countries.countries.map(c => c["country_code"]);
+        const blockedCountries = countries.countries.map(
+          (c) => c["country_code"],
+        );
 
         if (blockedCountries.includes(currentCountry)) {
           // Erase all content on the page
-          document.body.innerHTML = '';
+          document.body.innerHTML = "";
 
           // Example usage
           const newContent = `
@@ -58,10 +73,9 @@ const App = () => {
 
   return (
     <Provider config={rollbarConfig}>
-      <ErrorBoundary>
-      </ErrorBoundary>
+      <ErrorBoundary></ErrorBoundary>
     </Provider>
-  )
+  );
 };
 
 export default App;

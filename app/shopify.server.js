@@ -16,13 +16,16 @@ const shopify = shopifyApp({
   scopes: process.env.SCOPES?.split(","),
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
-  sessionStorage: new PrismaSessionStorage(prisma, {tableName: "IpblockerSession"}),
+  sessionStorage: new PrismaSessionStorage(prisma, {
+    tableName: "IpblockerSession",
+  }),
   distribution: AppDistribution.AppStore,
   restResources,
   webhooks: {
     APP_UNINSTALLED: {
       deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "https://ipblocker.valuecommerce.pro//compliances/app_uninstalled",
+      callbackUrl:
+        "https://ipblocker.valuecommerce.pro//compliances/app_uninstalled",
     },
   },
   hooks: {
