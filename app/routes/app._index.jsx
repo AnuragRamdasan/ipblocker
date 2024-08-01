@@ -12,9 +12,20 @@ import { authenticate } from "../shopify.server";
 import MultiSelect from "../components/MultiSelect";
 
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, admin } = await authenticate.admin(request);
   const { countries, ips } = await getCountriesForShop(session.accessToken);
-  return { countries, ips };
+  const res = await admin.graphql(`
+    query {
+      shop {
+        url
+      }
+    }
+  `);
+  const { data } = await res.json();
+  const storeId = data.shop.url
+    .replace("https://", "")
+    .replace(".myshopify.com", "");
+  return { countries, ips, storeId };
 };
 
 export const action = async ({ request }) => {
@@ -60,7 +71,7 @@ export const action = async ({ request }) => {
 
 export default function CountriesAdmin() {
   const data = useActionData();
-  const { countries, ips } = useLoaderData();
+  const { countries, ips, storeId } = useLoaderData();
   const [showBanner, setShowBanner] = useState(true);
 
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -87,6 +98,8 @@ export default function CountriesAdmin() {
     }
   }, []);
 
+  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`
+
   return (
     <Page title="Manage Blocked Countries">
       <Layout>
@@ -99,7 +112,11 @@ export default function CountriesAdmin() {
             >
               <p>
                 Enable the app block in your theme header to start blocking
-                fraudulent traffic.
+                fraudulent traffic.{" "}
+                <a href={themeUrl} target="_blank" rel="noopener noreferrer">
+                  Manage theme app extensions
+                </a>
+                .
               </p>
             </Banner>
             <Text variant="headingMd" as="h5"></Text>
