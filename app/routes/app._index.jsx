@@ -1,29 +1,20 @@
 import { useLoaderData, Form, Link, useActionData } from "@remix-run/react";
-import {
-  Page,
-  Layout,
-  Card,
-  Select,
-  Button,
-  Text,
-  TextField,
-  Banner,
-} from "@shopify/polaris";
-import { CountryList } from "../components/CountryList";
+import { Page, Layout, Card, Button, Text, Banner } from "@shopify/polaris";
 import masterCountryList from "./masterCountryList";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import {
   addCountryToShop,
+  addIpToShop,
   getCountriesForShop,
-  removeCountryFromShop,
 } from "../models/countries";
 import { authenticate } from "../shopify.server";
+import MultiSelect from "../components/MultiSelect";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-  const countries = await getCountriesForShop(session.accessToken);
-  return { countries };
+  const { countries, ips } = await getCountriesForShop(session.accessToken);
+  return { countries, ips };
 };
 
 export const action = async ({ request }) => {
@@ -33,40 +24,47 @@ export const action = async ({ request }) => {
 
   let res = null;
   if (actionType === "create") {
-    const countryName = formData.get("country");
-    const countryCode = masterCountryList.filter(
-      (mk) => mk["country"] === countryName,
-    )[0]["code"];
-    res = await addCountryToShop(session.accessToken, countryName, countryCode);
-  } else if (actionType === "delete") {
-    const countryId = formData.get("countryId");
-    res = await removeCountryFromShop(session.accessToken, countryId);
+    const countryNames = JSON.parse(formData.get("countries"));
+    const countryCodes = countryNames.map((name) => {
+      const country = masterCountryList.find((c) => c.country === name);
+      return country ? country.code : null;
+    });
+    res = await addCountryToShop(
+      session.accessToken,
+      countryNames,
+      countryCodes,
+    );
+  } else if (actionType === "create_ip") {
+    const ips = JSON.parse(formData.get("ips"));
+    res = await addIpToShop(session.accessToken, ips);
   }
+
+  const isCountryAction = actionType === "create";
+  const message = isCountryAction
+    ? "modify country blocklist"
+    : "modify IP blocklist";
 
   if (!res.ok) {
     return {
       error: true,
-      message:
-        actionType === "create"
-          ? "Failed to add country to blocklist."
-          : "Failed to remove country from blocklist.",
-    };
-  } else {
-    return {
-      message:
-        actionType === "create"
-          ? "Successfully added country to blocklist."
-          : "Successfull removed country from blocklist.",
+      [isCountryAction ? "message" : "messageIp"]: `Failed to ${message}.`,
     };
   }
+
+  return {
+    [isCountryAction ? "error" : "errorIp"]: false,
+    [isCountryAction ? "message" : "messageIp"]:
+      `Successfully ${message.replace("modify", "modified")}.`,
+  };
 };
 
 export default function CountriesAdmin() {
   const data = useActionData();
-  const { countries } = useLoaderData();
-  const [selected, setSelected] = useState();
+  const { countries, ips } = useLoaderData();
   const [showBanner, setShowBanner] = useState(true);
-  const handleSelectChange = useCallback((value) => setSelected(value), []);
+
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [selectedIps, setSelectedIps] = useState([]);
 
   useEffect(() => {
     // Function to add the script
@@ -114,20 +112,20 @@ export default function CountriesAdmin() {
             </Text>
             <Form method="post">
               <input type="hidden" name="_action" value="create" />
-              <Select
-                name="country"
-                options={masterCountryList
-                  .filter(
-                    (c) => !countries.map((c) => c.country).includes(c.country),
-                  )
-                  .map((c) => {
-                    return { label: c["country"], value: c["country"] };
-                  })}
-                onChange={handleSelectChange}
-                value={selected}
+              <MultiSelect
+                selectedOptions={countries.map((c) => c.country)}
+                placeholder={"Add countries to block"}
+                options={masterCountryList.map((c) => c.country)}
+                onUpdate={setSelectedOptions}
+              />
+              <br />
+              <input
+                type="hidden"
+                name="countries"
+                value={JSON.stringify(selectedOptions)}
               />
               <Button submit primary>
-                Add Country
+                Save
               </Button>
             </Form>
           </Card>
@@ -141,7 +139,37 @@ export default function CountriesAdmin() {
           )}
         </Layout.Section>
         <Layout.Section>
-          <CountryList countries={countries} />
+          <Card sectioned>
+            <Text variant="headingMd" as="h5">
+              Select the IPs that you want to block access to.
+            </Text>
+            <Form method="post">
+              <input type="hidden" name="_action" value="create_ip" />
+              <MultiSelect
+                selectedOptions={ips}
+                placeholder={"Add IPs separated by comma to block"}
+                options={[]}
+                onUpdate={setSelectedIps}
+              />
+              <br />
+              <input
+                type="hidden"
+                name="ips"
+                value={JSON.stringify(selectedIps)}
+              />
+              <Button submit primary>
+                Save
+              </Button>
+            </Form>
+          </Card>
+        </Layout.Section>
+        <Layout.Section>
+          {data && data.messageIp && (
+            <Banner
+              title={data.messageIp}
+              status={data.errorIp ? "critical" : "success"}
+            />
+          )}
         </Layout.Section>
         <Layout.Section>
           <Card sectioned>

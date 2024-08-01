@@ -6,9 +6,10 @@ const getCountriesForShop = async (token) => {
       Authorization: token,
     },
   });
-  const countries = await res.json();
-  return countries["countries"];
+  const data = await res.json();
+  return data;
 };
+
 const addCountryToShop = async (token, country, countryCode) => {
   return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
@@ -22,18 +23,19 @@ const addCountryToShop = async (token, country, countryCode) => {
     }),
   });
 };
-const removeCountryFromShop = async (token, country) => {
-  return fetch(
-    process.env.SERVER_URL + "ipblocker/countries/" + country + ".json",
-    {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
+
+const addIpToShop = async (token, ips) => {
+  return fetch(process.env.SERVER_URL + "ipblocker/ips.json", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: token,
     },
-  );
+    body: JSON.stringify({
+      country: { ips: ips },
+    }),
+  });
 };
 
-export { getCountriesForShop, addCountryToShop, removeCountryFromShop };
+export { getCountriesForShop, addCountryToShop, addIpToShop };

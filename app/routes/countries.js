@@ -13,9 +13,9 @@ export const loader = async ({ request }) => {
     },
   });
 
-  const countries = await getCountriesForShop(session[0].accessToken);
+  const { countries, ips } = await getCountriesForShop(session[0].accessToken);
   return json(
-    { countries },
+    { countries, ips },
     {
       headers: {
         "Access-Control-Allow-Origin": "*",

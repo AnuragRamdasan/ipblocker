@@ -11,7 +11,7 @@
           i = n.n(a)()(o());
         i.push([
           e.id,
-          "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nbody {\n  margin: 0;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',\n    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\ncode {\n  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',\n    monospace;\n}\n",
+          '@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nbody {\n  margin: 0;\n  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",\n    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\ncode {\n  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",\n    monospace;\n}\n',
           "",
         ]);
         const l = i;
@@ -14912,17 +14912,20 @@
                   const e = document
                       .getElementById("root")
                       .getAttribute("data-shop-domain"),
-                    n = await t(
+                    { countries: n, ips: r } = await t(
                       "https://ipblocker.valuecommerce.info/countries?shop=" +
                         e,
                     ),
-                    r = await t("https://api.ipify.org?format=json"),
-                    o = (await t("https://ipapi.co/".concat(r.ip, "/json/")))
-                      .country_code;
-                  if (n.countries.map((e) => e.country_code).includes(o)) {
+                    o = await t("https://api.ipify.org?format=json"),
+                    a = (await t("https://ipapi.co/".concat(o.ip, "/json/")))
+                      .country_code,
+                    i = o.ip,
+                    l = n.map((e) => e.country_code),
+                    u = r;
+                  if (l.includes(a) || u.includes(i)) {
                     document.body.innerHTML = "";
                     const e =
-                      "\n            <div>\n              <h1>This Shopify store is not available in your country.</h1>\n              <p>Sorry about that.</p>\n            </div>\n          ";
+                      "\n            <div>\n              <h1>This Shopify store is not available in your location.</h1>\n              <p>Sorry about that.</p>\n            </div>\n          ";
                     document.body.innerHTML = e;
                   }
                 } catch (e) {

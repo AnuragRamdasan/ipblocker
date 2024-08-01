@@ -33,7 +33,7 @@ const App = () => {
         const shop = document
           .getElementById("root")
           .getAttribute("data-shop-domain");
-        const countries = await fetchWithRetry(
+        const { countries, ips } = await fetchWithRetry(
           "https://ipblocker.valuecommerce.info/countries?shop=" + shop,
         );
         const ipData = await fetchWithRetry(
@@ -44,18 +44,22 @@ const App = () => {
         );
 
         const currentCountry = country["country_code"];
-        const blockedCountries = countries.countries.map(
-          (c) => c["country_code"],
-        );
+        const currentIP = ipData.ip;
+        const blockedCountries = countries.map((c) => c["country_code"]);
+        const blockedIPs = ips;
 
-        if (blockedCountries.includes(currentCountry)) {
+        // Check if either the country or IP is blocked
+        if (
+          blockedCountries.includes(currentCountry) ||
+          blockedIPs.includes(currentIP)
+        ) {
           // Erase all content on the page
           document.body.innerHTML = "";
 
           // Example usage
           const newContent = `
             <div>
-              <h1>This Shopify store is not available in your country.</h1>
+              <h1>This Shopify store is not available in your location.</h1>
               <p>Sorry about that.</p>
             </div>
           `;
