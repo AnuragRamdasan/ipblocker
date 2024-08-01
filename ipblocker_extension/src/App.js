@@ -48,10 +48,6 @@ const App = () => {
         const blockedCountries = countries.map((c) => c["country_code"]);
         const blockedIPs = ips;
 
-        console.log(currentCountry)
-        console.log(currentIP)
-        console.log(blockedCountries)
-        console.log(blockedIPs)
         // Check if either the country or IP is blocked
         if (
           blockedCountries.includes(currentCountry) ||
