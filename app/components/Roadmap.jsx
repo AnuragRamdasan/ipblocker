@@ -47,7 +47,7 @@ const Roadmap = () => {
               <InlineStack>
                 Status: &nbsp;
                 <div style={{ width: "100px" }}>
-                  <ProgressBar progress={50} animated={true} tone="success" />
+                  <ProgressBar progress={100} animated={true} tone="success" />
                 </div>
               </InlineStack>
               <Text>
