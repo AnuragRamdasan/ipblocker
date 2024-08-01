@@ -17,12 +17,12 @@ export const loader = async ({ request }) => {
   const res = await admin.graphql(`
     query {
       shop {
-        url
+        myshopifyDomain
       }
     }
   `);
   const { data } = await res.json();
-  const storeId = data.shop.url
+  const storeId = data.shop.myshopifyDomain
     .replace("https://", "")
     .replace(".myshopify.com", "");
   return { countries, ips, storeId };
