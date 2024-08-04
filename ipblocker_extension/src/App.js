@@ -26,6 +26,113 @@ const App = () => {
     }
   };
 
+  const trackIp = async (customer, countryData) => {
+    const {
+      appId,
+      customerToken
+    } = customer;
+
+    const {
+      ip,
+      continent_code,
+      continent_name,
+      country_code,
+      country_name,
+      region_code,
+      region_name,
+      city,
+      zip,
+      latitude,
+      longitude,
+      security
+    } = countryData;
+
+    return await fetchWithRetry(
+      "https://appapi.heymantle.com/v1/usage_events",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Mantle-App-Id": appId,
+          "X-Mantle-Customer-Api-Token": customerToken,
+        },
+        body: JSON.stringify({
+          eventId: `block_${Date.now()}`,
+          eventName: `ip_tracked`,
+          timestamp: Date.now(),
+          properties: {
+            continent_code,
+            continent_name,
+            country_code,
+            country_name,
+            region_code,
+            region_name,
+            city,
+            zip,
+            latitude,
+            longitude,
+            security,
+            ip,
+          },
+        }),
+      }
+    );
+  }
+  const trackBlocked = async (customer, countryData, reason) => {
+
+    const {
+      appId,
+      customerToken
+    } = customer;
+
+    const {
+      ip,
+      continent_code,
+      continent_name,
+      country_code,
+      country_name,
+      region_code,
+      region_name,
+      city,
+      zip,
+      latitude,
+      longitude,
+      security
+    } = countryData;
+
+    return await fetchWithRetry(
+      "https://appapi.heymantle.com/v1/usage_events",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Mantle-App-Id": appId,
+          "X-Mantle-Customer-Api-Token": customerToken,
+        },
+        body: JSON.stringify({
+          eventId: `block_${Date.now()}`,
+          eventName: `${reason}_blocked`,
+          timestamp: Date.now(),
+          properties: {
+            continent_code,
+            continent_name,
+            country_code,
+            country_name,
+            region_code,
+            region_name,
+            city,
+            zip,
+            latitude,
+            longitude,
+            security,
+            ip,
+            blockedReason: reason,
+          },
+        }),
+      }
+    );
+  }
+
   useEffect(() => {
     async function fetchCountries() {
       try {
@@ -33,7 +140,7 @@ const App = () => {
         const shop = document
           .getElementById("root")
           .getAttribute("data-shop-domain");
-        const { countries, ips } = await fetchWithRetry(
+        const { countries, ips, mantle_customer } = await fetchWithRetry(
           "https://ipblocker.valuecommerce.info/countries?shop=" + shop,
         );
         const ipData = await fetchWithRetry(
@@ -48,11 +155,13 @@ const App = () => {
         const blockedCountries = countries.map((c) => c["country_code"]);
         const blockedIPs = ips;
 
+        trackIp(mantle_customer, country)
         // Check if either the country or IP is blocked
         if (
           blockedCountries.includes(currentCountry) ||
           blockedIPs.includes(currentIP)
         ) {
+          trackBlocked(mantle_customer, country, blockedCountries.includes(currentCountry) ? "country" : "ip")
           // Erase all content on the page
           document.body.innerHTML = "";
 
