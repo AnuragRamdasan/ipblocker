@@ -155,13 +155,24 @@ const App = () => {
         const blockedCountries = countries.map((c) => c["country_code"]);
         const blockedIPs = ips;
 
-        trackIp(mantle_customer, country)
+        try { 
+          trackIp(mantle_customer, country)
+        } catch(err) {
+          console.log("Failed to report event" + err)
+        }
+
         // Check if either the country or IP is blocked
         if (
           blockedCountries.includes(currentCountry) ||
           blockedIPs.includes(currentIP)
         ) {
-          trackBlocked(mantle_customer, country, blockedCountries.includes(currentCountry) ? "country" : "ip")
+          try {
+            const reason = blockedCountries.includes(currentCountry) ? "country" : "ip"
+            trackBlocked(mantle_customer, country, reason)
+          } catch(err) {
+            console.log("Failed to report event" + err)
+          }
+
           // Erase all content on the page
           document.body.innerHTML = "";
 
