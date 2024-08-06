@@ -148,9 +148,6 @@ const App = () => {
         const blockedCountries = countries.map((c) => c["country_code"]);
         const blockedIPs = ips;
 
-        console.log(whiteList)
-        console.log(currentCountry)
-        
         try {
           trackIp(mantle_customer, country);
         } catch (err) {

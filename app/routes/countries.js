@@ -13,11 +13,11 @@ export const loader = async ({ request }) => {
     },
   });
 
-  const { countries, ips, mantle_customer } = await getCountriesForShop(
+  const { countries, ips, mantle_customer, whiteList } = await getCountriesForShop(
     session[0].accessToken,
   );
   return json(
-    { countries, ips, mantle_customer },
+    { countries, ips, mantle_customer, whiteList },
     {
       headers: {
         "Access-Control-Allow-Origin": "*",
