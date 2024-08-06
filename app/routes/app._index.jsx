@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   addCountryToShop,
   addIpToShop,
+  addWhitelistCountryToShop,
   getCountriesForShop,
 } from "../models/countries";
 import { authenticate } from "../shopify.server";
@@ -13,7 +14,9 @@ import MultiSelect from "../components/MultiSelect";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
-  const { countries, ips } = await getCountriesForShop(session.accessToken);
+  const { countries, ips, whiteList } = await getCountriesForShop(
+    session.accessToken,
+  );
   const res = await admin.graphql(`
     query {
       shop {
@@ -25,7 +28,7 @@ export const loader = async ({ request }) => {
   const storeId = data.shop.myshopifyDomain
     .replace("https://", "")
     .replace(".myshopify.com", "");
-  return { countries, ips, storeId };
+  return { countries, ips, storeId, whiteList };
 };
 
 export const action = async ({ request }) => {
@@ -48,33 +51,66 @@ export const action = async ({ request }) => {
   } else if (actionType === "create_ip") {
     const ips = JSON.parse(formData.get("ips"));
     res = await addIpToShop(session.accessToken, ips);
+  } else if (actionType === "create_whitelist") {
+    const countryNames = JSON.parse(formData.get("countries"));
+    const countryCodes = countryNames.map((name) => {
+      const country = masterCountryList.find((c) => c.country === name);
+      return country ? country.code : null;
+    });
+    res = await addWhitelistCountryToShop(
+      session.accessToken,
+      countryNames,
+      countryCodes,
+    );
   }
 
-  const isCountryAction = actionType === "create";
-  const message = isCountryAction
-    ? "modify country blocklist"
-    : "modify IP blocklist";
+  // Determine the type of action and set the appropriate message
+  const actionMessages = {
+    create: "modify country blocklist",
+    create_whitelist: "modify country whitelist",
+    create_ip: "modify IP blocklist",
+  };
 
+  const message = actionMessages[actionType] || "perform action";
+
+  // Determine which property names to use based on the action type
+  const getPropertyNames = (actionType) => {
+    switch (actionType) {
+      case "create":
+        return { error: "error", message: "message" };
+      case "create_whitelist":
+        return { error: "errorWhitelist", message: "messageWhitelist" };
+      case "create_ip":
+        return { error: "errorIp", message: "messageIp" };
+      default:
+        return { error: "error", message: "message" };
+    }
+  };
+
+  const { error: errorProp, message: messageProp } =
+    getPropertyNames(actionType);
+
+  // Return appropriate response based on the result
   if (!res.ok) {
     return {
-      error: true,
-      [isCountryAction ? "message" : "messageIp"]: `Failed to ${message}.`,
+      [errorProp]: true,
+      [messageProp]: `Failed to ${message}.`,
     };
   }
 
   return {
-    [isCountryAction ? "error" : "errorIp"]: false,
-    [isCountryAction ? "message" : "messageIp"]:
-      `Successfully ${message.replace("modify", "modified")}.`,
+    [errorProp]: false,
+    [messageProp]: `Successfully ${message.replace("modify", "modified")}.`,
   };
 };
 
 export default function CountriesAdmin() {
   const data = useActionData();
-  const { countries, ips, storeId } = useLoaderData();
+  const { countries, ips, storeId, whiteList } = useLoaderData();
   const [showBanner, setShowBanner] = useState(true);
 
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [selectedOptionsWhitelist, setSelectedOptionsWhitelist] = useState([]);
   const [selectedIps, setSelectedIps] = useState([]);
 
   useEffect(() => {
@@ -125,6 +161,48 @@ export default function CountriesAdmin() {
         <Layout.Section>
           <Card sectioned>
             <Text variant="headingMd" as="h5">
+              Select the countries that you want to whitelist.
+            </Text>
+            <Text>
+              If you add countries to whitelist, all countries not in whitelist
+              will be blocked. Whitelist supersedes blocklist.
+            </Text>
+            <Form method="post">
+              <input type="hidden" name="_action" value="create_whitelist" />
+              <MultiSelect
+                selectedOptions={whiteList.map((c) => c.country)}
+                placeholder={"Add countries to block"}
+                options={masterCountryList.map((c) => c.country)}
+                onUpdate={setSelectedOptionsWhitelist}
+              />
+              <br />
+              <input
+                type="hidden"
+                name="countries"
+                value={JSON.stringify(selectedOptionsWhitelist)}
+              />
+              <Button submit primary>
+                Save
+              </Button>
+            </Form>
+          </Card>
+        </Layout.Section>
+        <Layout.Section>
+          {data && data.messageWhitelist && (
+            <Banner
+              title={data.messageWhitelist}
+              status={data.errorWhitelist ? "critical" : "success"}
+            />
+          )}
+        </Layout.Section>
+        <Layout.Section>
+          <Card
+            sectioned
+            background={
+              whiteList.length > 0 ? "bg-surface-secondary" : "bg-surface"
+            }
+          >
+            <Text variant="headingMd" as="h5">
               Select the countries that you want to block access to.
             </Text>
             <Form method="post">
@@ -141,7 +219,7 @@ export default function CountriesAdmin() {
                 name="countries"
                 value={JSON.stringify(selectedOptions)}
               />
-              <Button submit primary>
+              <Button submit primary disabled={whiteList.length > 0}>
                 Save
               </Button>
             </Form>

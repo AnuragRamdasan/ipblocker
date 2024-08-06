@@ -19,7 +19,24 @@ const addCountryToShop = async (token, country, countryCode) => {
       Authorization: token,
     },
     body: JSON.stringify({
-      country: { country: country, country_code: countryCode },
+      country: { country: country, country_code: countryCode, type: "block" },
+    }),
+  });
+};
+const addWhitelistCountryToShop = async (token, country, countryCode) => {
+  return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify({
+      country: {
+        country: country,
+        country_code: countryCode,
+        type: "whitelist",
+      },
     }),
   });
 };
@@ -38,4 +55,9 @@ const addIpToShop = async (token, ips) => {
   });
 };
 
-export { getCountriesForShop, addCountryToShop, addIpToShop };
+export {
+  getCountriesForShop,
+  addCountryToShop,
+  addIpToShop,
+  addWhitelistCountryToShop,
+};

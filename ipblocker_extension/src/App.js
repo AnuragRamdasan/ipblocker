@@ -133,7 +133,7 @@ const App = () => {
         const shop = document
           .getElementById("root")
           .getAttribute("data-shop-domain");
-        const { countries, ips, mantle_customer } = await fetchWithRetry(
+        const { countries, ips, mantle_customer, whiteList } = await fetchWithRetry(
           "https://ipblocker.valuecommerce.info/countries?shop=" + shop,
         );
         const ipData = await fetchWithRetry(
@@ -154,15 +154,22 @@ const App = () => {
           console.log("Failed to report event" + err);
         }
 
+        let shouldBlock = false;
+        let reason = "";
+
+        // Check if whitelist exists and current country is not in it
+        if (whiteList && whiteList.length > 0 && !whiteList.includes(currentCountry)) {
+          shouldBlock = true;
+          reason = "country";
+        }
         // Check if either the country or IP is blocked
-        if (
-          blockedCountries.includes(currentCountry) ||
-          blockedIPs.includes(currentIP)
-        ) {
+        else if (blockedCountries.includes(currentCountry) || blockedIPs.includes(currentIP)) {
+          shouldBlock = true;
+          reason = blockedCountries.includes(currentCountry) ? "country" : "ip";
+        }
+
+        if (shouldBlock) {
           try {
-            const reason = blockedCountries.includes(currentCountry)
-              ? "country"
-              : "ip";
             trackBlocked(mantle_customer, country, reason);
           } catch (err) {
             console.log("Failed to report event" + err);
