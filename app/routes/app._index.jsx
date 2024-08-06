@@ -171,7 +171,7 @@ export default function CountriesAdmin() {
               <input type="hidden" name="_action" value="create_whitelist" />
               <MultiSelect
                 selectedOptions={whiteList.map((c) => c.country)}
-                placeholder={"Add countries to block"}
+                placeholder={"Add countries to whitelist"}
                 options={masterCountryList.map((c) => c.country)}
                 onUpdate={setSelectedOptionsWhitelist}
               />
