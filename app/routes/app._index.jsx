@@ -98,7 +98,7 @@ export default function CountriesAdmin() {
     }
   }, []);
 
-  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor`
+  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor`;
 
   return (
     <Page title="Manage Blocked Countries">

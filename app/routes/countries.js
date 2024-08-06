@@ -13,7 +13,9 @@ export const loader = async ({ request }) => {
     },
   });
 
-  const { countries, ips, mantle_customer } = await getCountriesForShop(session[0].accessToken);
+  const { countries, ips, mantle_customer } = await getCountriesForShop(
+    session[0].accessToken,
+  );
   return json(
     { countries, ips, mantle_customer },
     {

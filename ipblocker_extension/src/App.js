@@ -27,10 +27,7 @@ const App = () => {
   };
 
   const trackIp = async (customer, countryData) => {
-    const {
-      appId,
-      customerToken
-    } = customer;
+    const { appId, customerToken } = customer;
 
     const {
       ip,
@@ -44,7 +41,7 @@ const App = () => {
       zip,
       latitude,
       longitude,
-      security
+      security,
     } = countryData;
 
     return await fetchWithRetry(
@@ -75,15 +72,11 @@ const App = () => {
             ip,
           },
         }),
-      }
+      },
     );
-  }
+  };
   const trackBlocked = async (customer, countryData, reason) => {
-
-    const {
-      appId,
-      customerToken
-    } = customer;
+    const { appId, customerToken } = customer;
 
     const {
       ip,
@@ -97,7 +90,7 @@ const App = () => {
       zip,
       latitude,
       longitude,
-      security
+      security,
     } = countryData;
 
     return await fetchWithRetry(
@@ -129,9 +122,9 @@ const App = () => {
             blockedReason: reason,
           },
         }),
-      }
+      },
     );
-  }
+  };
 
   useEffect(() => {
     async function fetchCountries() {
@@ -155,10 +148,10 @@ const App = () => {
         const blockedCountries = countries.map((c) => c["country_code"]);
         const blockedIPs = ips;
 
-        try { 
-          trackIp(mantle_customer, country)
-        } catch(err) {
-          console.log("Failed to report event" + err)
+        try {
+          trackIp(mantle_customer, country);
+        } catch (err) {
+          console.log("Failed to report event" + err);
         }
 
         // Check if either the country or IP is blocked
@@ -167,10 +160,12 @@ const App = () => {
           blockedIPs.includes(currentIP)
         ) {
           try {
-            const reason = blockedCountries.includes(currentCountry) ? "country" : "ip"
-            trackBlocked(mantle_customer, country, reason)
-          } catch(err) {
-            console.log("Failed to report event" + err)
+            const reason = blockedCountries.includes(currentCountry)
+              ? "country"
+              : "ip";
+            trackBlocked(mantle_customer, country, reason);
+          } catch (err) {
+            console.log("Failed to report event" + err);
           }
 
           // Erase all content on the page
