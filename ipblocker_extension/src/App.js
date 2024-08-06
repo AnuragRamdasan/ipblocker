@@ -178,16 +178,20 @@ const App = () => {
           // Erase all content on the page
           document.body.innerHTML = "";
 
-          // Example usage
+          // Inject the new HTML string
           const newContent = `
-            <div>
-              <h1>This Shopify store is not available in your location.</h1>
-              <p>Sorry about that.</p>
+            <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f8f8f8;">
+              <img id="storeLogo" src="" alt="Store Logo" style="width: 130px; height: 130px; object-fit: contain; margin-bottom: 30px;">
+              <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">This Shopify store is not available in your location.</h1>
+              <p style="color: #666; font-size: 16px;">We apologize for the inconvenience. Thank you for your understanding.</p>
+              <p style="color: #999; font-size: 12px; margin-top: 30px;">Powered by ValueCommerce</p>
             </div>
           `;
-
-          // Inject the new HTML string
           document.body.innerHTML = newContent;
+
+          // Set the ipblocker logo
+          const ipblockerLogo = "https://cdn.shopify.com/app-store/listing_images/c32fa88b423044f414bf606d4cd737d3/icon/CKj-r-6ez4cDEAE=.png";
+          document.getElementById('storeLogo').src = ipblockerLogo;
         }
       } catch (err) {
         console.log("Error fetching countries or IP data:", err);
