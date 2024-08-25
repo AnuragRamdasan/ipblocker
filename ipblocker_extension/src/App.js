@@ -1,200 +1,129 @@
 import { useEffect } from "react";
-import { Provider, ErrorBoundary } from "@rollbar/react"; // Provider imports 'rollbar'
+import { Provider, ErrorBoundary } from "@rollbar/react";
 
 const rollbarConfig = {
   accessToken: "c5b3fd43148e4e258eadef336137b298",
   environment: "production",
 };
 
+const API_ENDPOINTS = {
+  USAGE_EVENTS: "https://appapi.heymantle.com/v1/usage_events",
+  COUNTRIES: "https://ipblocker.valuecommerce.info/countries",
+  IP_INFO: "https://api.ipify.org?format=json",
+  COUNTRY_INFO: "https://ipapi.co",
+};
+
+const IPBLOCKER_LOGO = "https://cdn.shopify.com/app-store/listing_images/c32fa88b423044f414bf606d4cd737d3/icon/CKj-r-6ez4cDEAE=.png";
+
 const App = () => {
-  const fetchWithRetry = async (
-    url,
-    options = {},
-    retries = 3,
-    backoff = 300,
-  ) => {
+  // Fetch function with retry mechanism
+  const fetchWithRetry = async (url, options = {}, retries = 3, backoff = 300) => {
     try {
+      // Attempt to fetch data from the URL
       const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+      // If the response is not ok, throw an error
+      if (!response.ok) throw new Error("Network response was not ok");
+      // Parse and return the JSON response
       return await response.json();
     } catch (error) {
+      // If no more retries left, throw the error
       if (retries === 0) throw error;
+      // Wait for the backoff period before retrying
       await new Promise((resolve) => setTimeout(resolve, backoff));
+      // Recursively call fetchWithRetry with one less retry and doubled backoff time
       return fetchWithRetry(url, options, retries - 1, backoff * 2);
     }
   };
 
-  const trackIp = async (customer, countryData) => {
+  const trackEvent = async (customer, countryData, eventName) => {
     const { appId, customerToken } = customer;
-
     const {
-      ip,
-      continent_code,
-      continent_name,
-      country_code,
-      country_name,
-      region_code,
-      region_name,
-      city,
-      zip,
-      latitude,
-      longitude,
-      security,
+      ip, continent_code, continent_name, country_code, country_name,
+      region_code, region_name, city, zip, latitude, longitude, security,
     } = countryData;
 
-    return await fetchWithRetry(
-      "https://appapi.heymantle.com/v1/usage_events",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Mantle-App-Id": appId,
-          "X-Mantle-Customer-Api-Token": customerToken,
-        },
-        body: JSON.stringify({
-          eventId: `block_${Date.now()}`,
-          eventName: `ip_tracked`,
-          timestamp: Date.now(),
-          properties: {
-            continent_code,
-            continent_name,
-            country_code,
-            country_name,
-            region_code,
-            region_name,
-            city,
-            zip,
-            latitude,
-            longitude,
-            security,
-            ip,
-          },
-        }),
+    const eventProperties = {
+      continent_code, continent_name, country_code, country_name,
+      region_code, region_name, city, zip, latitude, longitude, security, ip,
+    };
+
+    if (eventName.includes("blocked")) {
+      eventProperties.blockedReason = eventName.split("_")[0];
+    }
+
+    return fetchWithRetry(API_ENDPOINTS.USAGE_EVENTS, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Mantle-App-Id": appId,
+        "X-Mantle-Customer-Api-Token": customerToken,
       },
-    );
+      body: JSON.stringify({
+        eventId: `block_${Date.now()}`,
+        eventName,
+        timestamp: Date.now(),
+        properties: eventProperties,
+      }),
+    });
   };
-  const trackBlocked = async (customer, countryData, reason) => {
-    const { appId, customerToken } = customer;
 
-    const {
-      ip,
-      continent_code,
-      continent_name,
-      country_code,
-      country_name,
-      region_code,
-      region_name,
-      city,
-      zip,
-      latitude,
-      longitude,
-      security,
-    } = countryData;
-
-    return await fetchWithRetry(
-      "https://appapi.heymantle.com/v1/usage_events",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Mantle-App-Id": appId,
-          "X-Mantle-Customer-Api-Token": customerToken,
-        },
-        body: JSON.stringify({
-          eventId: `block_${Date.now()}`,
-          eventName: `${reason}_blocked`,
-          timestamp: Date.now(),
-          properties: {
-            continent_code,
-            continent_name,
-            country_code,
-            country_name,
-            region_code,
-            region_name,
-            city,
-            zip,
-            latitude,
-            longitude,
-            security,
-            ip,
-            blockedReason: reason,
-          },
-        }),
-      },
-    );
+  const injectBlockedContent = () => {
+    document.body.innerHTML = `
+      <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f8f8f8;">
+        <img id="storeLogo" src="${IPBLOCKER_LOGO}" alt="Store Logo" style="width: 130px; height: 130px; object-fit: contain; margin-bottom: 30px;">
+        <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">This Shopify store is not available in your location.</h1>
+        <p style="color: #666; font-size: 16px;">We apologize for the inconvenience. Thank you for your understanding.</p>
+        <p style="color: #999; font-size: 12px; margin-top: 30px;">Powered by ValueCommerce</p>
+      </div>
+    `;
   };
 
   useEffect(() => {
     async function fetchCountries() {
       try {
-        // TODO cleanup url
-        const shop = document
-          .getElementById("root")
-          .getAttribute("data-shop-domain");
-        const { countries, ips, mantle_customer, whiteList } = await fetchWithRetry(
-          "https://ipblocker.valuecommerce.info/countries?shop=" + shop,
-        );
-        const ipData = await fetchWithRetry(
-          "https://api.ipify.org?format=json",
-        );
-        const country = await fetchWithRetry(
-          `https://ipapi.co/${ipData.ip}/json/`,
-        );
+        // Get the shop domain from the root element's data attribute        
+        const shop = window.Shopify.shop.replace('.myshopify.com', '') || document.getElementById("root").getAttribute("data-shop-domain");
 
-        const currentCountry = country["country_code"];
-        const currentIP = ipData.ip;
-        const blockedCountries = countries.map((c) => c["country_code"]);
-        const blockedIPs = ips;
+        // Fetch country data, IP list, customer info, and whitelist for the shop
+        const { countries, ips, mantle_customer, whiteList } = await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}`);
 
-        try {
-          trackIp(mantle_customer, country);
-        } catch (err) {
-          console.log("Failed to report event" + err);
-        }
+        // Get the current IP address of the user
+        const { ip: currentIP } = await fetchWithRetry(API_ENDPOINTS.IP_INFO);
 
+        // Fetch detailed country information based on the current IP
+        const country = await fetchWithRetry(`${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/json/`);
+
+        // Extract the country code from the fetched country data
+        const currentCountry = country.country_code;
+
+        // Create an array of blocked country codes
+        const blockedCountries = countries.map((c) => c.country_code);
+
+        // Track the IP event for analytics
+        await trackEvent(mantle_customer, country, "ip_tracked");
+
+        // Initialize blocking flags
         let shouldBlock = false;
         let reason = "";
 
-        // Check if whitelist exists and current country is not in it
-        if (whiteList && whiteList.length > 0 && !whiteList.includes(currentCountry)) {
+        // Check if the current country is not in the whitelist (if whitelist exists)
+        if (whiteList?.length && !whiteList.includes(currentCountry)) {
           shouldBlock = true;
           reason = "country";
-        }
-        // Check if either the country or IP is blocked
-        else if (blockedCountries.includes(currentCountry) || blockedIPs.includes(currentIP)) {
+        } 
+        // Check if the current country is in the blocked list or if the IP is blocked
+        else if (blockedCountries.includes(currentCountry) || ips.includes(currentIP)) {
           shouldBlock = true;
           reason = blockedCountries.includes(currentCountry) ? "country" : "ip";
         }
 
+        // If blocking is required, track the event and inject blocked content
         if (shouldBlock) {
-          try {
-            trackBlocked(mantle_customer, country, reason);
-          } catch (err) {
-            console.log("Failed to report event" + err);
-          }
-
-          // Erase all content on the page
-          document.body.innerHTML = "";
-
-          // Inject the new HTML string
-          const newContent = `
-            <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f8f8f8;">
-              <img id="storeLogo" src="" alt="Store Logo" style="width: 130px; height: 130px; object-fit: contain; margin-bottom: 30px;">
-              <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">This Shopify store is not available in your location.</h1>
-              <p style="color: #666; font-size: 16px;">We apologize for the inconvenience. Thank you for your understanding.</p>
-              <p style="color: #999; font-size: 12px; margin-top: 30px;">Powered by ValueCommerce</p>
-            </div>
-          `;
-          document.body.innerHTML = newContent;
-
-          // Set the ipblocker logo
-          const ipblockerLogo = "https://cdn.shopify.com/app-store/listing_images/c32fa88b423044f414bf606d4cd737d3/icon/CKj-r-6ez4cDEAE=.png";
-          document.getElementById('storeLogo').src = ipblockerLogo;
+          await trackEvent(mantle_customer, country, `${reason}_blocked`);
+          injectBlockedContent();
         }
       } catch (err) {
-        console.log("Error fetching countries or IP data:", err);
+        console.error("Error fetching countries or IP data:", err);
       }
     }
 
