@@ -22,7 +22,7 @@ const App = () => {
       // Attempt to fetch data from the URL
       const response = await fetch(url, options);
       // If the response is not ok, throw an error
-      if (!response.ok) throw new Error("Network response was not ok");
+      if (!response.ok) throw new Error("Network response was not ok " + url);
       // Parse and return the JSON response
       return await response.json();
     } catch (error) {
@@ -100,7 +100,11 @@ const App = () => {
         const blockedCountries = countries.map((c) => c.country_code);
 
         // Track the IP event for analytics
-        await trackEvent(mantle_customer, country, "ip_tracked");
+        try {
+          await trackEvent(mantle_customer, country, "ip_tracked");
+        } catch (error) {
+          console.error("Error tracking IP event:", error);
+        }
 
         // Initialize blocking flags
         let shouldBlock = false;
@@ -119,11 +123,15 @@ const App = () => {
 
         // If blocking is required, track the event and inject blocked content
         if (shouldBlock) {
-          await trackEvent(mantle_customer, country, `${reason}_blocked`);
+          try { 
+            trackEvent(mantle_customer, country, `${reason}_blocked`);
+          } catch (err) {
+            console.error("Error tracking event:", err);
+          }
           injectBlockedContent();
         }
       } catch (err) {
-        console.error("Error fetching countries or IP data:", err);
+         console.error("Error fetching countries or IP data:", err);
       }
     }
 
