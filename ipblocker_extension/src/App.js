@@ -82,7 +82,7 @@ const App = () => {
     async function fetchCountries() {
       try {
         // Get the shop domain from the root element's data attribute        
-        const shop = window.Shopify.shop || document.getElementById("root").getAttribute("data-shop-domain");
+        const shop = window.Shopify.shop;
 
         // Fetch country data, IP list, customer info, and whitelist for the shop
         const { countries, ips, mantle_customer, whiteList } = await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}`);
