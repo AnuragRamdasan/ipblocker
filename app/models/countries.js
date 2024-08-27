@@ -64,7 +64,7 @@ const addCityToShop = async (token, cities) => {
       Authorization: token,
     },
     body: JSON.stringify({
-      country: { cities: cities },
+      cities: cities,
     }),
   });
 };
