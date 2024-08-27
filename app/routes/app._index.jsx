@@ -4,6 +4,7 @@ import masterCountryList from "./masterCountryList";
 import { useEffect } from "react";
 import { useState } from "react";
 import {
+  addCityToShop,
   addCountryToShop,
   addIpToShop,
   addWhitelistCountryToShop,
@@ -14,7 +15,7 @@ import MultiSelect from "../components/MultiSelect";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
-  const { countries, ips, whiteList } = await getCountriesForShop(
+  const { countries, ips, whiteList, cities } = await getCountriesForShop(
     session.accessToken,
   );
   const res = await admin.graphql(`
@@ -28,7 +29,8 @@ export const loader = async ({ request }) => {
   const storeId = data.shop.myshopifyDomain
     .replace("https://", "")
     .replace(".myshopify.com", "");
-  return { countries, ips, storeId, whiteList };
+
+  return { countries, ips, storeId, whiteList, cities };
 };
 
 export const action = async ({ request }) => {
@@ -62,6 +64,9 @@ export const action = async ({ request }) => {
       countryNames,
       countryCodes,
     );
+  } else if (actionType === "create_cities") {
+    const cities = JSON.parse(formData.get("cities"));
+    res = await addCityToShop(session.accessToken, cities);
   }
 
   // Determine the type of action and set the appropriate message
@@ -69,6 +74,7 @@ export const action = async ({ request }) => {
     create: "modify country blocklist",
     create_whitelist: "modify country whitelist",
     create_ip: "modify IP blocklist",
+    create_cities: "modify city blocklist",
   };
 
   const message = actionMessages[actionType] || "perform action";
@@ -82,6 +88,8 @@ export const action = async ({ request }) => {
         return { error: "errorWhitelist", message: "messageWhitelist" };
       case "create_ip":
         return { error: "errorIp", message: "messageIp" };
+      case "create_cities":
+        return { error: "errorCities", message: "messageCities" };
       default:
         return { error: "error", message: "message" };
     }
@@ -106,12 +114,13 @@ export const action = async ({ request }) => {
 
 export default function CountriesAdmin() {
   const data = useActionData();
-  const { countries, ips, storeId, whiteList } = useLoaderData();
+  const { countries, ips, storeId, whiteList, cities } = useLoaderData();
   const [showBanner, setShowBanner] = useState(true);
 
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedOptionsWhitelist, setSelectedOptionsWhitelist] = useState([]);
   const [selectedIps, setSelectedIps] = useState([]);
+  const [selectedCities, setSelectedCities] = useState([]);
 
   useEffect(() => {
     // Function to add the script
@@ -230,6 +239,41 @@ export default function CountriesAdmin() {
             <Banner
               title={data.message}
               status={data.error ? "critical" : "success"}
+            />
+          )}
+        </Layout.Section>
+        <Layout.Section>
+          <Card sectioned>
+            <Text variant="headingMd" as="h5">
+              Select the cities and zip codes you want to block access to.
+            </Text>
+            <Form method="post">
+              <input type="hidden" name="_action" value="create_cities" />
+              <MultiSelect
+                selectedOptions={cities.map((c) => c.city)}
+                placeholder={
+                  "Add city and optionally a zip code (e.g., New York or New York 10001)"
+                }
+                options={[]}
+                onUpdate={setSelectedCities}
+              />
+              <br />
+              <input
+                type="hidden"
+                name="cities"
+                value={JSON.stringify(selectedCities)}
+              />
+              <Button submit primary>
+                Save
+              </Button>
+            </Form>
+          </Card>
+        </Layout.Section>
+        <Layout.Section>
+          {data && data.messageCities && (
+            <Banner
+              title={data.messageCities}
+              status={data.messageCities ? "critical" : "success"}
             />
           )}
         </Layout.Section>

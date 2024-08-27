@@ -13,11 +13,17 @@ const API_ENDPOINTS = {
   COUNTRY_INFO: "https://ipapi.co",
 };
 
-const IPBLOCKER_LOGO = "https://cdn.shopify.com/app-store/listing_images/c32fa88b423044f414bf606d4cd737d3/icon/CKj-r-6ez4cDEAE=.png";
+const IPBLOCKER_LOGO =
+  "https://cdn.shopify.com/app-store/listing_images/c32fa88b423044f414bf606d4cd737d3/icon/CKj-r-6ez4cDEAE=.png";
 
 const App = () => {
   // Fetch function with retry mechanism
-  const fetchWithRetry = async (url, options = {}, retries = 3, backoff = 300) => {
+  const fetchWithRetry = async (
+    url,
+    options = {},
+    retries = 3,
+    backoff = 300,
+  ) => {
     try {
       // Attempt to fetch data from the URL
       const response = await fetch(url, options);
@@ -38,13 +44,33 @@ const App = () => {
   const trackEvent = async (customer, countryData, eventName) => {
     const { appId, customerToken } = customer;
     const {
-      ip, continent_code, continent_name, country_code, country_name,
-      region_code, region_name, city, zip, latitude, longitude, security,
+      ip,
+      continent_code,
+      continent_name,
+      country_code,
+      country_name,
+      region_code,
+      region_name,
+      city,
+      zip,
+      latitude,
+      longitude,
+      security,
     } = countryData;
 
     const eventProperties = {
-      continent_code, continent_name, country_code, country_name,
-      region_code, region_name, city, zip, latitude, longitude, security, ip,
+      continent_code,
+      continent_name,
+      country_code,
+      country_name,
+      region_code,
+      region_name,
+      city,
+      zip,
+      latitude,
+      longitude,
+      security,
+      ip,
     };
 
     if (eventName.includes("blocked")) {
@@ -81,23 +107,62 @@ const App = () => {
   useEffect(() => {
     async function fetchCountries() {
       try {
-        // Get the shop domain from the root element's data attribute        
+        // Get the shop domain from the root element's data attribute
         const shop = window.Shopify.shop;
 
         // Fetch country data, IP list, customer info, and whitelist for the shop
-        const { countries, ips, mantle_customer, whiteList } = await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}`);
+        const { countries, ips, mantle_customer, whiteList, cities } =
+          await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}`);
 
         // Get the current IP address of the user
         const { ip: currentIP } = await fetchWithRetry(API_ENDPOINTS.IP_INFO);
 
         // Fetch detailed country information based on the current IP
-        const country = await fetchWithRetry(`${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/json/`);
+        const country = await fetchWithRetry(
+          `${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/json/`,
+        );
 
         // Extract the country code from the fetched country data
         const currentCountry = country.country_code;
+        const currentCity = {
+          city: country.city,
+          pincode: country.postal || country.zip,
+        };
 
         // Create an array of blocked country codes
         const blockedCountries = countries.map((c) => c.country_code);
+
+        // Create an array of blocked city codes
+        const cityBlocked = (currentCity) => {
+          const { city, pincode } = currentCity;
+          return blockedCities.some((blockedCity) => {
+            if (blockedCity.pincode) {
+              // If pincode is present, match both city and pincode
+              return pincode === blockedCity.pincode;
+            } else {
+              // If no pincode, just match the city name (ignoring spaces and case)
+              return (
+                city.toLowerCase().replace(/\s+/g, "") ===
+                blockedCity.city.toLowerCase().replace(/\s+/g, "")
+              );
+            }
+          });
+        };
+
+        const blockedCities = cities.map((c) => {
+          const [city, pincode] = c.city.split(" ").reduce(
+            (acc, part, index, arr) => {
+              if (index === arr.length - 1 && /^\d+$/.test(part)) {
+                acc[1] = part;
+              } else {
+                acc[0] += (acc[0] ? " " : "") + part;
+              }
+              return acc;
+            },
+            ["", ""],
+          );
+          return { city, pincode };
+        });
 
         // Track the IP event for analytics
         try {
@@ -114,16 +179,22 @@ const App = () => {
         if (whiteList?.length && !whiteList.includes(currentCountry)) {
           shouldBlock = true;
           reason = "country";
-        } 
+        }
         // Check if the current country is in the blocked list or if the IP is blocked
-        else if (blockedCountries.includes(currentCountry) || ips.includes(currentIP)) {
+        else if (blockedCountries.includes(currentCountry)) {
           shouldBlock = true;
-          reason = blockedCountries.includes(currentCountry) ? "country" : "ip";
+          reason = "country";
+        } else if (cityBlocked(currentCity)) {
+          shouldBlock = true;
+          reason = "city";
+        } else if (ips.includes(currentIP)) {
+          shouldBlock = true;
+          reason = "ip";
         }
 
         // If blocking is required, track the event and inject blocked content
         if (shouldBlock) {
-          try { 
+          try {
             trackEvent(mantle_customer, country, `${reason}_blocked`);
           } catch (err) {
             console.error("Error tracking event:", err);
@@ -131,7 +202,7 @@ const App = () => {
           injectBlockedContent();
         }
       } catch (err) {
-         console.error("Error fetching countries or IP data:", err);
+        console.error("Error fetching countries or IP data:", err);
       }
     }
 

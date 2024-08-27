@@ -55,9 +55,24 @@ const addIpToShop = async (token, ips) => {
   });
 };
 
+const addCityToShop = async (token, cities) => {
+  return fetch(process.env.SERVER_URL + "ipblocker/cities.json", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify({
+      country: { cities: cities },
+    }),
+  });
+};
+
 export {
   getCountriesForShop,
   addCountryToShop,
   addIpToShop,
   addWhitelistCountryToShop,
+  addCityToShop,
 };
