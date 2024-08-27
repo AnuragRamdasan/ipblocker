@@ -214,6 +214,9 @@ export default function CountriesAdmin() {
             <Text variant="headingMd" as="h5">
               Select the countries that you want to block access to.
             </Text>
+            <Text>
+              If you add countries to blocklist, all countries in blocklist will find the website inaccessible. Country blocklist supersedes city blocklist.
+            </Text>
             <Form method="post">
               <input type="hidden" name="_action" value="create" />
               <MultiSelect
@@ -246,6 +249,9 @@ export default function CountriesAdmin() {
           <Card sectioned>
             <Text variant="headingMd" as="h5">
               Select the cities and zip codes you want to block access to.
+            </Text>
+            <Text>
+              If you add cities to blocklist, all cities in blocklist will find the website inaccessible. City blocklist supersedes ip blocklist.
             </Text>
             <Form method="post">
               <input type="hidden" name="_action" value="create_cities" />
