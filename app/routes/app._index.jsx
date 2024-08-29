@@ -163,7 +163,8 @@ export default function CountriesAdmin() {
                 </a>
                 .
               </p>
-
+              <br />
+              <br />
               <p>
                 In case, you installed the app before 29 August, 2024, you need to
                 emable the app block in your theme app embeds to start blocking
