@@ -143,7 +143,7 @@ export default function CountriesAdmin() {
     }
   }, []);
 
-  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor`;
+  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
 
   return (
     <Page title="Manage Blocked Countries">
@@ -156,10 +156,20 @@ export default function CountriesAdmin() {
               onDismiss={() => setShowBanner(false)}
             >
               <p>
-                Enable the app block in your theme header to start blocking
+                Enable the app block in your theme app embeds to start blocking
                 fraudulent traffic.{" "}
                 <a href={themeUrl} target="_blank" rel="noopener noreferrer">
-                  Manage theme app extensions
+                  Manage theme app embeds
+                </a>
+                .
+              </p>
+
+              <p>
+                In case, you installed the app before 29 August, 2024, you need to
+                emable the app block in your theme app embeds to start blocking
+                fraudulent traffic.{" "}
+                <a href={themeUrl} target="_blank" rel="noopener noreferrer">
+                  Manage theme app embeds
                 </a>
                 .
               </p>
