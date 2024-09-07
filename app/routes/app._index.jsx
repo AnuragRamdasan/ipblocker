@@ -1,5 +1,15 @@
 import { useLoaderData, Form, Link, useActionData } from "@remix-run/react";
-import { Page, Layout, Card, Button, Text, Banner } from "@shopify/polaris";
+import {
+  Page,
+  Layout,
+  Tabs,
+  Select,
+  TextField,
+  Card,
+  Button,
+  Text,
+  Banner,
+} from "@shopify/polaris";
 import masterCountryList from "./masterCountryList";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -121,6 +131,30 @@ export default function CountriesAdmin() {
   const [selectedOptionsWhitelist, setSelectedOptionsWhitelist] = useState([]);
   const [selectedIps, setSelectedIps] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
+  const [selected, setSelected] = useState(0);
+
+  const tabs = [
+    {
+      id: "whitelist",
+      content: "Whitelist",
+      accessibilityLabel: "Whitelist countries",
+      panelID: "whitelist-content",
+    },
+    {
+      id: "blocklist",
+      content: "Blocklist",
+      accessibilityLabel: "Block countries, cities, and IPs",
+      panelID: "blocklist-content",
+    },
+    // {
+    //   id: 'auto block',
+    //   content: 'Auto Block',
+    //   accessibilityLabel: 'Auto Block',
+    //   panelID: 'auto-block-content',
+    // }
+  ];
+
+  const handleTabChange = (selectedTabIndex) => setSelected(selectedTabIndex);
 
   useEffect(() => {
     // Function to add the script
@@ -166,9 +200,9 @@ export default function CountriesAdmin() {
               <br />
               <br />
               <p>
-                In case, you installed the app before 29 August, 2024, you need to
-                emable the app block in your theme app embeds to start blocking
-                fraudulent traffic.{" "}
+                In case, you installed the app before 29 August, 2024, you need
+                to emable the app block in your theme app embeds to start
+                blocking fraudulent traffic.{" "}
                 <a href={themeUrl} target="_blank" rel="noopener noreferrer">
                   Manage theme app embeds
                 </a>
@@ -179,154 +213,154 @@ export default function CountriesAdmin() {
           </Layout.Section>
         )}
         <Layout.Section>
-          <Card sectioned>
-            <Text variant="headingMd" as="h5">
-              Select the countries that you want to whitelist.
-            </Text>
-            <Text>
-              If you add countries to whitelist, all countries not in whitelist
-              will be blocked. Whitelist supersedes blocklist.
-            </Text>
-            <Form method="post">
-              <input type="hidden" name="_action" value="create_whitelist" />
-              <MultiSelect
-                selectedOptions={whiteList.map((c) => c.country)}
-                placeholder={"Add countries to whitelist"}
-                options={masterCountryList.map((c) => c.country)}
-                onUpdate={setSelectedOptionsWhitelist}
-              />
-              <br />
-              <input
-                type="hidden"
-                name="countries"
-                value={JSON.stringify(selectedOptionsWhitelist)}
-              />
-              <Button submit primary>
-                Save
-              </Button>
-            </Form>
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          {data && data.messageWhitelist && (
-            <Banner
-              title={data.messageWhitelist}
-              status={data.errorWhitelist ? "critical" : "success"}
-            />
-          )}
-        </Layout.Section>
-        <Layout.Section>
-          <Card
-            sectioned
-            background={
-              whiteList.length > 0 ? "bg-surface-secondary" : "bg-surface"
-            }
-          >
-            <Text variant="headingMd" as="h5">
-              Select the countries that you want to block access to.
-            </Text>
-            <Text>
-              If you add countries to blocklist, all countries in blocklist will find the website inaccessible. Country blocklist supersedes city blocklist.
-            </Text>
-            <Form method="post">
-              <input type="hidden" name="_action" value="create" />
-              <MultiSelect
-                selectedOptions={countries.map((c) => c.country)}
-                placeholder={"Add countries to block"}
-                options={masterCountryList.map((c) => c.country)}
-                onUpdate={setSelectedOptions}
-              />
-              <br />
-              <input
-                type="hidden"
-                name="countries"
-                value={JSON.stringify(selectedOptions)}
-              />
-              <Button submit primary disabled={whiteList.length > 0}>
-                Save
-              </Button>
-            </Form>
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          {data && data.message && (
-            <Banner
-              title={data.message}
-              status={data.error ? "critical" : "success"}
-            />
-          )}
-        </Layout.Section>
-        <Layout.Section>
-          <Card sectioned>
-            <Text variant="headingMd" as="h5">
-              Select the cities and zip codes you want to block access to.
-            </Text>
-            <Text>
-              If you add cities to blocklist, all cities in blocklist will find the website inaccessible. City blocklist supersedes ip blocklist.
-            </Text>
-            <Form method="post">
-              <input type="hidden" name="_action" value="create_cities" />
-              <MultiSelect
-                selectedOptions={cities.map((c) => c.city)}
-                placeholder={
-                  "Add city and optionally a zip code (e.g., New York or New York 10001)"
+          <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
+            {selected === 0 && (
+              <Card sectioned>
+                <Text variant="headingMd" as="h5">
+                  Select the countries that you want to whitelist.
+                </Text>
+                <Text>
+                  If you add countries to whitelist, all countries not in
+                  whitelist will be blocked. Whitelist supersedes blocklist.
+                </Text>
+                <Form method="post">
+                  <input
+                    type="hidden"
+                    name="_action"
+                    value="create_whitelist"
+                  />
+                  <MultiSelect
+                    selectedOptions={whiteList.map((c) => c.country)}
+                    placeholder={"Add countries to whitelist"}
+                    options={masterCountryList.map((c) => c.country)}
+                    onUpdate={setSelectedOptionsWhitelist}
+                  />
+                  <br />
+                  <input
+                    type="hidden"
+                    name="countries"
+                    value={JSON.stringify(selectedOptionsWhitelist)}
+                  />
+                  <Button submit primary>
+                    Save
+                  </Button>
+                </Form>
+                {data && data.messageWhitelist && (
+                  <Banner
+                    title={data.messageWhitelist}
+                    status={data.errorWhitelist ? "critical" : "success"}
+                  />
+                )}
+              </Card>
+            )}
+            {selected === 1 && (
+              <Card
+                sectioned
+                background={
+                  whiteList.length > 0 ? "bg-surface-secondary" : "bg-surface"
                 }
-                options={[]}
-                onUpdate={setSelectedCities}
-              />
-              <br />
-              <input
-                type="hidden"
-                name="cities"
-                value={JSON.stringify(selectedCities)}
-              />
-              <Button submit primary>
-                Save
-              </Button>
-            </Form>
-          </Card>
+              >
+                <Text variant="headingMd" as="h5">
+                  Select the countries that you want to block access to.
+                </Text>
+                <Text>
+                  If you add countries to blocklist, all countries in blocklist
+                  will find the website inaccessible. Country blocklist
+                  supersedes city blocklist.
+                </Text>
+                <Form method="post">
+                  <input type="hidden" name="_action" value="create" />
+                  <MultiSelect
+                    selectedOptions={countries.map((c) => c.country)}
+                    placeholder={"Add countries to block"}
+                    options={masterCountryList.map((c) => c.country)}
+                    onUpdate={setSelectedOptions}
+                  />
+                  <br />
+                  <input
+                    type="hidden"
+                    name="countries"
+                    value={JSON.stringify(selectedOptions)}
+                  />
+                  <Button submit primary disabled={whiteList.length > 0}>
+                    Save
+                  </Button>
+                </Form>
+                {data && data.message && (
+                  <Banner
+                    title={data.message}
+                    status={data.error ? "critical" : "success"}
+                  />
+                )}
+
+                <br />
+                <Text variant="headingMd" as="h5">
+                  Select the cities and zip codes you want to block access to.
+                </Text>
+                <Text>
+                  If you add cities to blocklist, all cities in blocklist will
+                  find the website inaccessible. City blocklist supersedes ip
+                  blocklist.
+                </Text>
+                <Form method="post">
+                  <input type="hidden" name="_action" value="create_cities" />
+                  <MultiSelect
+                    selectedOptions={cities.map((c) => c.city)}
+                    placeholder={
+                      "Add city and optionally a zip code (e.g., New York or New York 10001)"
+                    }
+                    options={[]}
+                    onUpdate={setSelectedCities}
+                  />
+                  <br />
+                  <input
+                    type="hidden"
+                    name="cities"
+                    value={JSON.stringify(selectedCities)}
+                  />
+                  <Button submit primary>
+                    Save
+                  </Button>
+                </Form>
+                {data && data.messageCities && (
+                  <Banner
+                    title={data.messageCities}
+                    status={data.messageCities ? "critical" : "success"}
+                  />
+                )}
+                <br />
+                <Text variant="headingMd" as="h5">
+                  Select the IPs that you want to block access to.
+                </Text>
+                <Form method="post">
+                  <input type="hidden" name="_action" value="create_ip" />
+                  <MultiSelect
+                    selectedOptions={ips}
+                    placeholder={"Add IPs separated by comma to block"}
+                    options={[]}
+                    onUpdate={setSelectedIps}
+                  />
+                  <br />
+                  <input
+                    type="hidden"
+                    name="ips"
+                    value={JSON.stringify(selectedIps)}
+                  />
+                  <Button submit primary>
+                    Save
+                  </Button>
+                </Form>
+                {data && data.messageIp && (
+                  <Banner
+                    title={data.messageIp}
+                    status={data.errorIp ? "critical" : "success"}
+                  />
+                )}
+              </Card>
+            )}
+          </Tabs>
         </Layout.Section>
-        <Layout.Section>
-          {data && data.messageCities && (
-            <Banner
-              title={data.messageCities}
-              status={data.messageCities ? "critical" : "success"}
-            />
-          )}
-        </Layout.Section>
-        <Layout.Section>
-          <Card sectioned>
-            <Text variant="headingMd" as="h5">
-              Select the IPs that you want to block access to.
-            </Text>
-            <Form method="post">
-              <input type="hidden" name="_action" value="create_ip" />
-              <MultiSelect
-                selectedOptions={ips}
-                placeholder={"Add IPs separated by comma to block"}
-                options={[]}
-                onUpdate={setSelectedIps}
-              />
-              <br />
-              <input
-                type="hidden"
-                name="ips"
-                value={JSON.stringify(selectedIps)}
-              />
-              <Button submit primary>
-                Save
-              </Button>
-            </Form>
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          {data && data.messageIp && (
-            <Banner
-              title={data.messageIp}
-              status={data.errorIp ? "critical" : "success"}
-            />
-          )}
-        </Layout.Section>
+
         <Layout.Section>
           <Card sectioned>
             <Text>
