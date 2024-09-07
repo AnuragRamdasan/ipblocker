@@ -1,6 +1,7 @@
 import { json } from "@remix-run/node";
 import { getCountriesForShop } from "../models/countries";
 import prisma from "../db.server";
+import { getConfig } from "../models/configuration";
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
