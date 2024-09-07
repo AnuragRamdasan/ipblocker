@@ -191,7 +191,7 @@ const App = () => {
         } else if (ips.includes(currentIP)) {
           shouldBlock = true;
           reason = "ip";
-        } else if ((config['botBlockingEnabled'] === 'true') && isBot()) {
+        } else if (config["botBlockingEnabled"] === "true" && isBot()) {
           shouldBlock = true;
           reason = "bot";
         }

@@ -8,6 +8,7 @@ import {
   Button,
   Text,
   Banner,
+  List,
 } from "@shopify/polaris";
 import masterCountryList from "./masterCountryList";
 import { useEffect } from "react";
@@ -22,6 +23,8 @@ import {
 import { authenticate } from "../shopify.server";
 import MultiSelect from "../components/MultiSelect";
 import { addOrCreateConfig, getConfig } from "../models/configuration";
+import { useMantle } from "@heymantle/react";
+import { isFeatureAllowed } from "../models/planGating";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -131,6 +134,7 @@ export const action = async ({ request }) => {
 
 export default function CountriesAdmin() {
   const data = useActionData();
+  const { customer } = useMantle();
   const { countries, ips, storeId, whiteList, cities, config } =
     useLoaderData();
   const [showBanner, setShowBanner] = useState(true);
@@ -157,12 +161,12 @@ export default function CountriesAdmin() {
       accessibilityLabel: "Block countries, cities, and IPs",
       panelID: "blocklist-content",
     },
-    // {
-    //   id: "auto block",
-    //   content: "Auto Block",
-    //   accessibilityLabel: "Auto Block",
-    //   panelID: "auto-block-content",
-    // },
+    {
+      id: "auto block",
+      content: "Auto Block",
+      accessibilityLabel: "Auto Block",
+      panelID: "auto-block-content",
+    },
   ];
 
   const handleTabChange = (selectedTabIndex) => setSelected(selectedTabIndex);
@@ -371,6 +375,23 @@ export default function CountriesAdmin() {
             )}
             {selected === 2 && (
               <Card sectioned>
+                {!isFeatureAllowed(customer, "bot_block") && (
+                  <Card sectioned>
+                    <Banner
+                      title="Plan Upgrade Required"
+                      action={{ url: "/app/billing", content: "Upgrade Plan" }}
+                      tone="warning"
+                    >
+                      <List>
+                        <List.Item>
+                          You have hit the maximum allowed number of stores for
+                          your current plan. Please upgrade the plan to add more
+                          sitemaps.
+                        </List.Item>
+                      </List>
+                    </Banner>
+                  </Card>
+                )}
                 <Text variant="headingMd" as="h5">
                   Bot Blocking
                 </Text>
@@ -393,7 +414,7 @@ export default function CountriesAdmin() {
                     }}
                   />
                   <br />
-                  <Button submit primary>
+                  <Button submit primary disabled={!isFeatureAllowed(customer, "bot_block")}>
                     Save
                   </Button>
                 </Form>
