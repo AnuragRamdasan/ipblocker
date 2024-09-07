@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Provider, ErrorBoundary } from "@rollbar/react";
+import isBot from "./BotBlocker";
 
 const rollbarConfig = {
   accessToken: "c5b3fd43148e4e258eadef336137b298",
@@ -111,7 +112,7 @@ const App = () => {
         const shop = window.Shopify.shop;
 
         // Fetch country data, IP list, customer info, and whitelist for the shop
-        const { countries, ips, mantle_customer, whiteList, cities } =
+        const { countries, ips, mantle_customer, whiteList, cities, config } =
           await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}`);
 
         // Get the current IP address of the user
@@ -190,6 +191,9 @@ const App = () => {
         } else if (ips.includes(currentIP)) {
           shouldBlock = true;
           reason = "ip";
+        } else if (isBot()) {
+          shouldBlock = true;
+          reason = "bot";
         }
 
         // If blocking is required, track the event and inject blocked content

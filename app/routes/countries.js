@@ -15,8 +15,9 @@ export const loader = async ({ request }) => {
 
   const { countries, ips, mantle_customer, whiteList, cities } =
     await getCountriesForShop(session[0].accessToken);
+  const config = await getConfig(session[0].accessToken)
   return json(
-    { countries, ips, mantle_customer, whiteList, cities },
+    { countries, ips, mantle_customer, whiteList, cities, config },
     {
       headers: {
         "Access-Control-Allow-Origin": "*",
