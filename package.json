@@ -25,6 +25,7 @@
     "node": ">=16.0.0 <22.0.0"
   },
   "dependencies": {
+    "@heymantle/react": "^0.0.32",
     "@prisma/client": "^5.11.0",
     "@remix-run/dev": "^2.7.1",
     "@remix-run/node": "^2.7.1",

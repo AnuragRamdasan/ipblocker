@@ -1,31 +1,42 @@
-import { json } from "@remix-run/node";
+import { MantleProvider } from "@heymantle/react";
 import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
+import { getMantleCustomer } from "../models/mantleCustomer";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
+  const { session } = await authenticate.admin(request);
+  const token = await getMantleCustomer(session.accessToken);
+  return {
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    customerApiToken: token,
+  };
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData();
+  const { apiKey, customerApiToken } = useLoaderData();
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
-      <NavMenu>
-        <Link to="/app" rel="home">
-          Home
-        </Link>
-        <Link to="/app/roadmap">Roadmap</Link>
-      </NavMenu>
-      <Outlet />
+      <MantleProvider
+        appId={import.meta.env.VITE_MANTLE_APP_ID}
+        customerApiToken={customerApiToken}
+        apiUrl={import.meta.env.VITE_MANTLE_API_URL}
+      >
+        <NavMenu>
+          <Link to="/app" rel="home">
+            Home
+          </Link>
+          {/* <Link to="/app/billing">Billing</Link> */}
+          <Link to="/app/roadmap">Roadmap</Link>
+        </NavMenu>
+        <Outlet />
+      </MantleProvider>
     </AppProvider>
   );
 }

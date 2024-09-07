@@ -3,8 +3,7 @@ import {
   Page,
   Layout,
   Tabs,
-  Select,
-  TextField,
+  Checkbox,
   Card,
   Button,
   Text,
@@ -22,6 +21,7 @@ import {
 } from "../models/countries";
 import { authenticate } from "../shopify.server";
 import MultiSelect from "../components/MultiSelect";
+import { addOrCreateConfig, getConfig } from "../models/configuration";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -40,7 +40,8 @@ export const loader = async ({ request }) => {
     .replace("https://", "")
     .replace(".myshopify.com", "");
 
-  return { countries, ips, storeId, whiteList, cities };
+  const config = (await getConfig(session.accessToken)) || {};
+  return { countries, ips, storeId, whiteList, cities, config };
 };
 
 export const action = async ({ request }) => {
@@ -77,6 +78,9 @@ export const action = async ({ request }) => {
   } else if (actionType === "create_cities") {
     const cities = JSON.parse(formData.get("cities"));
     res = await addCityToShop(session.accessToken, cities);
+  } else if (actionType === "toggle_bot_blocking") {
+    const botBlockingEnabled = formData.get("botBlockingEnabled");
+    res = await addOrCreateConfig(session.accessToken, { botBlockingEnabled });
   }
 
   // Determine the type of action and set the appropriate message
@@ -85,6 +89,7 @@ export const action = async ({ request }) => {
     create_whitelist: "modify country whitelist",
     create_ip: "modify IP blocklist",
     create_cities: "modify city blocklist",
+    toggle_bot_blocking: "modify bot blocking",
   };
 
   const message = actionMessages[actionType] || "perform action";
@@ -100,6 +105,8 @@ export const action = async ({ request }) => {
         return { error: "errorIp", message: "messageIp" };
       case "create_cities":
         return { error: "errorCities", message: "messageCities" };
+      case "toggle_bot_blocking":
+        return { error: "errorBotBlocking", message: "messageBotBlocking" };
       default:
         return { error: "error", message: "message" };
     }
@@ -124,7 +131,8 @@ export const action = async ({ request }) => {
 
 export default function CountriesAdmin() {
   const data = useActionData();
-  const { countries, ips, storeId, whiteList, cities } = useLoaderData();
+  const { countries, ips, storeId, whiteList, cities, config } =
+    useLoaderData();
   const [showBanner, setShowBanner] = useState(true);
 
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -132,6 +140,9 @@ export default function CountriesAdmin() {
   const [selectedIps, setSelectedIps] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
   const [selected, setSelected] = useState(0);
+  const [botBlockingEnabled, setBotBlockingEnabled] = useState(
+    config["botBlockingEnabled"] === "true",
+  );
 
   const tabs = [
     {
@@ -147,11 +158,11 @@ export default function CountriesAdmin() {
       panelID: "blocklist-content",
     },
     // {
-    //   id: 'auto block',
-    //   content: 'Auto Block',
-    //   accessibilityLabel: 'Auto Block',
-    //   panelID: 'auto-block-content',
-    // }
+    //   id: "auto block",
+    //   content: "Auto Block",
+    //   accessibilityLabel: "Auto Block",
+    //   panelID: "auto-block-content",
+    // },
   ];
 
   const handleTabChange = (selectedTabIndex) => setSelected(selectedTabIndex);
@@ -354,6 +365,42 @@ export default function CountriesAdmin() {
                   <Banner
                     title={data.messageIp}
                     status={data.errorIp ? "critical" : "success"}
+                  />
+                )}
+              </Card>
+            )}
+            {selected === 2 && (
+              <Card sectioned>
+                <Text variant="headingMd" as="h5">
+                  Bot Blocking
+                </Text>
+                <Form method="post">
+                  <input
+                    type="hidden"
+                    name="_action"
+                    value="toggle_bot_blocking"
+                  />
+                  <input
+                    type="hidden"
+                    name="botBlockingEnabled"
+                    value={botBlockingEnabled}
+                  />
+                  <Checkbox
+                    label="Enable Bot Blocking"
+                    checked={botBlockingEnabled}
+                    onChange={(checked) => {
+                      setBotBlockingEnabled(checked);
+                    }}
+                  />
+                  <br />
+                  <Button submit primary>
+                    Save
+                  </Button>
+                </Form>
+                {data && data.messageBotBlocking && (
+                  <Banner
+                    title={data.messageBotBlocking}
+                    status={data.errorBotBlocking ? "critical" : "success"}
                   />
                 )}
               </Card>
