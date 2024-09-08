@@ -414,7 +414,11 @@ export default function CountriesAdmin() {
                     }}
                   />
                   <br />
-                  <Button submit primary disabled={!isFeatureAllowed(customer, "bot_block")}>
+                  <Button
+                    submit
+                    primary
+                    disabled={!isFeatureAllowed(customer, "bot_block")}
+                  >
                     Save
                   </Button>
                 </Form>
