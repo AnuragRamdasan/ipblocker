@@ -167,6 +167,12 @@ export default function CountriesAdmin() {
       accessibilityLabel: "Auto Block",
       panelID: "auto-block-content",
     },
+    {
+      id: "How to enable IP Bot Blocking",
+      content: "How to Enable IP Bot Blocking",
+      accessibilityLabel: "Enable IP Bot Blocking",
+      panelID: "enable-ip-bot-blocking-content",
+    },
   ];
 
   const handleTabChange = (selectedTabIndex) => setSelected(selectedTabIndex);
@@ -428,6 +434,45 @@ export default function CountriesAdmin() {
                     status={data.errorBotBlocking ? "critical" : "success"}
                   />
                 )}
+              </Card>
+            )}
+            {selected === 3 && (
+              <Card sectioned>
+                <Text variant="headingMd" as="h5">
+                  How IP Blocker Works
+                </Text>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "20px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      paddingBottom: "56.25%",
+                      height: 0,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <iframe
+                      src="https://www.youtube.com/embed/6jnBYlGXlIw"
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        border: 0,
+                      }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title="IP Blocker Tutorial"
+                    ></iframe>
+                  </div>
+                </div>
               </Card>
             )}
           </Tabs>
