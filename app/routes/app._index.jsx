@@ -168,9 +168,9 @@ export default function CountriesAdmin() {
       panelID: "auto-block-content",
     },
     {
-      id: "How to enable IP Bot Blocking",
-      content: "How to Enable IP Bot Blocking",
-      accessibilityLabel: "Enable IP Bot Blocking",
+      id: "Video: How to enable IP Bot Blocking",
+      content: "Video: How to Enable IP Bot Blocking",
+      accessibilityLabel: "Video: Enable IP Bot Blocking",
       panelID: "enable-ip-bot-blocking-content",
     },
   ];
