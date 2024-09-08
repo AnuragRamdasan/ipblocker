@@ -25,6 +25,7 @@ import MultiSelect from "../components/MultiSelect";
 import { addOrCreateConfig, getConfig } from "../models/configuration";
 import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../models/planGating";
+import { actions, analytics } from "../utils/segment_analytics";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -175,7 +176,12 @@ export default function CountriesAdmin() {
     },
   ];
 
-  const handleTabChange = (selectedTabIndex) => setSelected(selectedTabIndex);
+  const handleTabChange = (selectedTabIndex) => {
+    analytics.track(actions.TAB_CHANGED, {
+      tab: tabs[selectedTabIndex].id,
+    });
+    setSelected(selectedTabIndex);
+  };
 
   useEffect(() => {
     // Function to add the script
@@ -262,7 +268,16 @@ export default function CountriesAdmin() {
                     name="countries"
                     value={JSON.stringify(selectedOptionsWhitelist)}
                   />
-                  <Button submit primary>
+                  <Button
+                    submit
+                    primary
+                    onClick={() => {
+                      analytics.track(actions.COUNTRY_WHITELISTED, {
+                        countries: selectedOptionsWhitelist,
+                      });
+                      // The form will be submitted automatically by the Button's default behavior
+                    }}
+                  >
                     Save
                   </Button>
                 </Form>
@@ -303,7 +318,17 @@ export default function CountriesAdmin() {
                     name="countries"
                     value={JSON.stringify(selectedOptions)}
                   />
-                  <Button submit primary disabled={whiteList.length > 0}>
+                  <Button
+                    submit
+                    primary
+                    disabled={whiteList.length > 0}
+                    onClick={() => {
+                      analytics.track(actions.COUNTRY_BLOCKED, {
+                        countries: selectedOptions,
+                      });
+                      // The form will be submitted automatically by the Button's default behavior
+                    }}
+                  >
                     Save
                   </Button>
                 </Form>
@@ -339,7 +364,16 @@ export default function CountriesAdmin() {
                     name="cities"
                     value={JSON.stringify(selectedCities)}
                   />
-                  <Button submit primary>
+                  <Button
+                    submit
+                    primary
+                    onClick={() => {
+                      analytics.track(actions.CITY_BLOCKED, {
+                        cities: selectedCities,
+                      });
+                      // The form will be submitted automatically by the Button's default behavior
+                    }}
+                  >
                     Save
                   </Button>
                 </Form>
@@ -367,7 +401,16 @@ export default function CountriesAdmin() {
                     name="ips"
                     value={JSON.stringify(selectedIps)}
                   />
-                  <Button submit primary>
+                  <Button
+                    submit
+                    primary
+                    onClick={() => {
+                      analytics.track(actions.IP_BLOCKED, {
+                        ips: selectedIps,
+                      });
+                      // The form will be submitted automatically by the Button's default behavior
+                    }}
+                  >
                     Save
                   </Button>
                 </Form>
@@ -424,6 +467,18 @@ export default function CountriesAdmin() {
                     submit
                     primary
                     disabled={!isFeatureAllowed(customer, "bot_block")}
+                    onClick={() => {
+                      if (botBlockingEnabled === true) {
+                        analytics.track(actions.AUTO_BLOCK_ENABLED, {
+                          botBlockingEnabled: botBlockingEnabled,
+                        });
+                        // The form will be submitted automatically by the Button's default behavior
+                      } else {
+                        analytics.track(actions.AUTO_BLOCK_DISABLED, {
+                          botBlockingEnabled: botBlockingEnabled,
+                        });
+                      }
+                    }}
                   >
                     Save
                   </Button>

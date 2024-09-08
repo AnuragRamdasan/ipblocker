@@ -7,7 +7,7 @@ import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import { getMantleCustomer } from "../models/mantleCustomer";
 import { useEffect } from "react";
-import analytics from "../utils/segment_analytics";
+import { analytics } from "../utils/segment_analytics";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -25,7 +25,6 @@ export default function App() {
   const { apiKey, customerApiToken, shop } = useLoaderData();
 
   useEffect(() => {
-    
     // Identify the user
     analytics.identify(shop);
   }, []);

@@ -1,5 +1,15 @@
-import { AnalyticsBrowser } from '@segment/analytics-next';
+import { AnalyticsBrowser } from "@segment/analytics-next";
 
-const analytics = AnalyticsBrowser.load({ writeKey: import.meta.env.VITE_SEGMENT_WRITE_KEY });
-
-export default analytics;
+export const analytics = AnalyticsBrowser.load({
+  writeKey: import.meta.env.VITE_SEGMENT_WRITE_KEY,
+});
+export const actions = {
+  IP_BLOCKED: "IP Blocked",
+  CITY_BLOCKED: "City Blocked",
+  COUNTRY_BLOCKED: "Country Blocked",
+  COUNTRY_WHITELISTED: "Country Whitelisted",
+  AUTO_BLOCK_ENABLED: "Auto Block Enabled",
+  AUTO_BLOCK_DISABLED: "Auto Block Disabled",
+  HOW_TO_VIEWED: "How To Viewed",
+  TAB_CHANGED: "Tab Changed",
+};
