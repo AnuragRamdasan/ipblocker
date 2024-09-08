@@ -6,6 +6,8 @@ import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import { getMantleCustomer } from "../models/mantleCustomer";
+import { useEffect } from "react";
+import { AnalyticsBrowser } from '@segment/analytics-next';
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -15,11 +17,19 @@ export const loader = async ({ request }) => {
   return {
     apiKey: process.env.SHOPIFY_API_KEY || "",
     customerApiToken: token,
+    shop: session.shop,
   };
 };
 
 export default function App() {
-  const { apiKey, customerApiToken } = useLoaderData();
+  const { apiKey, customerApiToken, shop } = useLoaderData();
+
+  useEffect(() => {
+    const analytics = AnalyticsBrowser.load({ writeKey: import.meta.env.VITE_SEGMENT_WRITE_KEY });
+    
+    // Identify the user
+    analytics.identify(shop);
+  }, []);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
