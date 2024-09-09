@@ -12,4 +12,5 @@ export const actions = {
   AUTO_BLOCK_DISABLED: "Auto Block Disabled",
   HOW_TO_VIEWED: "How To Viewed",
   TAB_CHANGED: "Tab Changed",
+  MANAGE_THEME_APP_EMBEDS_CLICKED: "Manage Theme App Embeds Clicked",
 };

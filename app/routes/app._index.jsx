@@ -219,7 +219,15 @@ export default function CountriesAdmin() {
               <p>
                 Enable the app block in your theme app embeds to start blocking
                 fraudulent traffic.{" "}
-                <a href={themeUrl} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={themeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    analytics.track(actions.MANAGE_THEME_APP_EMBEDS_CLICKED);
+                    window.open(themeUrl, "_blank", "noopener,noreferrer");
+                  }}
+                >
                   Manage theme app embeds
                 </a>
                 .
@@ -422,7 +430,9 @@ export default function CountriesAdmin() {
                     >
                       <List>
                         <List.Item>
-                          Automated intelligent bot blocking is not available on the free plan. You can enable this feature on our basic plan for just $1.99 per month.
+                          Automated intelligent bot blocking is not available on
+                          the free plan. You can enable this feature on our
+                          basic plan for just $1.99 per month.
                         </List.Item>
                       </List>
                     </Banner>
