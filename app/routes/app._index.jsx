@@ -151,16 +151,16 @@ export default function CountriesAdmin() {
 
   const tabs = [
     {
-      id: "whitelist",
-      content: "Whitelist",
-      accessibilityLabel: "Whitelist countries",
-      panelID: "whitelist-content",
-    },
-    {
       id: "blocklist",
       content: "Blocklist",
       accessibilityLabel: "Block countries, cities, and IPs",
       panelID: "blocklist-content",
+    },
+    {
+      id: "whitelist",
+      content: "Whitelist",
+      accessibilityLabel: "Whitelist countries",
+      panelID: "whitelist-content",
     },
     {
       id: "auto block",
@@ -239,54 +239,6 @@ export default function CountriesAdmin() {
         <Layout.Section>
           <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
             {selected === 0 && (
-              <Card sectioned>
-                <Text variant="headingMd" as="h5">
-                  Select the countries that you want to whitelist.
-                </Text>
-                <Text>
-                  If you add countries to whitelist, all countries not in
-                  whitelist will be blocked. Whitelist supersedes blocklist.
-                </Text>
-                <Form method="post">
-                  <input
-                    type="hidden"
-                    name="_action"
-                    value="create_whitelist"
-                  />
-                  <MultiSelect
-                    selectedOptions={whiteList.map((c) => c.country)}
-                    placeholder={"Add countries to whitelist"}
-                    options={masterCountryList.map((c) => c.country)}
-                    onUpdate={setSelectedOptionsWhitelist}
-                  />
-                  <br />
-                  <input
-                    type="hidden"
-                    name="countries"
-                    value={JSON.stringify(selectedOptionsWhitelist)}
-                  />
-                  <Button
-                    submit
-                    primary
-                    onClick={() => {
-                      analytics.track(actions.COUNTRY_WHITELISTED, {
-                        countries: selectedOptionsWhitelist,
-                      });
-                      // The form will be submitted automatically by the Button's default behavior
-                    }}
-                  >
-                    Save
-                  </Button>
-                </Form>
-                {data && data.messageWhitelist && (
-                  <Banner
-                    title={data.messageWhitelist}
-                    status={data.errorWhitelist ? "critical" : "success"}
-                  />
-                )}
-              </Card>
-            )}
-            {selected === 1 && (
               <Card
                 sectioned
                 background={
@@ -415,6 +367,54 @@ export default function CountriesAdmin() {
                   <Banner
                     title={data.messageIp}
                     status={data.errorIp ? "critical" : "success"}
+                  />
+                )}
+              </Card>
+            )}
+                        {selected === 1 && (
+              <Card sectioned>
+                <Text variant="headingMd" as="h5">
+                  Select the countries that you want to whitelist.
+                </Text>
+                <Text>
+                  If you add countries to whitelist, all countries not in
+                  whitelist will be blocked. Whitelist supersedes blocklist.
+                </Text>
+                <Form method="post">
+                  <input
+                    type="hidden"
+                    name="_action"
+                    value="create_whitelist"
+                  />
+                  <MultiSelect
+                    selectedOptions={whiteList.map((c) => c.country)}
+                    placeholder={"Add countries to whitelist"}
+                    options={masterCountryList.map((c) => c.country)}
+                    onUpdate={setSelectedOptionsWhitelist}
+                  />
+                  <br />
+                  <input
+                    type="hidden"
+                    name="countries"
+                    value={JSON.stringify(selectedOptionsWhitelist)}
+                  />
+                  <Button
+                    submit
+                    primary
+                    onClick={() => {
+                      analytics.track(actions.COUNTRY_WHITELISTED, {
+                        countries: selectedOptionsWhitelist,
+                      });
+                      // The form will be submitted automatically by the Button's default behavior
+                    }}
+                  >
+                    Save
+                  </Button>
+                </Form>
+                {data && data.messageWhitelist && (
+                  <Banner
+                    title={data.messageWhitelist}
+                    status={data.errorWhitelist ? "critical" : "success"}
                   />
                 )}
               </Card>
