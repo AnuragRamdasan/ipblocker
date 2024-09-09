@@ -224,17 +224,6 @@ export default function CountriesAdmin() {
                 </a>
                 .
               </p>
-              <br />
-              <br />
-              <p>
-                In case, you installed the app before 29 August, 2024, you need
-                to emable the app block in your theme app embeds to start
-                blocking fraudulent traffic.{" "}
-                <a href={themeUrl} target="_blank" rel="noopener noreferrer">
-                  Manage theme app embeds
-                </a>
-                .
-              </p>
             </Banner>
             <Text variant="headingMd" as="h5"></Text>
           </Layout.Section>
