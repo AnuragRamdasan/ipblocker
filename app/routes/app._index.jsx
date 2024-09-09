@@ -422,9 +422,7 @@ export default function CountriesAdmin() {
                     >
                       <List>
                         <List.Item>
-                          You have hit the maximum allowed number of stores for
-                          your current plan. Please upgrade the plan to add more
-                          sitemaps.
+                          Automated intelligent bot blocking is not available on the free plan. You can enable this feature on our basic plan for just $1.99 per month.
                         </List.Item>
                       </List>
                     </Banner>
