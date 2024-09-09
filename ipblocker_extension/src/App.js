@@ -120,7 +120,7 @@ const App = () => {
 
         // Fetch detailed country information based on the current IP
         const country = await fetchWithRetry(
-          `${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/json/`,
+          `${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/json/?access_key=a9b7a2dccfd7659f52c7414083b297da`,
         );
 
         // Extract the country code from the fetched country data
