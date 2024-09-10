@@ -132,7 +132,7 @@ const App = () => {
 
         // Create an array of blocked country codes
         const blockedCountries = countries.map((c) => c.country_code);
-
+        const whitelistedCountries = whiteList.map((c) => c.country_code);
         // Create an array of blocked city codes
         const cityBlocked = (currentCity) => {
           const { city, pincode } = currentCity;
@@ -177,7 +177,7 @@ const App = () => {
         let reason = "";
 
         // Check if the current country is not in the whitelist (if whitelist exists)
-        if (whiteList?.length && !whiteList.includes(currentCountry)) {
+        if (whiteList?.length && !whitelistedCountries.includes(currentCountry)) {
           shouldBlock = true;
           reason = "country";
         }
