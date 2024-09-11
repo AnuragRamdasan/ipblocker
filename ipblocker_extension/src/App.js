@@ -95,14 +95,80 @@ const App = () => {
   };
 
   const injectBlockedContent = () => {
-    document.body.innerHTML = `
-      <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f8f8f8;">
-        <img id="storeLogo" src="${IPBLOCKER_LOGO}" alt="Store Logo" style="width: 130px; height: 130px; object-fit: contain; margin-bottom: 30px;">
-        <h1 style="color: #333; font-size: 24px; margin-bottom: 20px;">This Shopify store is not available in your location.</h1>
-        <p style="color: #666; font-size: 16px;">We apologize for the inconvenience. Thank you for your understanding.</p>
-        <p style="color: #999; font-size: 12px; margin-top: 30px;">Powered by ValueCommerce</p>
-      </div>
+    // Remove all existing scripts
+    document.querySelectorAll('script').forEach(script => script.remove());
+
+    // Overwrite the entire document content
+    document.documentElement.innerHTML = `
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Access Blocked</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f8f8f8;
+          }
+          img {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            margin-bottom: 30px;
+          }
+          h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+          }
+          p {
+            color: #666;
+            font-size: 16px;
+          }
+          .footer {
+            color: #999;
+            font-size: 12px;
+            margin-top: 30px;
+          }
+        </style>
+      </head>
+      <body>
+        <img id="storeLogo" src="${IPBLOCKER_LOGO}" alt="Store Logo">
+        <h1>This Shopify store is not available in your location.</h1>
+        <p>We apologize for the inconvenience. Thank you for your understanding.</p>
+        <p class="footer">Powered by ValueCommerce</p>
+      </body>
     `;
+
+    // Disable all JavaScript execution
+    Object.defineProperty(window, 'eval', {
+      value: () => null,
+      writable: false,
+      configurable: false,
+    });
+
+    // Prevent adding new script tags
+    document.createElement = (function() {
+      const createElement = document.createElement;
+      return function(tagName) {
+        if (tagName.toLowerCase() === 'script') {
+          return null;
+        }
+        return createElement.apply(this, arguments);
+      };
+    })();
+
+    // Disable setting innerHTML and outerHTML
+    Element.prototype.innerHTML = '';
+    Object.defineProperty(Element.prototype, 'innerHTML', {
+      set: () => {},
+      configurable: false
+    });
+    Object.defineProperty(Element.prototype, 'outerHTML', {
+      set: () => {},
+      configurable: false
+    });
   };
 
   useEffect(() => {
