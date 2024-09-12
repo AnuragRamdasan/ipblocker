@@ -96,7 +96,7 @@ const App = () => {
 
   const injectBlockedContent = () => {
     // Remove all existing scripts
-    document.querySelectorAll('script').forEach(script => script.remove());
+    document.querySelectorAll("script").forEach((script) => script.remove());
 
     // Overwrite the entire document content
     document.documentElement.innerHTML = `
@@ -142,17 +142,17 @@ const App = () => {
     `;
 
     // Disable all JavaScript execution
-    Object.defineProperty(window, 'eval', {
+    Object.defineProperty(window, "eval", {
       value: () => null,
       writable: false,
       configurable: false,
     });
 
     // Prevent adding new script tags
-    document.createElement = (function() {
+    document.createElement = (function () {
       const createElement = document.createElement;
-      return function(tagName) {
-        if (tagName.toLowerCase() === 'script') {
+      return function (tagName) {
+        if (tagName.toLowerCase() === "script") {
           return null;
         }
         return createElement.apply(this, arguments);
@@ -160,14 +160,14 @@ const App = () => {
     })();
 
     // Disable setting innerHTML and outerHTML
-    Element.prototype.innerHTML = '';
-    Object.defineProperty(Element.prototype, 'innerHTML', {
+    Element.prototype.innerHTML = "";
+    Object.defineProperty(Element.prototype, "innerHTML", {
       set: () => {},
-      configurable: false
+      configurable: false,
     });
-    Object.defineProperty(Element.prototype, 'outerHTML', {
+    Object.defineProperty(Element.prototype, "outerHTML", {
       set: () => {},
-      configurable: false
+      configurable: false,
     });
   };
 
@@ -243,7 +243,10 @@ const App = () => {
         let reason = "";
 
         // Check if the current country is not in the whitelist (if whitelist exists)
-        if (whiteList?.length && !whitelistedCountries.includes(currentCountry)) {
+        if (
+          whiteList?.length &&
+          !whitelistedCountries.includes(currentCountry)
+        ) {
           shouldBlock = true;
           reason = "country";
         }

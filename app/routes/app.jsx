@@ -41,6 +41,7 @@ export default function App() {
             Home
           </Link>
           <Link to="/app/billing">Billing</Link>
+          <Link to="/app/faqs">FAQs</Link>
           <Link to="/app/roadmap">Roadmap</Link>
         </NavMenu>
         <Outlet />

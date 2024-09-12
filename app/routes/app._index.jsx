@@ -199,7 +199,7 @@ export default function CountriesAdmin() {
     const existingScript = document.querySelector(
       `script[src="https://client.crisp.chat/l.js"]`,
     );
-    if (!existingScript) {
+    if (!existingScript && import.meta.env.VITE_PRODUCTION === true) {
       addCrispScript();
     }
   }, []);
@@ -371,7 +371,7 @@ export default function CountriesAdmin() {
                 )}
               </Card>
             )}
-                        {selected === 1 && (
+            {selected === 1 && (
               <Card sectioned>
                 <Text variant="headingMd" as="h5">
                   Select the countries that you want to whitelist.

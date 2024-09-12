@@ -20,7 +20,7 @@ const getMantleCustomer = async (token) => {
       throw new Error("Failed to get customer info from mantle");
     }
 
-    return mantle_customer.api_token;
+    return mantle_customer && mantle_customer.api_token;
   } catch (error) {
     console.error("Error fetching Mantle customer data:", error);
     throw error;
