@@ -105,24 +105,24 @@ const App = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Access Blocked</title>
         <style>
-          body {
+          .ipblocker-body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
             background-color: #f8f8f8;
           }
-          img {
+          .ipblocker-body img {
             width: 130px;
             height: 130px;
             object-fit: contain;
             margin-bottom: 30px;
           }
-          h1 {
+          .ipblocker-body h1 {
             color: #333;
             font-size: 24px;
             margin-bottom: 20px;
           }
-          p {
+          .ipblocker-body p {
             color: #666;
             font-size: 16px;
           }
@@ -133,7 +133,7 @@ const App = () => {
           }
         </style>
       </head>
-      <body>
+      <body class="ipblocker-body">
         <img id="storeLogo" src="${IPBLOCKER_LOGO}" alt="Store Logo">
         <h1>This Shopify store is not available in your location.</h1>
         <p>We apologize for the inconvenience. Thank you for your understanding.</p>
