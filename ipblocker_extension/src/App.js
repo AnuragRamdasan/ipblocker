@@ -11,7 +11,7 @@ const API_ENDPOINTS = {
   USAGE_EVENTS: "https://appapi.heymantle.com/v1/usage_events",
   COUNTRIES: "https://ipblocker.valuecommerce.info/countries",
   IP_INFO: "https://api.ipify.org?format=json",
-  COUNTRY_INFO: "https://ipapi.co",
+  COUNTRY_INFO: "https://api.ipapi.com",
 };
 
 const IPBLOCKER_LOGO =
@@ -186,7 +186,7 @@ const App = () => {
 
         // Fetch detailed country information based on the current IP
         const country = await fetchWithRetry(
-          `${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/json/?access_key=a9b7a2dccfd7659f52c7414083b297da`,
+          `${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/?access_key=a9b7a2dccfd7659f52c7414083b297da&output=json`,
         );
 
         // Extract the country code from the fetched country data
