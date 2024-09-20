@@ -17,7 +17,7 @@ export const addOrCreateConfig = async (token, config) => {
     };
   });
 
-  return fetch(process.env.SERVER_URL + "configurations.json", {
+  return fetch(import.meta.env.VITE_SERVER_URL + "configurations.json", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -39,13 +39,16 @@ export const addOrCreateConfig = async (token, config) => {
  * @returns {Promise<object>} - A promise that resolves to the configuration object.
  */
 export const getConfig = async (token) => {
-  const res = await fetch(process.env.SERVER_URL + "configurations.json", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: token,
+  const res = await fetch(
+    import.meta.env.VITE_SERVER_URL + "configurations.json",
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
     },
-  });
+  );
   const config = await res.json();
 
   return config["configuration"];

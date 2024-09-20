@@ -26,12 +26,11 @@ import { addOrCreateConfig, getConfig } from "../models/configuration";
 import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../models/planGating";
 import { actions, analytics } from "../utils/segment_analytics";
+import IndexSkeleton from "../components/IndexSkeleton";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
-  const { countries, ips, whiteList, cities } = await getCountriesForShop(
-    session.accessToken,
-  );
+
   const res = await admin.graphql(`
     query {
       shop {
@@ -43,9 +42,8 @@ export const loader = async ({ request }) => {
   const storeId = data.shop.myshopifyDomain
     .replace("https://", "")
     .replace(".myshopify.com", "");
-
-  const config = (await getConfig(session.accessToken)) || {};
-  return { countries, ips, storeId, whiteList, cities, config };
+  const token = session.accessToken;
+  return { token, storeId }; //countries, ips, storeId, whiteList, cities, config };
 };
 
 export const action = async ({ request }) => {
@@ -136,10 +134,16 @@ export const action = async ({ request }) => {
 export default function CountriesAdmin() {
   const data = useActionData();
   const { customer } = useMantle();
-  const { countries, ips, storeId, whiteList, cities, config } =
-    useLoaderData();
+  const { token, storeId } = useLoaderData();
+
   const [showBanner, setShowBanner] = useState(true);
 
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [ips, setIps] = useState([]);
+  const [whiteList, setWhiteList] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [config, setConfig] = useState({});
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedOptionsWhitelist, setSelectedOptionsWhitelist] = useState([]);
   const [selectedIps, setSelectedIps] = useState([]);
@@ -199,378 +203,400 @@ export default function CountriesAdmin() {
     const existingScript = document.querySelector(
       `script[src="https://client.crisp.chat/l.js"]`,
     );
-    if (!existingScript && import.meta.env.VITE_PRODUCTION === 'true') {
+    if (!existingScript && import.meta.env.VITE_PRODUCTION === "true") {
       addCrispScript();
     }
+  }, []);
+
+  useEffect(() => {
+    async function getAllData() {
+      const { countries, ips, whiteList, cities } =
+        await getCountriesForShop(token);
+      const config = (await getConfig(session.accessToken)) || {};
+      setCountries(countries);
+      setIps(ips);
+      setWhiteList(whiteList);
+      setCities(cities);
+      setConfig(config);
+      setDataLoaded(true);
+    }
+    getAllData();
   }, []);
 
   const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
 
   return (
     <Page title="Manage Blocked Countries">
-      <Layout>
-        {showBanner && (
-          <Layout.Section>
-            <Banner
-              title="IP Blocker App Embed"
-              tone="info"
-              onDismiss={() => setShowBanner(false)}
-            >
-              <p>
-                Enable the app block in your theme app embeds to start blocking
-                fraudulent traffic.{" "}
-                <a
-                  href={themeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    analytics.track(actions.MANAGE_THEME_APP_EMBEDS_CLICKED);
-                    window.open(themeUrl, "_blank", "noopener,noreferrer");
-                  }}
-                >
-                  Manage theme app embeds
-                </a>
-                .
-              </p>
-            </Banner>
-            <Text variant="headingMd" as="h5"></Text>
-          </Layout.Section>
-        )}
-        <Layout.Section>
-          <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
-            {selected === 0 && (
-              <Card
-                sectioned
-                background={
-                  whiteList.length > 0 ? "bg-surface-secondary" : "bg-surface"
-                }
+      {!dataLoaded ? (
+        <IndexSkeleton></IndexSkeleton>
+      ) : (
+        <Layout>
+          {showBanner && (
+            <Layout.Section>
+              <Banner
+                title="IP Blocker App Embed"
+                tone="info"
+                onDismiss={() => setShowBanner(false)}
               >
-                <Text variant="headingMd" as="h5">
-                  Select the countries that you want to block access to.
-                </Text>
-                <Text>
-                  If you add countries to blocklist, all countries in blocklist
-                  will find the website inaccessible. Country blocklist
-                  supersedes city blocklist.
-                </Text>
-                <Form method="post">
-                  <input type="hidden" name="_action" value="create" />
-                  <MultiSelect
-                    selectedOptions={countries.map((c) => c.country)}
-                    placeholder={"Add countries to block"}
-                    options={masterCountryList.map((c) => c.country)}
-                    onUpdate={setSelectedOptions}
-                  />
-                  <br />
-                  <input
-                    type="hidden"
-                    name="countries"
-                    value={JSON.stringify(selectedOptions)}
-                  />
-                  <Button
-                    submit
-                    primary
-                    disabled={whiteList.length > 0}
+                <p>
+                  Enable the app block in your theme app embeds to start
+                  blocking fraudulent traffic.{" "}
+                  <a
+                    href={themeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onClick={() => {
-                      analytics.track(actions.COUNTRY_BLOCKED, {
-                        countries: selectedOptions,
-                      });
-                      // The form will be submitted automatically by the Button's default behavior
+                      analytics.track(actions.MANAGE_THEME_APP_EMBEDS_CLICKED);
+                      window.open(themeUrl, "_blank", "noopener,noreferrer");
                     }}
                   >
-                    Save
-                  </Button>
-                </Form>
-                {data && data.message && (
-                  <Banner
-                    title={data.message}
-                    status={data.error ? "critical" : "success"}
-                  />
-                )}
-
-                <br />
-                <Text variant="headingMd" as="h5">
-                  Select the cities and zip codes you want to block access to.
-                </Text>
-                <Text>
-                  If you add cities to blocklist, all cities in blocklist will
-                  find the website inaccessible. City blocklist supersedes ip
-                  blocklist.
-                </Text>
-                <Form method="post">
-                  <input type="hidden" name="_action" value="create_cities" />
-                  <MultiSelect
-                    selectedOptions={cities.map((c) => c.city)}
-                    placeholder={
-                      "Add city and optionally a zip code (e.g., New York or New York 10001)"
-                    }
-                    options={[]}
-                    onUpdate={setSelectedCities}
-                  />
-                  <br />
-                  <input
-                    type="hidden"
-                    name="cities"
-                    value={JSON.stringify(selectedCities)}
-                  />
-                  <Button
-                    submit
-                    primary
-                    onClick={() => {
-                      analytics.track(actions.CITY_BLOCKED, {
-                        cities: selectedCities,
-                      });
-                      // The form will be submitted automatically by the Button's default behavior
-                    }}
-                  >
-                    Save
-                  </Button>
-                </Form>
-                {data && data.messageCities && (
-                  <Banner
-                    title={data.messageCities}
-                    status={data.messageCities ? "critical" : "success"}
-                  />
-                )}
-                <br />
-                <Text variant="headingMd" as="h5">
-                  Select the IPs that you want to block access to.
-                </Text>
-                <Form method="post">
-                  <input type="hidden" name="_action" value="create_ip" />
-                  <MultiSelect
-                    selectedOptions={ips}
-                    placeholder={"Add IPs separated by comma to block"}
-                    options={[]}
-                    onUpdate={setSelectedIps}
-                  />
-                  <br />
-                  <input
-                    type="hidden"
-                    name="ips"
-                    value={JSON.stringify(selectedIps)}
-                  />
-                  <Button
-                    submit
-                    primary
-                    onClick={() => {
-                      analytics.track(actions.IP_BLOCKED, {
-                        ips: selectedIps,
-                      });
-                      // The form will be submitted automatically by the Button's default behavior
-                    }}
-                  >
-                    Save
-                  </Button>
-                </Form>
-                {data && data.messageIp && (
-                  <Banner
-                    title={data.messageIp}
-                    status={data.errorIp ? "critical" : "success"}
-                  />
-                )}
-              </Card>
-            )}
-            {selected === 1 && (
-              <Card sectioned>
-                <Text variant="headingMd" as="h5">
-                  Select the countries that you want to whitelist.
-                </Text>
-                <Text>
-                  If you add countries to whitelist, all countries not in
-                  whitelist will be blocked. Whitelist supersedes blocklist.
-                </Text>
-                <Form method="post">
-                  <input
-                    type="hidden"
-                    name="_action"
-                    value="create_whitelist"
-                  />
-                  <MultiSelect
-                    selectedOptions={whiteList.map((c) => c.country)}
-                    placeholder={"Add countries to whitelist"}
-                    options={masterCountryList.map((c) => c.country)}
-                    onUpdate={setSelectedOptionsWhitelist}
-                  />
-                  <br />
-                  <input
-                    type="hidden"
-                    name="countries"
-                    value={JSON.stringify(selectedOptionsWhitelist)}
-                  />
-                  <Button
-                    submit
-                    primary
-                    onClick={() => {
-                      analytics.track(actions.COUNTRY_WHITELISTED, {
-                        countries: selectedOptionsWhitelist,
-                      });
-                      // The form will be submitted automatically by the Button's default behavior
-                    }}
-                  >
-                    Save
-                  </Button>
-                </Form>
-                {data && data.messageWhitelist && (
-                  <Banner
-                    title={data.messageWhitelist}
-                    status={data.errorWhitelist ? "critical" : "success"}
-                  />
-                )}
-              </Card>
-            )}
-            {selected === 2 && (
-              <Card sectioned>
-                {!isFeatureAllowed(customer, "bot_block") && (
-                  <div>
-                    <Banner
-                      title="Plan Upgrade Required"
-                      action={{ url: "/app/billing", content: "Upgrade Plan" }}
-                      tone="warning"
-                    >
-                      <List>
-                        <List.Item>
-                          Automated intelligent bot blocking is not available on
-                          the free plan. You can enable this feature on our
-                          basic plan for just $1.99 per month.
-                        </List.Item>
-                      </List>
-                    </Banner>
-                  </div>
-                )}
-                <br />
-                <Card>
+                    Manage theme app embeds
+                  </a>
+                  .
+                </p>
+              </Banner>
+              <Text variant="headingMd" as="h5"></Text>
+            </Layout.Section>
+          )}
+          <Layout.Section>
+            <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
+              {selected === 0 && (
+                <Card
+                  sectioned
+                  background={
+                    whiteList.length > 0 ? "bg-surface-secondary" : "bg-surface"
+                  }
+                >
                   <Text variant="headingMd" as="h5">
-                    Bot Blocking
+                    Select the countries that you want to block access to.
                   </Text>
-                  <Text as="p" variant="bodyMd">
-                    Our intelligent Bot Blocking feature uses advanced
-                    algorithms to automatically detect and block malicious bot
-                    traffic, protecting your store without any manual
-                    configuration needed.
+                  <Text>
+                    If you add countries to blocklist, all countries in
+                    blocklist will find the website inaccessible. Country
+                    blocklist supersedes city blocklist.
                   </Text>
-                  <br />
-                  <Text as="p" variant="bodyMd">
-                    By upgrading to our paid plan, you'll unlock:
-                  </Text>
-                  <List>
-                    <List.Item>24/7 automated bot protection</List.Item>
-                    <List.Item>
-                      Improved site performance and security
-                    </List.Item>
-                    <List.Item>
-                      Reduced server load and bandwidth costs
-                    </List.Item>
-                    <List.Item>
-                      Protection against content scraping and fraud attempts
-                    </List.Item>
-                  </List>
-                  <br />
-                  <Text as="p" variant="bodyMd">
-                    Simply enable the feature below and let our system take care
-                    of the rest. Upgrade now to safeguard your store and
-                    optimize your online presence.
-                  </Text>
-                  <br />
                   <Form method="post">
-                    <input
-                      type="hidden"
-                      name="_action"
-                      value="toggle_bot_blocking"
-                    />
-                    <input
-                      type="hidden"
-                      name="botBlockingEnabled"
-                      value={botBlockingEnabled}
-                    />
-                    <Checkbox
-                      label="Enable Bot Blocking"
-                      checked={botBlockingEnabled}
-                      onChange={(checked) => {
-                        setBotBlockingEnabled(checked);
-                      }}
+                    <input type="hidden" name="_action" value="create" />
+                    <MultiSelect
+                      selectedOptions={countries.map((c) => c.country)}
+                      placeholder={"Add countries to block"}
+                      options={masterCountryList.map((c) => c.country)}
+                      onUpdate={setSelectedOptions}
                     />
                     <br />
+                    <input
+                      type="hidden"
+                      name="countries"
+                      value={JSON.stringify(selectedOptions)}
+                    />
                     <Button
                       submit
                       primary
-                      disabled={!isFeatureAllowed(customer, "bot_block")}
+                      disabled={whiteList.length > 0}
                       onClick={() => {
-                        if (botBlockingEnabled === true) {
-                          analytics.track(actions.AUTO_BLOCK_ENABLED, {
-                            botBlockingEnabled: botBlockingEnabled,
-                          });
-                          // The form will be submitted automatically by the Button's default behavior
-                        } else {
-                          analytics.track(actions.AUTO_BLOCK_DISABLED, {
-                            botBlockingEnabled: botBlockingEnabled,
-                          });
-                        }
+                        analytics.track(actions.COUNTRY_BLOCKED, {
+                          countries: selectedOptions,
+                        });
+                        // The form will be submitted automatically by the Button's default behavior
                       }}
                     >
                       Save
                     </Button>
                   </Form>
-                  {data && data.messageBotBlocking && (
+                  {data && data.message && (
                     <Banner
-                      title={data.messageBotBlocking}
-                      status={data.errorBotBlocking ? "critical" : "success"}
+                      title={data.message}
+                      status={data.error ? "critical" : "success"}
+                    />
+                  )}
+
+                  <br />
+                  <Text variant="headingMd" as="h5">
+                    Select the cities and zip codes you want to block access to.
+                  </Text>
+                  <Text>
+                    If you add cities to blocklist, all cities in blocklist will
+                    find the website inaccessible. City blocklist supersedes ip
+                    blocklist.
+                  </Text>
+                  <Form method="post">
+                    <input type="hidden" name="_action" value="create_cities" />
+                    <MultiSelect
+                      selectedOptions={cities.map((c) => c.city)}
+                      placeholder={
+                        "Add city and optionally a zip code (e.g., New York or New York 10001)"
+                      }
+                      options={[]}
+                      onUpdate={setSelectedCities}
+                    />
+                    <br />
+                    <input
+                      type="hidden"
+                      name="cities"
+                      value={JSON.stringify(selectedCities)}
+                    />
+                    <Button
+                      submit
+                      primary
+                      onClick={() => {
+                        analytics.track(actions.CITY_BLOCKED, {
+                          cities: selectedCities,
+                        });
+                        // The form will be submitted automatically by the Button's default behavior
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </Form>
+                  {data && data.messageCities && (
+                    <Banner
+                      title={data.messageCities}
+                      status={data.messageCities ? "critical" : "success"}
+                    />
+                  )}
+                  <br />
+                  <Text variant="headingMd" as="h5">
+                    Select the IPs that you want to block access to.
+                  </Text>
+                  <Form method="post">
+                    <input type="hidden" name="_action" value="create_ip" />
+                    <MultiSelect
+                      selectedOptions={ips}
+                      placeholder={"Add IPs separated by comma to block"}
+                      options={[]}
+                      onUpdate={setSelectedIps}
+                    />
+                    <br />
+                    <input
+                      type="hidden"
+                      name="ips"
+                      value={JSON.stringify(selectedIps)}
+                    />
+                    <Button
+                      submit
+                      primary
+                      onClick={() => {
+                        analytics.track(actions.IP_BLOCKED, {
+                          ips: selectedIps,
+                        });
+                        // The form will be submitted automatically by the Button's default behavior
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </Form>
+                  {data && data.messageIp && (
+                    <Banner
+                      title={data.messageIp}
+                      status={data.errorIp ? "critical" : "success"}
                     />
                   )}
                 </Card>
-              </Card>
-            )}
-            {selected === 3 && (
-              <Card sectioned>
-                <Text variant="headingMd" as="h5">
-                  How IP Blocker Works
-                </Text>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "20px",
-                    marginTop: "20px",
-                  }}
-                >
+              )}
+              {selected === 1 && (
+                <Card sectioned>
+                  <Text variant="headingMd" as="h5">
+                    Select the countries that you want to whitelist.
+                  </Text>
+                  <Text>
+                    If you add countries to whitelist, all countries not in
+                    whitelist will be blocked. Whitelist supersedes blocklist.
+                  </Text>
+                  <Form method="post">
+                    <input
+                      type="hidden"
+                      name="_action"
+                      value="create_whitelist"
+                    />
+                    <MultiSelect
+                      selectedOptions={whiteList.map((c) => c.country)}
+                      placeholder={"Add countries to whitelist"}
+                      options={masterCountryList.map((c) => c.country)}
+                      onUpdate={setSelectedOptionsWhitelist}
+                    />
+                    <br />
+                    <input
+                      type="hidden"
+                      name="countries"
+                      value={JSON.stringify(selectedOptionsWhitelist)}
+                    />
+                    <Button
+                      submit
+                      primary
+                      onClick={() => {
+                        analytics.track(actions.COUNTRY_WHITELISTED, {
+                          countries: selectedOptionsWhitelist,
+                        });
+                        // The form will be submitted automatically by the Button's default behavior
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </Form>
+                  {data && data.messageWhitelist && (
+                    <Banner
+                      title={data.messageWhitelist}
+                      status={data.errorWhitelist ? "critical" : "success"}
+                    />
+                  )}
+                </Card>
+              )}
+              {selected === 2 && (
+                <Card sectioned>
+                  {!isFeatureAllowed(customer, "bot_block") && (
+                    <div>
+                      <Banner
+                        title="Plan Upgrade Required"
+                        action={{
+                          url: "/app/billing",
+                          content: "Upgrade Plan",
+                        }}
+                        tone="warning"
+                      >
+                        <List>
+                          <List.Item>
+                            Automated intelligent bot blocking is not available
+                            on the free plan. You can enable this feature on our
+                            basic plan for just $1.99 per month.
+                          </List.Item>
+                        </List>
+                      </Banner>
+                    </div>
+                  )}
+                  <br />
+                  <Card>
+                    <Text variant="headingMd" as="h5">
+                      Bot Blocking
+                    </Text>
+                    <Text as="p" variant="bodyMd">
+                      Our intelligent Bot Blocking feature uses advanced
+                      algorithms to automatically detect and block malicious bot
+                      traffic, protecting your store without any manual
+                      configuration needed.
+                    </Text>
+                    <br />
+                    <Text as="p" variant="bodyMd">
+                      By upgrading to our paid plan, you'll unlock:
+                    </Text>
+                    <List>
+                      <List.Item>24/7 automated bot protection</List.Item>
+                      <List.Item>
+                        Improved site performance and security
+                      </List.Item>
+                      <List.Item>
+                        Reduced server load and bandwidth costs
+                      </List.Item>
+                      <List.Item>
+                        Protection against content scraping and fraud attempts
+                      </List.Item>
+                    </List>
+                    <br />
+                    <Text as="p" variant="bodyMd">
+                      Simply enable the feature below and let our system take
+                      care of the rest. Upgrade now to safeguard your store and
+                      optimize your online presence.
+                    </Text>
+                    <br />
+                    <Form method="post">
+                      <input
+                        type="hidden"
+                        name="_action"
+                        value="toggle_bot_blocking"
+                      />
+                      <input
+                        type="hidden"
+                        name="botBlockingEnabled"
+                        value={botBlockingEnabled}
+                      />
+                      <Checkbox
+                        label="Enable Bot Blocking"
+                        checked={botBlockingEnabled}
+                        onChange={(checked) => {
+                          setBotBlockingEnabled(checked);
+                        }}
+                      />
+                      <br />
+                      <Button
+                        submit
+                        primary
+                        disabled={!isFeatureAllowed(customer, "bot_block")}
+                        onClick={() => {
+                          if (botBlockingEnabled === true) {
+                            analytics.track(actions.AUTO_BLOCK_ENABLED, {
+                              botBlockingEnabled: botBlockingEnabled,
+                            });
+                            // The form will be submitted automatically by the Button's default behavior
+                          } else {
+                            analytics.track(actions.AUTO_BLOCK_DISABLED, {
+                              botBlockingEnabled: botBlockingEnabled,
+                            });
+                          }
+                        }}
+                      >
+                        Save
+                      </Button>
+                    </Form>
+                    {data && data.messageBotBlocking && (
+                      <Banner
+                        title={data.messageBotBlocking}
+                        status={data.errorBotBlocking ? "critical" : "success"}
+                      />
+                    )}
+                  </Card>
+                </Card>
+              )}
+              {selected === 3 && (
+                <Card sectioned>
+                  <Text variant="headingMd" as="h5">
+                    How IP Blocker Works
+                  </Text>
                   <div
                     style={{
-                      position: "relative",
-                      paddingBottom: "56.25%",
-                      height: 0,
-                      overflow: "hidden",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "20px",
+                      marginTop: "20px",
                     }}
                   >
-                    <iframe
-                      src="https://www.youtube.com/embed/6jnBYlGXlIw"
+                    <div
                       style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        border: 0,
+                        position: "relative",
+                        paddingBottom: "56.25%",
+                        height: 0,
+                        overflow: "hidden",
                       }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      title="IP Blocker Tutorial"
-                    ></iframe>
+                    >
+                      <iframe
+                        src="https://www.youtube.com/embed/6jnBYlGXlIw"
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          border: 0,
+                        }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="IP Blocker Tutorial"
+                      ></iframe>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            )}
-          </Tabs>
-        </Layout.Section>
+                </Card>
+              )}
+            </Tabs>
+          </Layout.Section>
 
-        <Layout.Section>
-          <Card sectioned>
-            <Text>
-              View our <Link to="/app/roadmap">Roadmap</Link> to see what we are
-              working on to make IPBlocker even more powerful for you.
-            </Text>
-          </Card>
-        </Layout.Section>
-      </Layout>
+          <Layout.Section>
+            <Card sectioned>
+              <Text>
+                View our <Link to="/app/roadmap">Roadmap</Link> to see what we
+                are working on to make IPBlocker even more powerful for you.
+              </Text>
+            </Card>
+          </Layout.Section>
+        </Layout>
+      )}
     </Page>
   );
 }

@@ -1,17 +1,20 @@
 const getCountriesForShop = async (token) => {
-  const res = await fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: token,
+  const res = await fetch(
+    import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json",
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
     },
-  });
+  );
   const data = await res.json();
   return data;
 };
 
 const addCountryToShop = async (token, country, countryCode) => {
-  return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
+  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -24,7 +27,7 @@ const addCountryToShop = async (token, country, countryCode) => {
   });
 };
 const addWhitelistCountryToShop = async (token, country, countryCode) => {
-  return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
+  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
     headers: {
       Accept: "application/json",
