@@ -199,7 +199,7 @@ export default function CountriesAdmin() {
     const existingScript = document.querySelector(
       `script[src="https://client.crisp.chat/l.js"]`,
     );
-    if (!existingScript && import.meta.env.VITE_PRODUCTION === 'true') {
+    if (!existingScript && import.meta.env.VITE_PRODUCTION === "true") {
       addCrispScript();
     }
   }, []);

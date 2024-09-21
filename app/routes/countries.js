@@ -7,7 +7,7 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const urlParams = new URLSearchParams(url.search);
   const shop = urlParams.get("shop");
-  const ip = urlParams.get('ip')
+  const ip = urlParams.get("ip");
 
   const session = await prisma.ipblockerSession.findMany({
     where: {
@@ -15,7 +15,7 @@ export const loader = async ({ request }) => {
     },
   });
 
-  const allowed = await getStatusForShop(session[0].accessToken, ip)
+  const allowed = await getStatusForShop(session[0].accessToken, ip);
   const config = await getConfig(session[0].accessToken);
 
   return json(

@@ -11,13 +11,16 @@ const getCountriesForShop = async (token) => {
 };
 
 const getStatusForShop = async (token, ip) => {
-  const res = await fetch(process.env.SERVER_URL + "ipblocker/allowed.json?ip=" + ip, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: token,
+  const res = await fetch(
+    process.env.SERVER_URL + "ipblocker/allowed.json?ip=" + ip,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
     },
-  });
+  );
   const data = await res.json();
   return data.allowed;
 };
