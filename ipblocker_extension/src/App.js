@@ -181,20 +181,50 @@ const App = () => {
         const { ip: currentIP } = await fetchWithRetry(API_ENDPOINTS.IP_INFO);
 
         // Fetch country data, IP list, customer info, and whitelist for the shop
-        const { allowed, config } =
-          await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}&ip=${currentIP}`);
+        const sessionKey = `ipBlockerData_${shop}_${currentIP}`;
+        let allowedConfig;
 
-        let shouldBlock = !allowed
-        let reason = null
+        // Check if data exists in sessionStorage and is not expired
+        const storedData = sessionStorage.getItem(sessionKey);
+        if (storedData) {
+          const { data, timestamp } = JSON.parse(storedData);
+          const now = new Date().getTime();
+          const tenMinutes = 10 * 60 * 1000;
 
-        if(isBot()) {
-          shouldBlock = true
-          reason = 'bot_blocked'
-        } 
+          if (now - timestamp < tenMinutes) {
+            allowedConfig = data;
+          } else {
+            sessionStorage.removeItem(sessionKey);
+          }
+        }
+
+        // If data is not in sessionStorage or expired, fetch it
+        if (!allowedConfig) {
+          allowedConfig = await fetchWithRetry(
+            `${API_ENDPOINTS.COUNTRIES}?shop=${shop}&ip=${currentIP}`,
+          );
+
+          // Store the fetched data in sessionStorage
+          const dataToStore = {
+            data: allowedConfig,
+            timestamp: new Date().getTime(),
+          };
+          sessionStorage.setItem(sessionKey, JSON.stringify(dataToStore));
+        }
+
+        const { allowed, config } = allowedConfig;
+
+        let shouldBlock = !allowed;
+        let reason = null;
+
+        if (isBot()) {
+          shouldBlock = true;
+          reason = "bot_blocked";
+        }
         // If blocking is required, track the event and inject blocked content
         if (shouldBlock) {
           try {
-            if(reason !== null) {
+            if (reason !== null) {
               trackEvent(mantle_customer, country, `${reason}_blocked`);
             }
           } catch (err) {
