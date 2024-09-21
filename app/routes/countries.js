@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { getCountriesForShop } from "../models/countries";
+import { getCountriesForShop, getStatusForShop } from "../models/countries";
 import prisma from "../db.server";
 import { getConfig } from "../models/configuration";
 
@@ -7,6 +7,7 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const urlParams = new URLSearchParams(url.search);
   const shop = urlParams.get("shop");
+  const ip = urlParams.get('ip')
 
   const session = await prisma.ipblockerSession.findMany({
     where: {
@@ -14,11 +15,11 @@ export const loader = async ({ request }) => {
     },
   });
 
-  const { countries, ips, mantle_customer, whiteList, cities } =
-    await getCountriesForShop(session[0].accessToken);
+  const allowed = await getStatusForShop(session[0].accessToken, ip)
   const config = await getConfig(session[0].accessToken);
+
   return json(
-    { countries, ips, mantle_customer, whiteList, cities, config },
+    { allowed, config },
     {
       headers: {
         "Access-Control-Allow-Origin": "*",

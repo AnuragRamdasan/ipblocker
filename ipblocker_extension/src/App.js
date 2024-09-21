@@ -177,102 +177,26 @@ const App = () => {
         // Get the shop domain from the root element's data attribute
         const shop = window.Shopify.shop;
 
-        // Fetch country data, IP list, customer info, and whitelist for the shop
-        const { countries, ips, mantle_customer, whiteList, cities, config } =
-          await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}`);
-
         // Get the current IP address of the user
         const { ip: currentIP } = await fetchWithRetry(API_ENDPOINTS.IP_INFO);
 
-        // Fetch detailed country information based on the current IP
-        const country = await fetchWithRetry(
-          `${API_ENDPOINTS.COUNTRY_INFO}/${currentIP}/?access_key=a9b7a2dccfd7659f52c7414083b297da&output=json`,
-        );
+        // Fetch country data, IP list, customer info, and whitelist for the shop
+        const { allowed, config } =
+          await fetchWithRetry(`${API_ENDPOINTS.COUNTRIES}?shop=${shop}&ip=${currentIP}`);
 
-        // Extract the country code from the fetched country data
-        const currentCountry = country.country_code;
-        const currentCity = {
-          city: country.city,
-          pincode: country.postal || country.zip,
-        };
+        let shouldBlock = !allowed
+        let reason = null
 
-        // Create an array of blocked country codes
-        const blockedCountries = countries.map((c) => c.country_code);
-        const whitelistedCountries = whiteList.map((c) => c.country_code);
-        // Create an array of blocked city codes
-        const cityBlocked = (currentCity) => {
-          const { city, pincode } = currentCity;
-          return blockedCities.some((blockedCity) => {
-            if (blockedCity.pincode) {
-              // If pincode is present, match both city and pincode
-              return pincode === blockedCity.pincode;
-            } else {
-              // If no pincode, just match the city name (ignoring spaces and case)
-              return (
-                city.toLowerCase().replace(/\s+/g, "") ===
-                blockedCity.city.toLowerCase().replace(/\s+/g, "")
-              );
-            }
-          });
-        };
-
-        const blockedCities = cities.map((c) => {
-          const [city, pincode] = c.city.split(" ").reduce(
-            (acc, part, index, arr) => {
-              if (index === arr.length - 1 && /^\d+$/.test(part)) {
-                acc[1] = part;
-              } else {
-                acc[0] += (acc[0] ? " " : "") + part;
-              }
-              return acc;
-            },
-            ["", ""],
-          );
-          return { city, pincode };
-        });
-
-        // Track the IP event for analytics
-        try {
-          await trackEvent(mantle_customer, country, "ip_tracked");
-        } catch (error) {
-          console.error("Error tracking IP event:", error);
-        }
-
-        // Initialize blocking flags
-        let shouldBlock = false;
-        let reason = "";
-
-        // Check if the current country is not in the whitelist (if whitelist exists)
-        if (
-          whiteList?.length &&
-          !whitelistedCountries.includes(currentCountry)
-        ) {
-          shouldBlock = true;
-          reason = "country";
-        }
-        // Check if the current country is in the blocked list or if the IP is blocked
-        else if (blockedCountries.includes(currentCountry)) {
-          shouldBlock = true;
-          reason = "country";
-        } else if (cityBlocked(currentCity)) {
-          shouldBlock = true;
-          reason = "city";
-        } else if (ips.includes(currentIP)) {
-          shouldBlock = true;
-          reason = "ip";
-        } else if (
-          config &&
-          config["botBlockingEnabled"] === "true" &&
-          isBot()
-        ) {
-          shouldBlock = true;
-          reason = "bot";
-        }
-
+        if(isBot()) {
+          shouldBlock = true
+          reason = 'bot_blocked'
+        } 
         // If blocking is required, track the event and inject blocked content
         if (shouldBlock) {
           try {
-            trackEvent(mantle_customer, country, `${reason}_blocked`);
+            if(reason !== null) {
+              trackEvent(mantle_customer, country, `${reason}_blocked`);
+            }
           } catch (err) {
             console.error("Error tracking event:", err);
           }

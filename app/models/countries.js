@@ -10,6 +10,18 @@ const getCountriesForShop = async (token) => {
   return data;
 };
 
+const getStatusForShop = async (token, ip) => {
+  const res = await fetch(process.env.SERVER_URL + "ipblocker/allowed.json?ip=" + ip, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+  });
+  const data = await res.json();
+  return data.allowed;
+};
+
 const addCountryToShop = async (token, country, countryCode) => {
   return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
@@ -75,4 +87,5 @@ export {
   addIpToShop,
   addWhitelistCountryToShop,
   addCityToShop,
+  getStatusForShop,
 };
