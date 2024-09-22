@@ -1,5 +1,5 @@
 import { MantleProvider } from "@heymantle/react";
-import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useRouteError, useLocation } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
@@ -7,7 +7,16 @@ import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import { getMantleCustomer } from "../models/mantleCustomer";
 import { useEffect } from "react";
+import Rollbar from "rollbar";
 import { analytics } from "../utils/segment_analytics";
+
+// Initialize Rollbar
+const rollbar = new Rollbar({
+  accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+  environment: process.env.NODE_ENV
+});
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -23,11 +32,26 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   const { apiKey, customerApiToken, shop } = useLoaderData();
+  const location = useLocation();
 
   useEffect(() => {
     // Identify the user
     analytics.identify(shop);
-  }, []);
+
+    // Set up Rollbar person tracking
+    rollbar.configure({
+      payload: {
+        person: {
+          id: shop,
+        }
+      }
+    });
+  }, [shop]);
+
+  useEffect(() => {
+    // Log navigation to Rollbar
+    rollbar.info(`Navigated to: ${location.pathname}`);
+  }, [location]);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
@@ -50,9 +74,15 @@ export default function App() {
   );
 }
 
-// Shopify needs Remix to catch some thrown responses, so that their headers are included in the response.
+// Update the ErrorBoundary to log errors to Rollbar
 export function ErrorBoundary() {
-  return boundary.error(useRouteError());
+  const error = useRouteError();
+  
+  useEffect(() => {
+    rollbar.error(error);
+  }, [error]);
+
+  return boundary.error(error);
 }
 
 export const headers = (headersArgs) => {
