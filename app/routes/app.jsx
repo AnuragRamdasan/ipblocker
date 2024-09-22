@@ -30,16 +30,17 @@ export const loader = async ({ request }) => {
   return {
     apiKey: process.env.SHOPIFY_API_KEY || "",
     customerApiToken: token,
+    shopName: session.shop,
     shop: shopInfo.data[0],
   };
 };
 
 export default function App() {
-  const { apiKey, customerApiToken, shop } = useLoaderData();
+  const { apiKey, customerApiToken, shop, shopName } = useLoaderData();
 
   useEffect(() => {
     // Identify the user
-    analytics.identify(shop);
+    analytics.identify(shopName, shop);
 
     // Set up Rollbar person tracking
     rollbar.configure({
