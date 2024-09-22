@@ -217,7 +217,7 @@ const App = () => {
         let shouldBlock = !allowed;
         let reason = null;
 
-        if (isBot()) {
+        if (!shouldBlock && config.isBotBlockerEnabled && isBot()) {
           shouldBlock = true;
           reason = "bot_blocked";
         }
