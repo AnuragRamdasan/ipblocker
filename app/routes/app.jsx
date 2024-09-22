@@ -12,7 +12,7 @@ import { analytics } from "../utils/segment_analytics";
 
 // Initialize Rollbar
 const rollbar = new Rollbar({
-  accessToken: process.env.VITE_ROLLBAR_ACCESS_TOKEN,
+  accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
   captureUncaught: true,
   captureUnhandledRejections: true,
   environment: process.env.NODE_ENV
