@@ -1,18 +1,21 @@
 const getCountriesForShop = async (token) => {
-  const res = await fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: token,
+  const res = await fetch(
+    import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json",
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
     },
-  });
+  );
   const data = await res.json();
   return data;
 };
 
 const getStatusForShop = async (token, ip) => {
   const res = await fetch(
-    process.env.SERVER_URL + "ipblocker/allowed.json?ip=" + ip,
+    import.meta.env.VITE_SERVER_URL + "ipblocker/allowed.json?ip=" + ip,
     {
       headers: {
         Accept: "application/json",
@@ -26,7 +29,7 @@ const getStatusForShop = async (token, ip) => {
 };
 
 const addCountryToShop = async (token, country, countryCode) => {
-  return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
+  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -39,7 +42,7 @@ const addCountryToShop = async (token, country, countryCode) => {
   });
 };
 const addWhitelistCountryToShop = async (token, country, countryCode) => {
-  return fetch(process.env.SERVER_URL + "ipblocker/countries.json", {
+  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -57,7 +60,7 @@ const addWhitelistCountryToShop = async (token, country, countryCode) => {
 };
 
 const addIpToShop = async (token, ips) => {
-  return fetch(process.env.SERVER_URL + "ipblocker/ips.json", {
+  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/ips.json", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -71,7 +74,7 @@ const addIpToShop = async (token, ips) => {
 };
 
 const addCityToShop = async (token, cities) => {
-  return fetch(process.env.SERVER_URL + "ipblocker/cities.json", {
+  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/cities.json", {
     method: "POST",
     headers: {
       Accept: "application/json",

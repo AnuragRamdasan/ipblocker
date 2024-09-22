@@ -26,12 +26,10 @@ import { addOrCreateConfig, getConfig } from "../models/configuration";
 import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../models/planGating";
 import { actions, analytics } from "../utils/segment_analytics";
+import IndexSkeleton from "../components/IndexSelect";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
-  const { countries, ips, whiteList, cities } = await getCountriesForShop(
-    session.accessToken,
-  );
   const res = await admin.graphql(`
     query {
       shop {
@@ -44,8 +42,7 @@ export const loader = async ({ request }) => {
     .replace("https://", "")
     .replace(".myshopify.com", "");
 
-  const config = (await getConfig(session.accessToken)) || {};
-  return { countries, ips, storeId, whiteList, cities, config };
+  return { token: session.accessToken, storeId: storeId };
 };
 
 export const action = async ({ request }) => {
@@ -136,8 +133,7 @@ export const action = async ({ request }) => {
 export default function CountriesAdmin() {
   const data = useActionData();
   const { customer } = useMantle();
-  const { countries, ips, storeId, whiteList, cities, config } =
-    useLoaderData();
+  const { token, storeId } = useLoaderData();
   const [showBanner, setShowBanner] = useState(true);
 
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -145,9 +141,11 @@ export default function CountriesAdmin() {
   const [selectedIps, setSelectedIps] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
   const [selected, setSelected] = useState(0);
-  const [botBlockingEnabled, setBotBlockingEnabled] = useState(
-    config["botBlockingEnabled"] === "true",
-  );
+  const [botBlockingEnabled, setBotBlockingEnabled] = useState(false);
+
+  const [countries, setCountries] = useState([]);
+  const [whiteList, setWhiteList] = useState([]);
+  const [config, setConfig] = useState({});
 
   const tabs = [
     {
@@ -204,9 +202,29 @@ export default function CountriesAdmin() {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const { countries, ips, whiteList, cities } =
+        await getCountriesForShop(token);
+      const config = (await getConfig(token)) || {};
+
+      setCountries(countries);
+      setWhiteList(whiteList);
+      setConfig(config);
+
+      setSelectedOptions(countries.map((c) => c.country));
+      setSelectedOptionsWhitelist(whiteList.map((c) => c.country));
+      setSelectedIps(ips);
+      setSelectedCities(cities.map((c) => c.city));
+
+      setBotBlockingEnabled(config["botBlockingEnabled"] === "true");
+    };
+    fetchData();
+  }, [token]);
+
   const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
 
-  return (
+  return countries.length > 0 ? (
     <Page title="Manage Blocked Countries">
       <Layout>
         {showBanner && (
@@ -256,7 +274,7 @@ export default function CountriesAdmin() {
                 <Form method="post">
                   <input type="hidden" name="_action" value="create" />
                   <MultiSelect
-                    selectedOptions={countries.map((c) => c.country)}
+                    selectedOptions={selectedOptions}
                     placeholder={"Add countries to block"}
                     options={masterCountryList.map((c) => c.country)}
                     onUpdate={setSelectedOptions}
@@ -270,7 +288,6 @@ export default function CountriesAdmin() {
                   <Button
                     submit
                     primary
-                    disabled={whiteList.length > 0}
                     onClick={() => {
                       analytics.track(actions.COUNTRY_BLOCKED, {
                         countries: selectedOptions,
@@ -300,7 +317,7 @@ export default function CountriesAdmin() {
                 <Form method="post">
                   <input type="hidden" name="_action" value="create_cities" />
                   <MultiSelect
-                    selectedOptions={cities.map((c) => c.city)}
+                    selectedOptions={selectedCities}
                     placeholder={
                       "Add city and optionally a zip code (e.g., New York or New York 10001)"
                     }
@@ -339,7 +356,7 @@ export default function CountriesAdmin() {
                 <Form method="post">
                   <input type="hidden" name="_action" value="create_ip" />
                   <MultiSelect
-                    selectedOptions={ips}
+                    selectedOptions={selectedIps}
                     placeholder={"Add IPs separated by comma to block"}
                     options={[]}
                     onUpdate={setSelectedIps}
@@ -572,5 +589,7 @@ export default function CountriesAdmin() {
         </Layout.Section>
       </Layout>
     </Page>
+  ) : (
+    <IndexSkeleton />
   );
 }
