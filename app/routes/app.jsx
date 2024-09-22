@@ -1,5 +1,5 @@
 import { MantleProvider } from "@heymantle/react";
-import { Link, Outlet, useLoaderData, useRouteError, useLocation } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
@@ -21,18 +21,21 @@ const rollbar = new Rollbar({
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, admin } = await authenticate.admin(request);
   const token = await getMantleCustomer(session.accessToken);
+  const shopInfo = await admin.rest.resources.Shop.all({
+    session: session,
+  });
+
   return {
     apiKey: process.env.SHOPIFY_API_KEY || "",
     customerApiToken: token,
-    shop: session.shop,
+    shop: shopInfo.data[0],
   };
 };
 
 export default function App() {
   const { apiKey, customerApiToken, shop } = useLoaderData();
-  const location = useLocation();
 
   useEffect(() => {
     // Identify the user
