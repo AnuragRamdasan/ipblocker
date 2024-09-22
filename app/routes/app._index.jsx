@@ -218,6 +218,7 @@ export default function CountriesAdmin() {
       setSelectedCities(cities.map((c) => c.city));
 
       setBotBlockingEnabled(config["botBlockingEnabled"] === "true");
+      setShowBanner(config["embed_enabled"] !== "true");
     };
     fetchData();
   }, [token]);
