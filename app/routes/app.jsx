@@ -48,11 +48,6 @@ export default function App() {
     });
   }, [shop]);
 
-  useEffect(() => {
-    // Log navigation to Rollbar
-    rollbar.info(`Navigated to: ${location.pathname}`);
-  }, [location]);
-
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <MantleProvider
