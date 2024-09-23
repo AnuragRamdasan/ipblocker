@@ -182,27 +182,6 @@ export default function CountriesAdmin() {
   };
 
   useEffect(() => {
-    // Function to add the script
-    const addCrispScript = () => {
-      window.$crisp = [];
-      window.CRISP_WEBSITE_ID = "6158cfeb-f135-4382-abcd-80c96b8fa3ab";
-      const d = document;
-      const s = d.createElement("script");
-      s.src = "https://client.crisp.chat/l.js";
-      s.async = 1;
-      d.getElementsByTagName("head")[0].appendChild(s);
-    };
-
-    // Check if the script is already present
-    const existingScript = document.querySelector(
-      `script[src="https://client.crisp.chat/l.js"]`,
-    );
-    if (!existingScript && import.meta.env.VITE_PRODUCTION === "true") {
-      addCrispScript();
-    }
-  }, []);
-
-  useEffect(() => {
     const fetchData = async () => {
       const { countries, ips, whiteList, cities } =
         await getCountriesForShop(token);
