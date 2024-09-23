@@ -146,7 +146,7 @@ export default function CountriesAdmin() {
   const [countries, setCountries] = useState([]);
   const [whiteList, setWhiteList] = useState([]);
   const [config, setConfig] = useState({});
-
+  const [loading, setLoading] = useState(true);
   const tabs = [
     {
       id: "blocklist",
@@ -219,13 +219,18 @@ export default function CountriesAdmin() {
 
       setBotBlockingEnabled(config["botBlockingEnabled"] === "true");
       setShowBanner(config["embed_enabled"] !== "true");
+      setLoading(false);
     };
     fetchData();
   }, [token]);
 
+  if (loading) {
+    return <IndexSkeleton />;
+  }
+
   const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
 
-  return countries.length > 0 ? (
+  return (
     <Page title="Manage Blocked Countries">
       <Layout>
         {showBanner && (
@@ -590,7 +595,5 @@ export default function CountriesAdmin() {
         </Layout.Section>
       </Layout>
     </Page>
-  ) : (
-    <IndexSkeleton />
   );
 }
