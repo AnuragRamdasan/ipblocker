@@ -27,4 +27,18 @@ const getMantleCustomer = async (token) => {
   }
 };
 
-export { getMantleCustomer };
+const identifyMantleCustomer = async (token) => {
+  return await fetch(
+    `${import.meta.env.VITE_SERVER_URL}/customers/identify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token, 
+      }
+    }
+  )
+}
+
+
+export { getMantleCustomer, identifyMantleCustomer };
