@@ -83,6 +83,9 @@ export const action = async ({ request }) => {
   } else if (actionType === "toggle_bot_blocking") {
     const botBlockingEnabled = formData.get("botBlockingEnabled");
     res = await addOrCreateConfig(session.accessToken, { botBlockingEnabled });
+  } else if (actionType === "toggle_app_branding") {
+    const appBrandingDisabled = formData.get("appBrandingDisabled");
+    res = await addOrCreateConfig(session.accessToken, { appBrandingDisabled });
   }
 
   // Determine the type of action and set the appropriate message
@@ -92,6 +95,7 @@ export const action = async ({ request }) => {
     create_ip: "modify IP blocklist",
     create_cities: "modify city blocklist",
     toggle_bot_blocking: "modify bot blocking",
+    toggle_app_branding: "modify app branding",
   };
 
   const message = actionMessages[actionType] || "perform action";
@@ -109,6 +113,8 @@ export const action = async ({ request }) => {
         return { error: "errorCities", message: "messageCities" };
       case "toggle_bot_blocking":
         return { error: "errorBotBlocking", message: "messageBotBlocking" };
+      case "toggle_app_branding":
+        return { error: "errorAppBranding", message: "messageAppBranding" };
       default:
         return { error: "error", message: "message" };
     }
@@ -143,6 +149,7 @@ export default function CountriesAdmin() {
   const [selectedCities, setSelectedCities] = useState([]);
   const [selected, setSelected] = useState(0);
   const [botBlockingEnabled, setBotBlockingEnabled] = useState(false);
+  const [appBrandingDisabled, setAppBrandingDisabled] = useState(false);
 
   const [countries, setCountries] = useState([]);
   const [whiteList, setWhiteList] = useState([]);
@@ -162,10 +169,10 @@ export default function CountriesAdmin() {
       panelID: "whitelist-content",
     },
     {
-      id: "auto block",
-      content: "Auto Block",
-      accessibilityLabel: "Auto Block",
-      panelID: "auto-block-content",
+      id: "premium",
+      content: "Premium",
+      accessibilityLabel: "Premium",
+      panelID: "premium-content",
     },
     {
       id: "Video: How to enable IP Bot Blocking",
@@ -197,7 +204,8 @@ export default function CountriesAdmin() {
       setSelectedIps(ips);
       setSelectedCities(cities.map((c) => c.city));
 
-      setBotBlockingEnabled(config["botBlockingEnabled"] === "true");
+      setBotBlockingEnabled(config.botBlockingEnabled === "true");
+      setAppBrandingDisabled(config.appBrandingDisabled === "true");
       setShowBanner(config.embed_enabled !== "true");
       setLoading(false);
     };
@@ -209,7 +217,6 @@ export default function CountriesAdmin() {
 
   useEffect(() => {
     const checkEmbedStatus = async () => {
-      console.log("checkEmbedStatus", enabled, showBanner);
       if (enabled && showBanner) {
         setIsChecking(true);
         try {
@@ -459,7 +466,8 @@ export default function CountriesAdmin() {
               </Card>
             )}
             {selected === 2 && (
-              <Card sectioned>
+              <>
+               <Card sectioned>
                 {!isFeatureAllowed(customer, "bot_block") && (
                   <div>
                     <Banner
@@ -558,6 +566,55 @@ export default function CountriesAdmin() {
                   )}
                 </Card>
               </Card>
+            <Card sectioned>
+              <Text variant="headingMd" as="h5">
+                Remove IP Blocker Branding
+              </Text>
+              <Text variant="bodyMd" as="p">
+                Choose whether to remove IP Blocker branding on the blocked page.
+              </Text>
+              <br />
+              <Form method="post">
+                <input
+                  type="hidden"
+                  name="_action"
+                  value="toggle_app_branding"
+                />
+                <input
+                  type="hidden"
+                  name="appBrandingDisabled"
+                  value={appBrandingDisabled}
+                />
+                <Checkbox
+                  label="Display IP Blocker branding on blocked page"
+                  checked={appBrandingDisabled}
+                  onChange={(checked) => {
+                    setAppBrandingDisabled(checked);
+                  }}
+                />
+                <br />
+                <Button
+                  submit
+                  primary
+                  disabled={!isFeatureAllowed(customer, "branding_removal")}
+                  onClick={() => {
+                    if (appBrandingDisabled) {
+                      analytics.track(actions.APP_BRANDING_ENABLED);
+                    } else {
+                      analytics.track(actions.APP_BRANDING_DISABLED);
+                    }
+                  }}
+                >
+                  Save
+                </Button>
+              </Form>
+              {data && data.messageAppBranding && (
+                <Banner
+                  title={data.messageAppBranding}
+                  status={data.errorAppBranding ? "critical" : "success"}
+                />
+              )}
+            </Card></>
             )}
             {selected === 3 && (
               <Card sectioned>

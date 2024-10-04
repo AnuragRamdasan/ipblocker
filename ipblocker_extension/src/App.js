@@ -94,7 +94,7 @@ const App = () => {
     });
   };
 
-  const injectBlockedContent = () => {
+  const injectBlockedContent = (removeBranding) => {
     // Remove all existing scripts
     document.querySelectorAll("script").forEach((script) => script.remove());
 
@@ -137,7 +137,7 @@ const App = () => {
         <img id="storeLogo" src="${IPBLOCKER_LOGO}" alt="Store Logo">
         <h1>This Shopify store is not available in your location.</h1>
         <p>We apologize for the inconvenience. Thank you for your understanding.</p>
-        <p class="footer">Powered by ValueCommerce</p>
+        ${removeBranding ? "" : '<p class="footer">Powered by ValueCommerce</p>'}
       </body>
     `;
 
@@ -216,6 +216,7 @@ const App = () => {
 
         let shouldBlock = !allowed;
         let reason = null;
+        let removeBranding = config.appBrandingDisabled === "true";
 
         if (!shouldBlock && config.isBotBlockerEnabled && isBot()) {
           shouldBlock = true;
@@ -230,7 +231,8 @@ const App = () => {
           } catch (err) {
             console.error("Error tracking event:", err);
           }
-          injectBlockedContent();
+          console.log("SESSION BLOCKED BY VALUECOMMERCE IP BLOCKER")
+          injectBlockedContent(removeBranding);
         }
       } catch (err) {
         console.error("Error fetching countries or IP data:", err);
