@@ -571,7 +571,7 @@ export default function CountriesAdmin() {
                 Remove IP Blocker Branding
               </Text>
               <Text variant="bodyMd" as="p">
-                Choose whether to remove IP Blocker branding on the blocked page.
+                Choose whether to remove IP Blocker branding on the blocked page. This may take 3-4 minutes to reflect on the blocked page.
               </Text>
               <br />
               <Form method="post">

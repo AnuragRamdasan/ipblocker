@@ -189,7 +189,7 @@ const App = () => {
         if (storedData) {
           const { data, timestamp } = JSON.parse(storedData);
           const now = new Date().getTime();
-          const tenMinutes = 10 * 60 * 1000;
+          const twoMinutes = 2 * 60 * 1000;
 
           if (now - timestamp < tenMinutes) {
             allowedConfig = data;
