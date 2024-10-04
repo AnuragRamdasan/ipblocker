@@ -27,6 +27,7 @@ import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../models/planGating";
 import { actions, analytics } from "../utils/segment_analytics";
 import IndexSkeleton from "../components/IndexSelect";
+import EmbedEnablePage from "../components/EmbedEnablePage";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -197,17 +198,53 @@ export default function CountriesAdmin() {
       setSelectedCities(cities.map((c) => c.city));
 
       setBotBlockingEnabled(config["botBlockingEnabled"] === "true");
-      setShowBanner(config["embed_enabled"] !== "true");
+      setShowBanner(config.embed_enabled !== "true");
       setLoading(false);
     };
     fetchData();
   }, [token]);
 
+  const [isChecking, setIsChecking] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    const checkEmbedStatus = async () => {
+      console.log("checkEmbedStatus", enabled, showBanner);
+      if (enabled && showBanner) {
+        setIsChecking(true);
+        try {
+          const config = await getConfig(token);
+          if (config && config.embed_enabled === "true") {
+            setShowBanner(false);
+          }
+        } catch (error) {
+          console.error("Error checking embed status:", error);
+        } finally {
+          setIsChecking(false);
+        }
+      }
+    };
+
+    const intervalId = setInterval(checkEmbedStatus, 3000); // Check every 3 seconds
+
+    return () => clearInterval(intervalId); // Clean up on unmount
+  }, [token, showBanner, enabled]);
+
+  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
+
   if (loading) {
     return <IndexSkeleton />;
   }
 
-  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
+  if (showBanner) {
+    return (
+      <EmbedEnablePage
+        url={themeUrl}
+        loading={isChecking}
+        setEnabled={setEnabled}
+      />
+    );
+  }
 
   return (
     <Page title="Manage Blocked Countries">
