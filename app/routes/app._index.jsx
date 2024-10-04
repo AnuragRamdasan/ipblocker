@@ -467,8 +467,7 @@ export default function CountriesAdmin() {
             )}
             {selected === 2 && (
               <>
-               <Card sectioned>
-                {!isFeatureAllowed(customer, "bot_block") && (
+                {!isFeatureAllowed(customer, "branding_removal") && (
                   <div>
                     <Banner
                       title="Plan Upgrade Required"
@@ -477,144 +476,152 @@ export default function CountriesAdmin() {
                     >
                       <List>
                         <List.Item>
-                          Automated intelligent bot blocking is not available on
-                          the free plan. You can enable this feature on our
-                          basic plan for just $1.99 per month.
+                          Premium features are not available on the free plan.
+                          You can enable this feature on our basic plan for just
+                          $1.99 per month.
                         </List.Item>
                       </List>
                     </Banner>
                   </div>
                 )}
                 <br />
-                <Card>
+                {botBlockingEnabled && (
+                  <Card sectioned>
+                    <Card>
+                      <Text variant="headingMd" as="h5">
+                        Bot Blocking
+                      </Text>
+                      <Text as="p" variant="bodyMd">
+                        Our intelligent Bot Blocking feature uses advanced
+                        algorithms to automatically detect and block malicious
+                        bot traffic, protecting your store without any manual
+                        configuration needed.
+                      </Text>
+                      <br />
+                      <Text as="p" variant="bodyMd">
+                        By upgrading to our paid plan, you'll unlock:
+                      </Text>
+                      <List>
+                        <List.Item>24/7 automated bot protection</List.Item>
+                        <List.Item>
+                          Improved site performance and security
+                        </List.Item>
+                        <List.Item>
+                          Reduced server load and bandwidth costs
+                        </List.Item>
+                        <List.Item>
+                          Protection against content scraping and fraud attempts
+                        </List.Item>
+                      </List>
+                      <br />
+                      <Text as="p" variant="bodyMd">
+                        Simply enable the feature below and let our system take
+                        care of the rest. Upgrade now to safeguard your store
+                        and optimize your online presence.
+                      </Text>
+                      <br />
+                      <Form method="post">
+                        <input
+                          type="hidden"
+                          name="_action"
+                          value="toggle_bot_blocking"
+                        />
+                        <input
+                          type="hidden"
+                          name="botBlockingEnabled"
+                          value={botBlockingEnabled}
+                        />
+                        <Checkbox
+                          label="Enable Bot Blocking"
+                          checked={botBlockingEnabled}
+                          onChange={(checked) => {
+                            setBotBlockingEnabled(checked);
+                          }}
+                        />
+                        <br />
+                        <Button
+                          submit
+                          primary
+                          disabled={!isFeatureAllowed(customer, "bot_block")}
+                          onClick={() => {
+                            if (botBlockingEnabled === true) {
+                              analytics.track(actions.AUTO_BLOCK_ENABLED, {
+                                botBlockingEnabled: botBlockingEnabled,
+                              });
+                              // The form will be submitted automatically by the Button's default behavior
+                            } else {
+                              analytics.track(actions.AUTO_BLOCK_DISABLED, {
+                                botBlockingEnabled: botBlockingEnabled,
+                              });
+                            }
+                          }}
+                        >
+                          Save
+                        </Button>
+                      </Form>
+                      {data && data.messageBotBlocking && (
+                        <Banner
+                          title={data.messageBotBlocking}
+                          status={
+                            data.errorBotBlocking ? "critical" : "success"
+                          }
+                        />
+                      )}
+                    </Card>
+                  </Card>
+                )}
+                <Card sectioned>
                   <Text variant="headingMd" as="h5">
-                    Bot Blocking
+                    Remove IP Blocker Branding
                   </Text>
-                  <Text as="p" variant="bodyMd">
-                    Our intelligent Bot Blocking feature uses advanced
-                    algorithms to automatically detect and block malicious bot
-                    traffic, protecting your store without any manual
-                    configuration needed.
-                  </Text>
-                  <br />
-                  <Text as="p" variant="bodyMd">
-                    By upgrading to our paid plan, you'll unlock:
-                  </Text>
-                  <List>
-                    <List.Item>24/7 automated bot protection</List.Item>
-                    <List.Item>
-                      Improved site performance and security
-                    </List.Item>
-                    <List.Item>
-                      Reduced server load and bandwidth costs
-                    </List.Item>
-                    <List.Item>
-                      Protection against content scraping and fraud attempts
-                    </List.Item>
-                  </List>
-                  <br />
-                  <Text as="p" variant="bodyMd">
-                    Simply enable the feature below and let our system take care
-                    of the rest. Upgrade now to safeguard your store and
-                    optimize your online presence.
+                  <Text variant="bodyMd" as="p">
+                    Choose whether to remove IP Blocker branding on the blocked
+                    page. This may take 3-4 minutes to reflect on the blocked
+                    page.
                   </Text>
                   <br />
                   <Form method="post">
                     <input
                       type="hidden"
                       name="_action"
-                      value="toggle_bot_blocking"
+                      value="toggle_app_branding"
                     />
                     <input
                       type="hidden"
-                      name="botBlockingEnabled"
-                      value={botBlockingEnabled}
+                      name="appBrandingDisabled"
+                      value={appBrandingDisabled}
                     />
                     <Checkbox
-                      label="Enable Bot Blocking"
-                      checked={botBlockingEnabled}
+                      label="Display IP Blocker branding on blocked page"
+                      checked={appBrandingDisabled}
                       onChange={(checked) => {
-                        setBotBlockingEnabled(checked);
+                        setAppBrandingDisabled(checked);
                       }}
                     />
                     <br />
                     <Button
                       submit
                       primary
-                      disabled={!isFeatureAllowed(customer, "bot_block")}
+                      disabled={!isFeatureAllowed(customer, "branding_removal")}
                       onClick={() => {
-                        if (botBlockingEnabled === true) {
-                          analytics.track(actions.AUTO_BLOCK_ENABLED, {
-                            botBlockingEnabled: botBlockingEnabled,
-                          });
-                          // The form will be submitted automatically by the Button's default behavior
+                        if (appBrandingDisabled) {
+                          analytics.track(actions.APP_BRANDING_ENABLED);
                         } else {
-                          analytics.track(actions.AUTO_BLOCK_DISABLED, {
-                            botBlockingEnabled: botBlockingEnabled,
-                          });
+                          analytics.track(actions.APP_BRANDING_DISABLED);
                         }
                       }}
                     >
                       Save
                     </Button>
                   </Form>
-                  {data && data.messageBotBlocking && (
+                  {data && data.messageAppBranding && (
                     <Banner
-                      title={data.messageBotBlocking}
-                      status={data.errorBotBlocking ? "critical" : "success"}
+                      title={data.messageAppBranding}
+                      status={data.errorAppBranding ? "critical" : "success"}
                     />
                   )}
                 </Card>
-              </Card>
-            <Card sectioned>
-              <Text variant="headingMd" as="h5">
-                Remove IP Blocker Branding
-              </Text>
-              <Text variant="bodyMd" as="p">
-                Choose whether to remove IP Blocker branding on the blocked page. This may take 3-4 minutes to reflect on the blocked page.
-              </Text>
-              <br />
-              <Form method="post">
-                <input
-                  type="hidden"
-                  name="_action"
-                  value="toggle_app_branding"
-                />
-                <input
-                  type="hidden"
-                  name="appBrandingDisabled"
-                  value={appBrandingDisabled}
-                />
-                <Checkbox
-                  label="Display IP Blocker branding on blocked page"
-                  checked={appBrandingDisabled}
-                  onChange={(checked) => {
-                    setAppBrandingDisabled(checked);
-                  }}
-                />
-                <br />
-                <Button
-                  submit
-                  primary
-                  disabled={!isFeatureAllowed(customer, "branding_removal")}
-                  onClick={() => {
-                    if (appBrandingDisabled) {
-                      analytics.track(actions.APP_BRANDING_ENABLED);
-                    } else {
-                      analytics.track(actions.APP_BRANDING_DISABLED);
-                    }
-                  }}
-                >
-                  Save
-                </Button>
-              </Form>
-              {data && data.messageAppBranding && (
-                <Banner
-                  title={data.messageAppBranding}
-                  status={data.errorAppBranding ? "critical" : "success"}
-                />
-              )}
-            </Card></>
+              </>
             )}
             {selected === 3 && (
               <Card sectioned>
