@@ -137,7 +137,7 @@ const BasicPlanDashboard = ({ config }) => {
             value={conf.appBrandingDisabled}
           />
           <Checkbox
-            label="Display IP Blocker branding on blocked page"
+            label="Remove IP Blocker branding on blocked page"
             checked={conf.appBrandingDisabled}
             disabled={!isFeatureAllowed(customer, "branding_removal")}
             onChange={(checked) => {
