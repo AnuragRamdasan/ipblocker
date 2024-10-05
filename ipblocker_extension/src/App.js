@@ -191,7 +191,7 @@ const App = () => {
           const now = new Date().getTime();
           const twoMinutes = 2 * 60 * 1000;
 
-          if (now - timestamp < tenMinutes) {
+          if (now - timestamp < twoMinutes) {
             allowedConfig = data;
           } else {
             sessionStorage.removeItem(sessionKey);
