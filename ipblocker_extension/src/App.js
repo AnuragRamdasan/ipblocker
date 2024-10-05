@@ -216,7 +216,7 @@ const App = () => {
 
         let shouldBlock = !allowed;
         let reason = null;
-        let removeBranding = config.appBrandingDisabled === "true";
+        let removeBranding = config.appBrandingDisabled === "1";
         let redirectUrl = config.redirectRules === "" || config.redirectRules === null || config.redirectRules === undefined ? null : config.redirectRules;
 
         if (!shouldBlock && config.isBotBlockerEnabled && isBot()) {
