@@ -61,10 +61,7 @@ const isFeatureAllowed = (customer, feature) => {
   if (customer === undefined || customer === null) {
     return null;
   }
-  console.log(customer);
-  console.log(getCurrentPlan(customer));
-  console.log(searchPlanWithName(customer, getCurrentPlan(customer)));
-  console.log(getCurrentPlanFeatureUsage(customer, feature));
+
   const currentPlan = searchPlanWithName(customer, getCurrentPlan(customer));
   const count = getCurrentPlanFeatureUsage(customer, feature);
 
