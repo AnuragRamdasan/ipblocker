@@ -15,7 +15,7 @@ const rollbar = new Rollbar({
   accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
   captureUncaught: true,
   captureUnhandledRejections: true,
-  environment: process.env.NODE_ENV
+  environment: process.env.NODE_ENV,
 });
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
@@ -47,8 +47,8 @@ export default function App() {
       payload: {
         person: {
           id: shop,
-        }
-      }
+        },
+      },
     });
   }, [shop]);
 
@@ -76,7 +76,7 @@ export default function App() {
 // Update the ErrorBoundary to log errors to Rollbar
 export function ErrorBoundary() {
   const error = useRouteError();
-  
+
   useEffect(() => {
     rollbar.error(error);
   }, [error]);

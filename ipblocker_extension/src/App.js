@@ -231,7 +231,7 @@ const App = () => {
           } catch (err) {
             console.error("Error tracking event:", err);
           }
-          console.log("SESSION BLOCKED BY VALUECOMMERCE IP BLOCKER")
+          console.log("SESSION BLOCKED BY VALUECOMMERCE IP BLOCKER");
           injectBlockedContent(removeBranding);
         }
       } catch (err) {
