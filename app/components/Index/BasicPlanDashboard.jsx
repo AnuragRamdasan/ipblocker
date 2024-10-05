@@ -1,0 +1,145 @@
+import { Banner, Card, Checkbox, List, Text } from "@shopify/polaris";
+import { useMantle } from "@heymantle/react";
+import { isFeatureAllowed } from "../../models/planGating";
+import { useState } from "react";
+import { addOrCreateConfig } from "../../models/configuration";
+import { useLoaderData } from "@remix-run/react";
+import { actions, analytics } from "../../utils/segment_analytics";
+
+export const loader = async ({ request }) => {
+  const { session } = await authenticate.admin(request);
+
+  return { token: session.accessToken };
+};
+
+const BasicPlanDashboard = ({ config }) => {
+  const [conf, setConf] = useState(config);
+  const [message, setMessage] = useState(false);
+  const { customer } = useMantle();
+  const { token } = useLoaderData();
+
+  const isChecked = (value) => {
+    return value === 0 || value === "false" || value === "0" ? false : true;
+  };
+
+  const loadToast = (message) =>
+    shopify.toast.show(message, { duration: 4000 }) && setMessage(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await addOrCreateConfig(token, conf);
+
+    if (!res.ok) {
+      setMessage("Failed to modify configuration. Please try again.");
+      setConf(config);
+    } else {
+      setMessage("Successfully modified configuration.");
+    }
+  };
+
+  return (
+    <form data-save-bar onSubmit={handleSubmit}>
+      {message && loadToast(message)}
+
+      {!isFeatureAllowed(customer, "branding_removal") && (
+        <div>
+          <Banner
+            title="Plan Upgrade Required"
+            action={{ url: "/app/billing", content: "Upgrade Plan" }}
+            tone="warning"
+          >
+            <List>
+              <List.Item>
+                Premium features are not available on the free plan. You can
+                enable this feature on our basic plan for just $1.99 per month.
+              </List.Item>
+            </List>
+          </Banner>
+        </div>
+      )}
+      <br />
+      {isChecked(config.botBlockingEnabled) && (
+        <Card sectioned>
+          <Text variant="headingMd" as="h5">
+            Bot Blocking (this is a deprecated feature, disabling it will make
+            it unavailable permanently)
+          </Text>
+          <Text as="p" variant="bodyMd">
+            Our intelligent Bot Blocking feature uses advanced algorithms to
+            automatically detect and block malicious bot traffic, protecting
+            your store without any manual configuration needed.
+          </Text>
+          <br />
+          <Text as="p" variant="bodyMd">
+            By upgrading to our paid plan, you'll unlock:
+          </Text>
+          <List>
+            <List.Item>24/7 automated bot protection</List.Item>
+            <List.Item>Improved site performance and security</List.Item>
+            <List.Item>Reduced server load and bandwidth costs</List.Item>
+            <List.Item>
+              Protection against content scraping and fraud attempts
+            </List.Item>
+          </List>
+          <br />
+          <Text as="p" variant="bodyMd">
+            Simply enable the feature below and let our system take care of the
+            rest. Upgrade now to safeguard your store and optimize your online
+            presence.
+          </Text>
+          <br />
+          <>
+            <input type="hidden" name="_action" value="toggle_bot_blocking" />
+            <input
+              type="hidden"
+              name="botBlockingEnabled"
+              value={conf.botBlockingEnabled}
+            />
+            <Checkbox
+              label="Enable Bot Blocking"
+              checked={conf.botBlockingEnabled}
+              onChange={(checked) => {
+                analytics.track(actions.BOT_BLOCKING_ENABLED, {
+                  botBlockingEnabled: checked,
+                });
+                setConf({ ...conf, botBlockingEnabled: checked });
+              }}
+            />
+          </>
+        </Card>
+      )}
+      <br />
+      <Card sectioned>
+        <Text variant="headingMd" as="h5">
+          Remove IP Blocker Branding
+        </Text>
+        <Text variant="bodyMd" as="p">
+          Choose whether to remove IP Blocker branding on the blocked page. This
+          may take 3-4 minutes to reflect on the blocked page.
+        </Text>
+        <br />
+        <>
+          <input type="hidden" name="_action" value="toggle_app_branding" />
+          <input
+            type="hidden"
+            name="appBrandingDisabled"
+            value={conf.appBrandingDisabled}
+          />
+          <Checkbox
+            label="Display IP Blocker branding on blocked page"
+            checked={conf.appBrandingDisabled}
+            onChange={(checked) => {
+              analytics.track(actions.APP_BRANDING_DISABLED, {
+                appBrandingDisabled: checked,
+              });
+              setConf({ ...conf, appBrandingDisabled: checked });
+            }}
+          />
+        </>
+      </Card>
+    </form>
+  );
+};
+
+export default BasicPlanDashboard;

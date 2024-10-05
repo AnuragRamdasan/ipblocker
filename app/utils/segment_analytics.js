@@ -14,5 +14,5 @@ export const actions = {
   TAB_CHANGED: "Tab Changed",
   MANAGE_THEME_APP_EMBEDS_CLICKED: "Manage Theme App Embeds Clicked",
   APP_BRANDING_DISABLED: "App Branding Disabled",
-  APP_BRANDING_ENABLED: "App Branding Enabled",
+  BOT_BLOCKING_ENABLED: "Bot Blocking Enabled",
 };
