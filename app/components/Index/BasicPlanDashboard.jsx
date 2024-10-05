@@ -139,6 +139,7 @@ const BasicPlanDashboard = ({ config }) => {
           <Checkbox
             label="Display IP Blocker branding on blocked page"
             checked={conf.appBrandingDisabled}
+            disabled={!isFeatureAllowed(customer, "branding_removal")}
             onChange={(checked) => {
               analytics.track(actions.APP_BRANDING_DISABLED, {
                 appBrandingDisabled: checked,
@@ -166,6 +167,7 @@ const BasicPlanDashboard = ({ config }) => {
           value={redirectRules}
         />
         <TextField
+          disabled={!isFeatureAllowed(customer, "redirect_rules")}
           label="Enable Redirect Rules"
           config={redirectRules}
           value={redirectRules}
