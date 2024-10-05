@@ -1,4 +1,11 @@
-import { Banner, Card, Checkbox, List, Text, TextField } from "@shopify/polaris";
+import {
+  Banner,
+  Card,
+  Checkbox,
+  List,
+  Text,
+  TextField,
+} from "@shopify/polaris";
 import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../../models/planGating";
 import { useState } from "react";
@@ -16,7 +23,6 @@ export const loader = async ({ request }) => {
 const BasicPlanDashboard = ({ config }) => {
   const [conf, setConf] = useState(config);
   const [redirectRules, setRedirectRules] = useState(conf.redirectRules);
-  const [message, setMessage] = useState(false);
   const { customer } = useMantle();
   const { token } = useLoaderData();
 
@@ -25,7 +31,7 @@ const BasicPlanDashboard = ({ config }) => {
   };
 
   const loadToast = (message) =>
-    shopify.toast.show(message, { duration: 4000 }) && setMessage(false);
+    shopify.toast.show(message, { duration: 4000 });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,25 +39,26 @@ const BasicPlanDashboard = ({ config }) => {
     const res = await addOrCreateConfig(token, conf);
 
     if (!res.ok) {
-      setMessage("Failed to modify configuration. Please try again.");
+      loadToast("Failed to modify configuration. Please try again.");
       setConf(config);
     } else {
-      setMessage("Successfully modified configuration.");
+      loadToast("Successfully modified configuration.");
     }
   };
 
-  const handleRedirectRulesUpdate = useCallback((value) => {
-    analytics.track(actions.REDIRECT_RULES, {
-      redirectRules: value,
-    });
-    setConf({ ...conf, redirectRules: value });
-    setRedirectRules(value);
-  }, [conf]);
+  const handleRedirectRulesUpdate = useCallback(
+    (value) => {
+      analytics.track(actions.REDIRECT_RULES, {
+        redirectRules: value,
+      });
+      setConf({ ...conf, redirectRules: value });
+      setRedirectRules(value);
+    },
+    [conf],
+  );
 
   return (
     <form data-save-bar onSubmit={handleSubmit}>
-      {message && loadToast(message)}
-
       {!isFeatureAllowed(customer, "branding_removal") && (
         <div>
           <Banner
@@ -161,11 +168,7 @@ const BasicPlanDashboard = ({ config }) => {
         </Text>
         <br />
         <input type="hidden" name="_action" value="setup_redirect_rules" />
-        <input
-          type="hidden"
-          name="redirectRules"
-          value={redirectRules}
-        />
+        <input type="hidden" name="redirectRules" value={redirectRules} />
         <TextField
           disabled={!isFeatureAllowed(customer, "redirect_rules")}
           label="Enable Redirect Rules"

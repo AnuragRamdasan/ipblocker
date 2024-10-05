@@ -15,7 +15,6 @@ import {
   addCityToShop,
   addCountryToShop,
   addIpToShop,
-  addWhitelistCountryToShop,
   getCountriesForShop,
 } from "../models/countries";
 import { authenticate } from "../shopify.server";
@@ -25,6 +24,7 @@ import { actions, analytics } from "../utils/segment_analytics";
 import IndexSkeleton from "../components/IndexSelect";
 import EmbedEnablePage from "../components/EmbedEnablePage";
 import BasicPlanDashboard from "../components/Index/BasicPlanDashboard";
+import WhitelistDashboard from "../components/Index/WhitelistDashboard";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -63,17 +63,6 @@ export const action = async ({ request }) => {
   } else if (actionType === "create_ip") {
     const ips = JSON.parse(formData.get("ips"));
     res = await addIpToShop(session.accessToken, ips);
-  } else if (actionType === "create_whitelist") {
-    const countryNames = JSON.parse(formData.get("countries"));
-    const countryCodes = countryNames.map((name) => {
-      const country = masterCountryList.find((c) => c.country === name);
-      return country ? country.code : null;
-    });
-    res = await addWhitelistCountryToShop(
-      session.accessToken,
-      countryNames,
-      countryCodes,
-    );
   } else if (actionType === "create_cities") {
     const cities = JSON.parse(formData.get("cities"));
     res = await addCityToShop(session.accessToken, cities);
@@ -82,7 +71,6 @@ export const action = async ({ request }) => {
   // Determine the type of action and set the appropriate message
   const actionMessages = {
     create: "modify country blocklist",
-    create_whitelist: "modify country whitelist",
     create_ip: "modify IP blocklist",
     create_cities: "modify city blocklist",
   };
@@ -94,8 +82,6 @@ export const action = async ({ request }) => {
     switch (actionType) {
       case "create":
         return { error: "error", message: "message" };
-      case "create_whitelist":
-        return { error: "errorWhitelist", message: "messageWhitelist" };
       case "create_ip":
         return { error: "errorIp", message: "messageIp" };
       case "create_cities":
@@ -128,7 +114,6 @@ export default function CountriesAdmin() {
   const [showBanner, setShowBanner] = useState(true);
 
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [selectedOptionsWhitelist, setSelectedOptionsWhitelist] = useState([]);
   const [selectedIps, setSelectedIps] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
   const [selected, setSelected] = useState(0);
@@ -176,7 +161,6 @@ export default function CountriesAdmin() {
       setConfig(config);
 
       setSelectedOptions(countries.map((c) => c.country));
-      setSelectedOptionsWhitelist(whiteList.map((c) => c.country));
       setSelectedIps(ips);
       setSelectedCities(cities.map((c) => c.city));
 
@@ -392,52 +376,10 @@ export default function CountriesAdmin() {
               </Card>
             )}
             {selected === 1 && (
-              <Card sectioned>
-                <Text variant="headingMd" as="h5">
-                  Select the countries that you want to whitelist.
-                </Text>
-                <Text>
-                  If you add countries to whitelist, all countries not in
-                  whitelist will be blocked. Whitelist supersedes blocklist.
-                </Text>
-                <Form method="post">
-                  <input
-                    type="hidden"
-                    name="_action"
-                    value="create_whitelist"
-                  />
-                  <MultiSelect
-                    selectedOptions={whiteList.map((c) => c.country)}
-                    placeholder={"Add countries to whitelist"}
-                    options={masterCountryList.map((c) => c.country)}
-                    onUpdate={setSelectedOptionsWhitelist}
-                  />
-                  <br />
-                  <input
-                    type="hidden"
-                    name="countries"
-                    value={JSON.stringify(selectedOptionsWhitelist)}
-                  />
-                  <Button
-                    submit
-                    primary
-                    onClick={() => {
-                      analytics.track(actions.COUNTRY_WHITELISTED, {
-                        countries: selectedOptionsWhitelist,
-                      });
-                      // The form will be submitted automatically by the Button's default behavior
-                    }}
-                  >
-                    Save
-                  </Button>
-                </Form>
-                {data && data.messageWhitelist && (
-                  <Banner
-                    title={data.messageWhitelist}
-                    status={data.errorWhitelist ? "critical" : "success"}
-                  />
-                )}
-              </Card>
+              <WhitelistDashboard
+                whiteList={whiteList}
+                masterCountryList={masterCountryList}
+              />
             )}
             {selected === 2 && <BasicPlanDashboard config={config} />}
           </Tabs>
