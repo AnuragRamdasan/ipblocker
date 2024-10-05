@@ -15,4 +15,5 @@ export const actions = {
   MANAGE_THEME_APP_EMBEDS_CLICKED: "Manage Theme App Embeds Clicked",
   APP_BRANDING_DISABLED: "App Branding Disabled",
   BOT_BLOCKING_ENABLED: "Bot Blocking Enabled",
+  REDIRECT_RULES: "Redirect Rules",
 };

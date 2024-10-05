@@ -217,6 +217,7 @@ const App = () => {
         let shouldBlock = !allowed;
         let reason = null;
         let removeBranding = config.appBrandingDisabled === "true";
+        let redirectUrl = config.redirectRules === "" || config.redirectRules === null || config.redirectRules === undefined ? null : config.redirectRules;
 
         if (!shouldBlock && config.isBotBlockerEnabled && isBot()) {
           shouldBlock = true;
@@ -232,7 +233,11 @@ const App = () => {
             console.error("Error tracking event:", err);
           }
           console.log("SESSION BLOCKED BY VALUECOMMERCE IP BLOCKER");
-          injectBlockedContent(removeBranding);
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+          } else {
+            injectBlockedContent(removeBranding);
+          }
         }
       } catch (err) {
         console.error("Error fetching countries or IP data:", err);

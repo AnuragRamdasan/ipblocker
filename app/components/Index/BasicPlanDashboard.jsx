@@ -1,10 +1,11 @@
-import { Banner, Card, Checkbox, List, Text } from "@shopify/polaris";
+import { Banner, Card, Checkbox, List, Text, TextField } from "@shopify/polaris";
 import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../../models/planGating";
 import { useState } from "react";
 import { addOrCreateConfig } from "../../models/configuration";
 import { useLoaderData } from "@remix-run/react";
 import { actions, analytics } from "../../utils/segment_analytics";
+import { useCallback } from "react";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -14,6 +15,7 @@ export const loader = async ({ request }) => {
 
 const BasicPlanDashboard = ({ config }) => {
   const [conf, setConf] = useState(config);
+  const [redirectRules, setRedirectRules] = useState(conf.redirectRules);
   const [message, setMessage] = useState(false);
   const { customer } = useMantle();
   const { token } = useLoaderData();
@@ -37,6 +39,14 @@ const BasicPlanDashboard = ({ config }) => {
       setMessage("Successfully modified configuration.");
     }
   };
+
+  const handleRedirectRulesUpdate = useCallback((value) => {
+    analytics.track(actions.REDIRECT_RULES, {
+      redirectRules: value,
+    });
+    setConf({ ...conf, redirectRules: value });
+    setRedirectRules(value);
+  }, [conf]);
 
   return (
     <form data-save-bar onSubmit={handleSubmit}>
@@ -137,6 +147,33 @@ const BasicPlanDashboard = ({ config }) => {
             }}
           />
         </>
+      </Card>
+
+      <br />
+      <Card sectioned>
+        <Text variant="headingMd" as="h5">
+          Setup Redirect Rules
+        </Text>
+        <Text variant="bodyMd" as="p">
+          Setup redirect rules to redirect users to a different page when they
+          are blocked.
+        </Text>
+        <br />
+        <input type="hidden" name="_action" value="setup_redirect_rules" />
+        <input
+          type="hidden"
+          name="redirectRules"
+          value={redirectRules}
+        />
+        <TextField
+          label="Enable Redirect Rules"
+          config={redirectRules}
+          value={redirectRules}
+          onChange={handleRedirectRulesUpdate}
+          type="url"
+          placeholder="https://example.com"
+          helpText="Enter the url to redirect users to when they are blocked. Keep it blank to disable."
+        />
       </Card>
     </form>
   );
