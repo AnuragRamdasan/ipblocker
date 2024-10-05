@@ -21,7 +21,7 @@ const BasicPlanDashboard = ({ config }) => {
   const { token } = useLoaderData();
 
   const isChecked = (value) => {
-    return value === 0 || value === "false" || value === "0" ? false : true;
+    return Boolean(value) && value !== "false" && value !== "0";
   };
 
   const loadToast = (message) =>
