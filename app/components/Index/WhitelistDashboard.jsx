@@ -62,18 +62,11 @@ const WhitelistDashboard = ({ whiteList, masterCountryList }) => {
         be blocked. Whitelist supersedes blocklist.
       </Text>
       <form onSubmit={handleSubmit}>
-        <input type="hidden" name="_action" value="create_whitelist" />
         <MultiSelect
           selectedOptions={whiteList.map((c) => c.country)}
           placeholder={"Add countries to whitelist"}
           options={masterCountryList.map((c) => c.country)}
           onUpdate={handleUpdate}
-        />
-        <br />
-        <input
-          type="hidden"
-          name="countries"
-          value={JSON.stringify(selectedOptionsWhitelist)}
         />
       </form>
       <SaveBar id="my-save-bar">

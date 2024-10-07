@@ -28,19 +28,6 @@ const getStatusForShop = async (token, ip) => {
   return data.allowed;
 };
 
-const addCountryToShop = async (token, country, countryCode) => {
-  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: token,
-    },
-    body: JSON.stringify({
-      country: { country: country, country_code: countryCode, type: "block" },
-    }),
-  });
-};
 const addWhitelistCountryToShop = async (token, country, countryCode) => {
   return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
@@ -59,8 +46,8 @@ const addWhitelistCountryToShop = async (token, country, countryCode) => {
   });
 };
 
-const addIpToShop = async (token, ips) => {
-  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/ips.json", {
+const updateBlocklist = async (token, countries, cities, ips) => {
+  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/blocklist.json", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -68,30 +55,16 @@ const addIpToShop = async (token, ips) => {
       Authorization: token,
     },
     body: JSON.stringify({
-      country: { ips: ips },
-    }),
-  });
-};
-
-const addCityToShop = async (token, cities) => {
-  return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/cities.json", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: token,
-    },
-    body: JSON.stringify({
+      countries: countries,
       cities: cities,
+      ips: ips,
     }),
   });
 };
 
 export {
   getCountriesForShop,
-  addCountryToShop,
-  addIpToShop,
   addWhitelistCountryToShop,
-  addCityToShop,
   getStatusForShop,
+  updateBlocklist,
 };

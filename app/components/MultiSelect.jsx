@@ -166,6 +166,7 @@ const MultiSelect = (props) => {
             placeholder={props.placeholder}
             verticalContent={verticalContentMarkup}
             onChange={setValue}
+            disabled={props.disabled}
           />
         }
       >
