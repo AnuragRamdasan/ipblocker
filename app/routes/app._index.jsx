@@ -20,6 +20,7 @@ import EmbedEnablePage from "../components/EmbedEnablePage";
 import BasicPlanDashboard from "../components/Index/BasicPlanDashboard";
 import WhitelistDashboard from "../components/Index/WhitelistDashboard";
 import BlocklistDashboard from "../components/Index/BlocklistDashboard";
+import ReportingDashboard from "../components/Index/ReportingDashboard";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -68,6 +69,12 @@ export default function CountriesAdmin() {
       content: "Premium",
       accessibilityLabel: "Premium",
       panelID: "premium-content",
+    },
+    {
+      id: "reporting",
+      content: "Reporting",
+      accessibilityLabel: "Reporting",
+      panelID: "reporting-content",
     },
   ];
 
@@ -186,6 +193,7 @@ export default function CountriesAdmin() {
               />
             )}
             {selected === 2 && <BasicPlanDashboard config={config} />}
+            {selected === 3 && <ReportingDashboard />}
           </Tabs>
         </Layout.Section>
 

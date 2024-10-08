@@ -40,7 +40,7 @@ const BlocklistDashboard = ({
     if (!res.ok) {
       loadToast("Failed to modify blocklist. Please try again.");
     } else {
-      loadToast("Successfully modified countries in whitelist.");
+      loadToast("Successfully modified countries in blocklist.");
       shopify.saveBar.hide("my-save-bar");
     }
   };
