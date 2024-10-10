@@ -37,6 +37,45 @@ export default function EmbedEnablePage({ url, loading, setEnabled }) {
             </Button>
           </Card>
         </Layout.Section>
+        <Layout.Section>
+          <Card sectioned>
+            <Text variant="headingMd" as="h5">
+              How to Install IP Blocker
+            </Text>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px",
+                marginTop: "20px",
+              }}
+            >
+              <div
+                style={{
+                  position: "relative",
+                  paddingBottom: "56.25%",
+                  height: 0,
+                  overflow: "hidden",
+                }}
+              >
+                <iframe
+                  src="https://www.youtube.com/embed/6jnBYlGXlIw"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    border: 0,
+                  }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="IP Blocker Tutorial"
+                ></iframe>
+              </div>
+            </div>
+          </Card>
+        </Layout.Section>
       </Layout>
     </Page>
   );
