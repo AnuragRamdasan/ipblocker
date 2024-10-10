@@ -190,6 +190,7 @@ export default function CountriesAdmin() {
               <WhitelistDashboard
                 whiteList={whiteList}
                 masterCountryList={masterCountryList}
+                setWhiteList={setWhiteList}
               />
             )}
             {selected === 2 && <BasicPlanDashboard config={config} />}

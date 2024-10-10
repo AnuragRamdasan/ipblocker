@@ -11,7 +11,7 @@ export const loader = async ({ request }) => {
   return { token: session.accessToken };
 };
 
-const WhitelistDashboard = ({ whiteList, masterCountryList }) => {
+const WhitelistDashboard = ({ whiteList, masterCountryList, setWhiteList }) => {
   const { token } = useLoaderData();
   const [selectedOptionsWhitelist, setSelectedOptionsWhitelist] = useState(
     whiteList.map((c) => c.country),
@@ -38,6 +38,11 @@ const WhitelistDashboard = ({ whiteList, masterCountryList }) => {
       loadToast("Failed to modify whitelist. Please try again.");
       setSelectedOptionsWhitelist(whiteList.map((c) => c.country));
     } else {
+      setWhiteList(
+        masterCountryList.filter((c) =>
+          selectedOptionsWhitelist.includes(c.country),
+        ),
+      );
       loadToast("Successfully modified countries in whitelist.");
       shopify.saveBar.hide("my-save-bar");
     }
@@ -63,7 +68,7 @@ const WhitelistDashboard = ({ whiteList, masterCountryList }) => {
       </Text>
       <form onSubmit={handleSubmit}>
         <MultiSelect
-          selectedOptions={whiteList.map((c) => c.country)}
+          selectedOptions={selectedOptionsWhitelist}
           placeholder={"Add countries to whitelist"}
           options={masterCountryList.map((c) => c.country)}
           onUpdate={handleUpdate}
