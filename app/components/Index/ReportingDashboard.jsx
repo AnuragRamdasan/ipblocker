@@ -12,6 +12,7 @@ import { getAnalytics } from "../../models/analytics";
 import { useLoaderData } from "@remix-run/react";
 import { isFeatureAllowed } from "../../models/planGating";
 import { useMantle } from "@heymantle/react";
+import UpgradePlanOverlay from "./UpgradePlanOverlay";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -29,7 +30,9 @@ function ReportingDashboard() {
       const analyticsData = await getAnalytics(token);
       setAnalytics(analyticsData);
     }
-    fetchData();
+    if (isFeatureAllowed(customer, "reporting")) {
+      fetchData();
+    }
   }, []);
 
   const stats = [
@@ -53,6 +56,18 @@ function ReportingDashboard() {
       ).length,
     },
   ];
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
   const rowMarkup = analytics
     .filter((item) => item.eventName !== "ip_tracked")
@@ -81,73 +96,125 @@ function ReportingDashboard() {
           <IndexTable.Cell>{city}</IndexTable.Cell>
           <IndexTable.Cell>{country}</IndexTable.Cell>
           <IndexTable.Cell>{zip}</IndexTable.Cell>
+          <IndexTable.Cell>{formatDate(blockedAt)}</IndexTable.Cell>
           <IndexTable.Cell>{latitude}</IndexTable.Cell>
           <IndexTable.Cell>{longitude}</IndexTable.Cell>
-          <IndexTable.Cell>{blockedAt}</IndexTable.Cell>
         </IndexTable.Row>
       ),
     );
 
-  if (!isFeatureAllowed(customer, "reporting")) {
-    return (
-      <div>
-        <Banner
-          title="Plan Upgrade Required"
-          action={{ url: "/app/billing", content: "Upgrade Plan" }}
-          tone="warning"
-        >
-          <List>
-            <List.Item>
-              Premium features are not available on the free plan. You can
-              enable this feature on our basic plan for just $1.99 per month.
-            </List.Item>
-          </List>
-        </Banner>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!isFeatureAllowed(customer, "reporting")) {
+      // Add dummy data for demonstration purposes
+      const dummyAnalytics = [
+        {
+          eventName: "ip_blocked",
+          id: "1",
+          ip: "192.168.1.1",
+          city: "New York",
+          country: "United States",
+          zip: "10001",
+          blockedAt: "2023-06-01T12:00:00Z",
+          latitude: "40.7128",
+          longitude: "-74.0060",
+        },
+        {
+          eventName: "country_blocked",
+          id: "2",
+          ip: "203.0.113.0",
+          city: "London",
+          country: "United Kingdom",
+          zip: "SW1A 1AA",
+          blockedAt: "2023-06-02T14:30:00Z",
+          latitude: "51.5074",
+          longitude: "-0.1278",
+        },
+        {
+          eventName: "country_whitelisted",
+          id: "3",
+          ip: "198.51.100.0",
+          city: "Toronto",
+          country: "Canada",
+          zip: "M5H 2N2",
+          blockedAt: "2023-06-03T09:15:00Z",
+          latitude: "43.6532",
+          longitude: "-79.3832",
+        },
+      ];
+
+      // Merge dummy data with existing analytics
+      setAnalytics(dummyAnalytics);
+    }
+  }, [customer]);
 
   return (
     <div>
+      {!isFeatureAllowed(customer, "reporting") && (
+        <Layout.Section>
+          <Banner
+            title="Plan Upgrade Required"
+            action={{ url: "/app/billing", content: "Upgrade Plan" }}
+            tone="warning"
+          >
+            <List>
+              <List.Item>
+                Premium features are not available on the free plan. You can
+                enable this feature on our basic plan for just $1.99 per month.
+              </List.Item>
+            </List>
+          </Banner>
+        </Layout.Section>
+      )}
       <Layout.Section>
         <Card sectioned>
           <Text variant="headingMd" as="h6">
-            Overview
+            Overview{" "}
+            {isFeatureAllowed(customer, "reporting")
+              ? ""
+              : " (Dummy data. Upgrade your plan to see more details)"}
           </Text>
           <br />
           <InlineGrid columns={4} gap="400" background="bg-fill-success">
             {stats.map((stat, index) => (
               <Card key={index}>
-                <Text variant="headingMd" as="h3">
-                  {stat.name}
-                </Text>
-                <Text variant="heading2xl" as="p">
-                  {stat.value}
-                </Text>
+                <div style={{ position: "relative" }}>
+                  <Text variant="headingMd" as="h3">
+                    {stat.name}
+                  </Text>
+                  <Text variant="heading2xl" as="p">
+                    {stat.value}
+                  </Text>
+                  {!isFeatureAllowed(customer, "reporting") && (
+                    <UpgradePlanOverlay />
+                  )}
+                </div>
               </Card>
             ))}
           </InlineGrid>
         </Card>
       </Layout.Section>
       <Layout.Section>
-        <Card sectioned title="Geographic Distribution">
-          <IndexTable
-            itemCount={analytics.length}
-            headings={[
-              { title: "Block Type" },
-              { title: "IP" },
-              { title: "City" },
-              { title: "Country" },
-              { title: "Zip" },
-              { title: "Blocked At" },
-              { title: "Latitude" },
-              { title: "Longitude" },
-            ]}
-            selectable={false}
-          >
-            {rowMarkup}
-          </IndexTable>
-        </Card>
+        <div style={{ position: "relative" }}>
+          <Card sectioned title="Geographic Distribution">
+            <IndexTable
+              itemCount={analytics.length}
+              headings={[
+                { title: "Block Type" },
+                { title: "IP" },
+                { title: "City" },
+                { title: "Country" },
+                { title: "Zip" },
+                { title: "Blocked At" },
+                { title: "Latitude" },
+                { title: "Longitude" },
+              ]}
+              selectable={false}
+            >
+              {rowMarkup}
+            </IndexTable>
+          </Card>
+          {!isFeatureAllowed(customer, "reporting") && <UpgradePlanOverlay />}
+        </div>
       </Layout.Section>
     </div>
   );
