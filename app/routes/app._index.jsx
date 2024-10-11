@@ -21,6 +21,7 @@ import BasicPlanDashboard from "../components/Index/BasicPlanDashboard";
 import WhitelistDashboard from "../components/Index/WhitelistDashboard";
 import BlocklistDashboard from "../components/Index/BlocklistDashboard";
 import ReportingDashboard from "../components/Index/ReportingDashboard";
+import BasicUpgradeBanner from "../components/Index/BasicUpgradeBanner";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -113,6 +114,7 @@ export default function CountriesAdmin() {
         setIsChecking(true);
         try {
           const config = await getConfig(token);
+          setConfig(config);
           if (config && config.embed_enabled === "true") {
             setShowBanner(false);
           }
@@ -148,33 +150,11 @@ export default function CountriesAdmin() {
   return (
     <Page title="Manage Blocked Countries">
       <Layout>
-        {showBanner && (
-          <Layout.Section>
-            <Banner
-              title="IP Blocker App Embed"
-              tone="info"
-              onDismiss={() => setShowBanner(false)}
-            >
-              <p>
-                Enable the app block in your theme app embeds to start blocking
-                fraudulent traffic.{" "}
-                <a
-                  href={themeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    analytics.track(actions.MANAGE_THEME_APP_EMBEDS_CLICKED);
-                    window.open(themeUrl, "_blank", "noopener,noreferrer");
-                  }}
-                >
-                  Manage theme app embeds
-                </a>
-                .
-              </p>
-            </Banner>
-            <Text variant="headingMd" as="h5"></Text>
-          </Layout.Section>
-        )}
+        <Layout.Section>
+          {config.basic_upgrade_banner_dismissed !== "1" && (
+            <BasicUpgradeBanner />
+          )}
+        </Layout.Section>
         <Layout.Section>
           <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
             {selected === 0 && (
