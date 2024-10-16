@@ -70,7 +70,7 @@ const Roadmap = () => {
               <InlineStack>
                 Status: &nbsp;
                 <div style={{ width: "100px" }}>
-                  <ProgressBar progress={35} animated={true} tone="success" />
+                  <ProgressBar progress={100} animated={true} tone="success" />
                 </div>
               </InlineStack>
               <Text>
@@ -82,11 +82,23 @@ const Roadmap = () => {
               <InlineStack>
                 Status: &nbsp;
                 <div style={{ width: "100px" }}>
-                  <ProgressBar progress={35} animated={true} tone="success" />
+                  <ProgressBar progress={100} animated={true} tone="success" />
                 </div>
               </InlineStack>
               <Text>
                 ⛔ Enable Premium users to completely redesign the blocked page.
+              </Text>
+            </Card>
+            <Card sectioned>
+              <InlineStack>
+                Status: &nbsp;
+                <div style={{ width: "100px" }}>
+                  <ProgressBar progress={100} animated={true} tone="success" />
+                </div>
+              </InlineStack>
+              <Text>
+                📈 Enable blocking analytics for merchants to understand better
+                the source of spam traffic.
               </Text>
             </Card>
             <Card sectioned>
@@ -135,18 +147,6 @@ const Roadmap = () => {
               <Text>
                 ⛔ Enable Enterprise users to setup block rules for checkout
                 page.
-              </Text>
-            </Card>
-            <Card sectioned>
-              <InlineStack>
-                Status: &nbsp;
-                <div style={{ width: "100px" }}>
-                  <ProgressBar progress={0} animated={true} tone="success" />
-                </div>
-              </InlineStack>
-              <Text>
-                📈 Enable blocking analytics for merchants to understand better
-                the source of spam traffic.
               </Text>
             </Card>
           </BlockStack>
