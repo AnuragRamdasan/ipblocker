@@ -407,6 +407,16 @@ const Styling = ({ config, setConfig }) => {
           </div>
         </div>
       </InlineStack>
+      <br />
+      <Card>
+        <h5>
+          Need more customizations? Reach out to support to get a free block
+          page customization done with your premium plan.
+        </h5>
+        <Button onClick={handleContactSupport} disabled={!featureEnabled}>
+          Contact Support
+        </Button>
+      </Card>
       <SaveBar id="my-styling-save-bar">
         <button variant="primary" onClick={handleSave}></button>
         <button onClick={handleDiscard}></button>
@@ -414,5 +424,14 @@ const Styling = ({ config, setConfig }) => {
     </Page>
   );
 };
+
+function handleContactSupport() {
+  $crisp.push(["do", "chat:open"]);
+  $crisp.push([
+    "do",
+    "message:send",
+    ["text", "I would like to get a customized block page made."],
+  ]);
+}
 
 export default Styling;
