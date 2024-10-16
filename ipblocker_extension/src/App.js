@@ -94,7 +94,14 @@ const App = () => {
     });
   };
 
-  const injectBlockedContent = (removeBranding) => {
+  const injectBlockedContent = (config) => {
+    let removeBranding = config.appBrandingDisabled === "1";
+    let styling = JSON.parse(config.blockPageStyling);
+    const imageUrl = styling.logoUrl
+      ? styling.logoUrl
+      : styling.logoLink
+        ? styling.logoLink
+        : IPBLOCKER_LOGO;
     // Remove all existing scripts
     document.querySelectorAll("script").forEach((script) => script.remove());
 
@@ -103,28 +110,28 @@ const App = () => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Access Blocked</title>
+        <title>${styling.title}</title>
         <style>
           .ipblocker-body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
-            background-color: #f8f8f8;
+            background-color: ${styling.backgroundColor.hex};
           }
           .ipblocker-body img {
-            width: 130px;
-            height: 130px;
+            width: ${styling.logoSize}px;
+            height: ${styling.logoSize}px;
             object-fit: contain;
             margin-bottom: 30px;
           }
           .ipblocker-body h1 {
-            color: #333;
-            font-size: 24px;
+            color: ${styling.titleColor.hex};
+            font-size: ${styling.titleFontSize}px;
             margin-bottom: 20px;
           }
           .ipblocker-body p {
-            color: #666;
-            font-size: 16px;
+            color: ${styling.descriptionColor.hex};
+            font-size: ${styling.descriptionSize}px;
           }
           .footer {
             color: #999;
@@ -134,10 +141,10 @@ const App = () => {
         </style>
       </head>
       <body class="ipblocker-body">
-        <img id="storeLogo" src="${IPBLOCKER_LOGO}" alt="Store Logo">
-        <h1>This Shopify store is not available in your location.</h1>
-        <p>We apologize for the inconvenience. Thank you for your understanding.</p>
-        ${removeBranding ? "" : '<p class="footer">Powered by ValueCommerce</p>'}
+        <img id="storeLogo" src="${imageUrl}" alt="Store Logo">
+        <h1>${styling.title}</h1>
+        <p>${styling.description}</p>
+        ${removeBranding ? "" : '<span class="footer">Powered by ValueCommerce</span>'}
       </body>
     `;
 
@@ -216,7 +223,6 @@ const App = () => {
 
         let shouldBlock = !allowed;
         let reason = null;
-        let removeBranding = config.appBrandingDisabled === "1";
         let redirectUrl =
           config.redirectRules === "" ||
           config.redirectRules === null ||
@@ -241,7 +247,7 @@ const App = () => {
           if (redirectUrl) {
             window.location.href = redirectUrl;
           } else {
-            injectBlockedContent(removeBranding);
+            injectBlockedContent(config);
           }
         }
       } catch (err) {

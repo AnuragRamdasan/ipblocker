@@ -159,7 +159,7 @@ function ReportingDashboard() {
             <List>
               <List.Item>
                 Premium features are not available on the free plan. You can
-                enable this feature on our basic plan for just $1.99 per month.
+                enable this feature on our basic plan for just $2.99 per month.
               </List.Item>
             </List>
           </Banner>

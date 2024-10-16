@@ -1,8 +1,17 @@
 import { AnalyticsBrowser } from "@segment/analytics-next";
 
-export const analytics = AnalyticsBrowser.load({
-  writeKey: import.meta.env.VITE_SEGMENT_WRITE_KEY,
-});
+const isDevelopment = import.meta.env.MODE === "development";
+
+export const analytics = isDevelopment
+  ? {
+      track: () => {},
+      identify: () => {},
+      page: () => {},
+    }
+  : AnalyticsBrowser.load({
+      writeKey: import.meta.env.VITE_SEGMENT_WRITE_KEY,
+    });
+
 export const actions = {
   IP_BLOCKED: "IP Blocked",
   CITY_BLOCKED: "City Blocked",

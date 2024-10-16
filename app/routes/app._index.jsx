@@ -22,6 +22,7 @@ import WhitelistDashboard from "../components/Index/WhitelistDashboard";
 import BlocklistDashboard from "../components/Index/BlocklistDashboard";
 import ReportingDashboard from "../components/Index/ReportingDashboard";
 import BasicUpgradeBanner from "../components/Index/BasicUpgradeBanner";
+import StylingDashboard from "../components/Index/StylingDashboard";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -76,6 +77,12 @@ export default function CountriesAdmin() {
       content: "Reporting",
       accessibilityLabel: "Reporting",
       panelID: "reporting-content",
+    },
+    {
+      id: "styling",
+      content: "Styling",
+      accessibilityLabel: "Customize blocked page styling",
+      panelID: "styling-content",
     },
   ];
 
@@ -175,6 +182,9 @@ export default function CountriesAdmin() {
             )}
             {selected === 2 && <BasicPlanDashboard config={config} />}
             {selected === 3 && <ReportingDashboard />}
+            {selected === 4 && (
+              <StylingDashboard config={config} setConfig={setConfig} />
+            )}
           </Tabs>
         </Layout.Section>
 
