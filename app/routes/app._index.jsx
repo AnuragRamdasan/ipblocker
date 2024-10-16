@@ -37,22 +37,40 @@ export const loader = async ({ request }) => {
   const storeId = data.shop.myshopifyDomain
     .replace("https://", "")
     .replace(".myshopify.com", "");
+  const token = session.accessToken;
 
-  return { token: session.accessToken, storeId: storeId };
+  const [{ countries, ips, whiteList, cities }, config] = await Promise.all([
+    getCountriesForShop(token),
+    getConfig(token).then((result) => result || {}),
+  ]);
+
+  return {
+    token,
+    storeId,
+    countries,
+    ips,
+    whiteList,
+    cities,
+    config,
+  };
 };
 
 export default function CountriesAdmin() {
-  const { token, storeId } = useLoaderData();
-  const [showBanner, setShowBanner] = useState(true);
+  const { token, storeId, countries, ips, whiteList, cities, config } =
+    useLoaderData();
+  const [showBanner, setShowBanner] = useState(config.embed_enabled !== "true");
 
-  const [selectedCountries, setSelectedCountries] = useState([]);
-  const [selectedIps, setSelectedIps] = useState([]);
-  const [selectedCities, setSelectedCities] = useState([]);
+  const [selectedCountries, setSelectedCountries] = useState(
+    countries.map((c) => c.country),
+  );
+  const [selectedIps, setSelectedIps] = useState(ips);
+  const [selectedCities, setSelectedCities] = useState(
+    cities.map((c) => c.city),
+  );
   const [selected, setSelected] = useState(0);
 
-  const [whiteList, setWhiteList] = useState([]);
-  const [config, setConfig] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [newWhiteList, setNewWhiteList] = useState(whiteList);
+  const [newConfig, setNewConfig] = useState(config);
   const tabs = [
     {
       id: "blocklist",
@@ -93,25 +111,6 @@ export default function CountriesAdmin() {
     setSelected(selectedTabIndex);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { countries, ips, whiteList, cities } =
-        await getCountriesForShop(token);
-      const config = (await getConfig(token)) || {};
-
-      setWhiteList(whiteList);
-      setConfig(config);
-
-      setSelectedCountries(countries.map((c) => c.country));
-      setSelectedIps(ips);
-      setSelectedCities(cities.map((c) => c.city));
-
-      setShowBanner(config.embed_enabled !== "true");
-      setLoading(false);
-    };
-    fetchData();
-  }, [token]);
-
   const [isChecking, setIsChecking] = useState(false);
   const [enabled, setEnabled] = useState(false);
 
@@ -121,7 +120,7 @@ export default function CountriesAdmin() {
         setIsChecking(true);
         try {
           const config = await getConfig(token);
-          setConfig(config);
+          setNewConfig(config);
           if (config && config.embed_enabled === "true") {
             setShowBanner(false);
           }
@@ -140,10 +139,6 @@ export default function CountriesAdmin() {
 
   const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
 
-  if (loading) {
-    return <IndexSkeleton />;
-  }
-
   if (showBanner) {
     return (
       <EmbedEnablePage
@@ -158,7 +153,7 @@ export default function CountriesAdmin() {
     <Page title="Manage Blocked Countries">
       <Layout>
         <Layout.Section>
-          {config.basic_upgrade_banner_dismissed !== "1" && (
+          {newConfig.basic_upgrade_banner_dismissed !== "1" && (
             <BasicUpgradeBanner />
           )}
         </Layout.Section>
@@ -166,7 +161,7 @@ export default function CountriesAdmin() {
           <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
             {selected === 0 && (
               <BlocklistDashboard
-                whiteList={whiteList}
+                whiteList={newWhiteList}
                 masterCountryList={masterCountryList}
                 selectedCountries={selectedCountries}
                 selectedCities={selectedCities}
@@ -175,15 +170,15 @@ export default function CountriesAdmin() {
             )}
             {selected === 1 && (
               <WhitelistDashboard
-                whiteList={whiteList}
+                whiteList={newWhiteList}
                 masterCountryList={masterCountryList}
-                setWhiteList={setWhiteList}
+                setWhiteList={setNewWhiteList}
               />
             )}
-            {selected === 2 && <BasicPlanDashboard config={config} />}
+            {selected === 2 && <BasicPlanDashboard config={newConfig} />}
             {selected === 3 && <ReportingDashboard />}
             {selected === 4 && (
-              <StylingDashboard config={config} setConfig={setConfig} />
+              <StylingDashboard config={newConfig} setConfig={setNewConfig} />
             )}
           </Tabs>
         </Layout.Section>

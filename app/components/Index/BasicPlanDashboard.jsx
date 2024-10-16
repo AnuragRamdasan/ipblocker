@@ -73,9 +73,9 @@ const BasicPlanDashboard = ({ config }) => {
               </List.Item>
             </List>
           </Banner>
+          <br />
         </div>
       )}
-      <br />
       {isChecked(config.botBlockingEnabled) && (
         <Card sectioned>
           <Text variant="headingMd" as="h5">
