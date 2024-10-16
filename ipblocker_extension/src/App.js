@@ -96,7 +96,30 @@ const App = () => {
 
   const injectBlockedContent = (config) => {
     let removeBranding = config.appBrandingDisabled === "1";
-    let styling = JSON.parse(config.blockPageStyling);
+    let styling = config.blockPageStyling
+      ? JSON.parse(config.blockPageStyling)
+      : {
+          title: "Access Denied",
+          description: "Sorry, this content is not available in your region.",
+          logoUrl: "",
+          logoLink: "",
+          titleColor: { hue: 0, saturation: 0, brightness: 0, hex: "#000000" },
+          descriptionColor: {
+            hue: 0,
+            saturation: 0,
+            brightness: 0,
+            hex: "#000000",
+          },
+          backgroundColor: {
+            hue: 0.4,
+            saturation: 0,
+            brightness: 0.9,
+            hex: "#f5f4f2",
+          },
+          titleSize: 24,
+          descriptionSize: 16,
+          logoSize: 100,
+        };
     const imageUrl = styling.logoUrl
       ? styling.logoUrl
       : styling.logoLink
