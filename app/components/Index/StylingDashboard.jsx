@@ -123,7 +123,7 @@ const Styling = ({ config, setConfig }) => {
       if (file) {
         setIsUploading(true);
         try {
-          const uploadedUrl = await uploadFile(file);
+          const uploadedUrl = await uploadFile(token, file);
           if (uploadedUrl) {
             updateStyling("logoUrl", uploadedUrl);
           }

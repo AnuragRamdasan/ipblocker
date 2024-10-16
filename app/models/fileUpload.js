@@ -1,4 +1,4 @@
-const uploadFile = async (file) => {
+const uploadFile = async (token, file) => {
   const formData = new FormData();
   formData.append("file", file);
 
