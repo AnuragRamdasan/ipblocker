@@ -17,6 +17,9 @@ const BlocklistDashboard = ({
   selectedCountries,
   selectedCities,
   selectedIps,
+  setSelectedCountries,
+  setSelectedCities,
+  setSelectedIps,
 }) => {
   const [countries, setCountries] = useState(selectedCountries);
   const [cities, setCities] = useState(selectedCities);
@@ -40,6 +43,9 @@ const BlocklistDashboard = ({
     if (!res.ok) {
       loadToast("Failed to modify blocklist. Please try again.");
     } else {
+      setSelectedCountries(countries);
+      setSelectedCities(cities);
+      setSelectedIps(ips);
       loadToast("Successfully modified countries in blocklist.");
       shopify.saveBar.hide("my-save-bar");
     }

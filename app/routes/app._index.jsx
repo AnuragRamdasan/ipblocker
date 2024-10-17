@@ -15,7 +15,6 @@ import { getCountriesForShop } from "../models/countries";
 import { authenticate } from "../shopify.server";
 import { getConfig } from "../models/configuration";
 import { actions, analytics } from "../utils/segment_analytics";
-import IndexSkeleton from "../components/IndexSelect";
 import EmbedEnablePage from "../components/EmbedEnablePage";
 import BasicPlanDashboard from "../components/Index/BasicPlanDashboard";
 import WhitelistDashboard from "../components/Index/WhitelistDashboard";
@@ -166,6 +165,9 @@ export default function CountriesAdmin() {
                 selectedCountries={selectedCountries}
                 selectedCities={selectedCities}
                 selectedIps={selectedIps}
+                setSelectedCountries={setSelectedCountries}
+                setSelectedCities={setSelectedCities}
+                setSelectedIps={setSelectedIps}
               />
             )}
             {selected === 1 && (

@@ -26,8 +26,8 @@ function BasicUpgradeBanner() {
         onDismiss={handleDismiss}
       >
         <p>
-          Get Value IP Blocker Premium Plan for free for stores with less than $10K in
-          monthly revenue.
+          Get Value IP Blocker Premium Plan for free for stores with less than
+          $10K in monthly revenue.
         </p>
       </Banner>
     )
