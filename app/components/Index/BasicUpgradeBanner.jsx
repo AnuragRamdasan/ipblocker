@@ -1,4 +1,4 @@
-import { Banner } from "@shopify/polaris";
+import { CalloutCard } from "@shopify/polaris";
 import { useState, useEffect } from "react";
 import { addOrCreateConfig, getConfig } from "../../models/configuration";
 import { useLoaderData } from "@remix-run/react";
@@ -19,17 +19,18 @@ function BasicUpgradeBanner() {
 
   return (
     showBanner && (
-      <Banner
-        title="Early Stage Plan"
-        status="info"
-        action={{ content: "Contact Support", onAction: handleContactSupport }}
+      <CalloutCard
+        title="Unlock premium for Free 🎉"
+        primaryAction={{
+          content: "Contact Support",
+          onAction: handleContactSupport,
+        }}
         onDismiss={handleDismiss}
       >
-        <p>
-          Get Value IP Blocker Premium Plan for free for stores with less than
-          $10K in monthly revenue.
-        </p>
-      </Banner>
+        Get access to our premium features like advanced reporting, redirects at
+        no cost for stores with less than $10k in monthly revenue. Contact our
+        team to unlock the premium for absolutely free.
+      </CalloutCard>
     )
   );
 }

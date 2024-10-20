@@ -14,11 +14,9 @@ function UpgradePlanOverlay() {
         alignItems: "center",
         justifyContent: "center",
         background: "rgba(255, 255, 255, 0.9)",
-        opacity: 0,
+        opacity: 1,
         transition: "opacity 0.3s",
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
-      onMouseLeave={(e) => (e.currentTarget.style.opacity = 0)}
     >
       <Button url="/app/billing" primary>
         Upgrade Plan

@@ -7,6 +7,7 @@ import {
   InlineGrid,
   Banner,
   List,
+  EmptySearchResult,
 } from "@shopify/polaris";
 import { getAnalytics } from "../../models/analytics";
 import { useLoaderData } from "@remix-run/react";
@@ -30,9 +31,7 @@ function ReportingDashboard() {
       const analyticsData = await getAnalytics(token);
       setAnalytics(analyticsData);
     }
-    if (isFeatureAllowed(customer, "reporting")) {
-      fetchData();
-    }
+    fetchData();
   }, []);
 
   const stats = [
@@ -71,6 +70,13 @@ function ReportingDashboard() {
 
   const rowMarkup = analytics
     .filter((item) => item.eventName !== "ip_tracked")
+    .filter((_, index) => {
+      // Show only 10 rows if the customer is not on the premium plan
+      if (!isFeatureAllowed(customer, "reporting")) {
+        return index < 10;
+      }
+      return true;
+    })
     .map(
       (
         {
@@ -102,6 +108,16 @@ function ReportingDashboard() {
         </IndexTable.Row>
       ),
     );
+
+  const emptyStateMarkup = (
+    <EmptySearchResult
+      title={"No traffic blocked yet"}
+      description={
+        "Wait for some traffic to come in and we will show you the details here."
+      }
+      withIllustration
+    />
+  );
 
   useEffect(() => {
     if (!isFeatureAllowed(customer, "reporting")) {
@@ -184,9 +200,6 @@ function ReportingDashboard() {
                   <Text variant="heading2xl" as="p">
                     {stat.value}
                   </Text>
-                  {!isFeatureAllowed(customer, "reporting") && (
-                    <UpgradePlanOverlay />
-                  )}
                 </div>
               </Card>
             ))}
@@ -198,6 +211,7 @@ function ReportingDashboard() {
           <Card sectioned title="Geographic Distribution">
             <IndexTable
               itemCount={analytics.length}
+              emptyState={emptyStateMarkup}
               headings={[
                 { title: "Block Type" },
                 { title: "IP" },
