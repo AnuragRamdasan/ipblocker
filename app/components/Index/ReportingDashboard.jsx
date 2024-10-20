@@ -119,50 +119,6 @@ function ReportingDashboard() {
     />
   );
 
-  useEffect(() => {
-    if (!isFeatureAllowed(customer, "reporting")) {
-      // Add dummy data for demonstration purposes
-      const dummyAnalytics = [
-        {
-          eventName: "ip_blocked",
-          id: "1",
-          ip: "192.168.1.1",
-          city: "New York",
-          country: "United States",
-          zip: "10001",
-          blockedAt: "2023-06-01T12:00:00Z",
-          latitude: "40.7128",
-          longitude: "-74.0060",
-        },
-        {
-          eventName: "country_blocked",
-          id: "2",
-          ip: "203.0.113.0",
-          city: "London",
-          country: "United Kingdom",
-          zip: "SW1A 1AA",
-          blockedAt: "2023-06-02T14:30:00Z",
-          latitude: "51.5074",
-          longitude: "-0.1278",
-        },
-        {
-          eventName: "country_whitelisted",
-          id: "3",
-          ip: "198.51.100.0",
-          city: "Toronto",
-          country: "Canada",
-          zip: "M5H 2N2",
-          blockedAt: "2023-06-03T09:15:00Z",
-          latitude: "43.6532",
-          longitude: "-79.3832",
-        },
-      ];
-
-      // Merge dummy data with existing analytics
-      setAnalytics(dummyAnalytics);
-    }
-  }, [customer]);
-
   return (
     <div>
       {!isFeatureAllowed(customer, "reporting") && (
@@ -184,10 +140,7 @@ function ReportingDashboard() {
       <Layout.Section>
         <Card sectioned>
           <Text variant="headingMd" as="h6">
-            Overview{" "}
-            {isFeatureAllowed(customer, "reporting")
-              ? ""
-              : " (Dummy data. Upgrade your plan to see more details)"}
+            Overview              
           </Text>
           <br />
           <InlineGrid columns={4} gap="400" background="bg-fill-success">
