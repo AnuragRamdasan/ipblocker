@@ -121,22 +121,6 @@ function ReportingDashboard() {
 
   return (
     <div>
-      {!isFeatureAllowed(customer, "reporting") && (
-        <Layout.Section>
-          <Banner
-            title="Plan Upgrade Required"
-            action={{ url: "/app/billing", content: "Upgrade Plan" }}
-            tone="warning"
-          >
-            <List>
-              <List.Item>
-                Premium features are not available on the free plan. You can
-                enable this feature on our basic plan for just $2.99 per month.
-              </List.Item>
-            </List>
-          </Banner>
-        </Layout.Section>
-      )}
       <Layout.Section>
         <Card sectioned>
           <Text variant="headingMd" as="h6">
