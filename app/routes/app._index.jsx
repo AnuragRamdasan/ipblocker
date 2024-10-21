@@ -72,6 +72,12 @@ export default function CountriesAdmin() {
   const [newConfig, setNewConfig] = useState(config);
   const tabs = [
     {
+      id: "reporting",
+      content: "Reporting",
+      accessibilityLabel: "Reporting",
+      panelID: "reporting-content",
+    },
+    {
       id: "blocklist",
       content: "Blocklist",
       accessibilityLabel: "Block countries, cities, and IPs",
@@ -88,12 +94,6 @@ export default function CountriesAdmin() {
       content: "Premium",
       accessibilityLabel: "Premium",
       panelID: "premium-content",
-    },
-    {
-      id: "reporting",
-      content: "Reporting",
-      accessibilityLabel: "Reporting",
-      panelID: "reporting-content",
     },
     {
       id: "styling",
@@ -158,7 +158,8 @@ export default function CountriesAdmin() {
         </Layout.Section>
         <Layout.Section>
           <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
-            {selected === 0 && (
+            {selected === 0 && <ReportingDashboard />}
+            {selected === 1 && (
               <BlocklistDashboard
                 whiteList={newWhiteList}
                 masterCountryList={masterCountryList}
@@ -170,15 +171,14 @@ export default function CountriesAdmin() {
                 setSelectedIps={setSelectedIps}
               />
             )}
-            {selected === 1 && (
+            {selected === 2 && (
               <WhitelistDashboard
                 whiteList={newWhiteList}
                 masterCountryList={masterCountryList}
                 setWhiteList={setNewWhiteList}
               />
             )}
-            {selected === 2 && <BasicPlanDashboard config={newConfig} />}
-            {selected === 3 && <ReportingDashboard />}
+            {selected === 3 && <BasicPlanDashboard config={newConfig} />}
             {selected === 4 && (
               <StylingDashboard config={newConfig} setConfig={setNewConfig} />
             )}
