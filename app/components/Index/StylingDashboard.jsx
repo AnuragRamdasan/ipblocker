@@ -397,6 +397,28 @@ const Styling = ({ config, setConfig }) => {
           </Card>
         </div>
         <div style={{ flex: 3 }}>
+          <div style={{ textAlign: "right" }}>
+            <Button
+              onClick={() => {
+                const params = new URLSearchParams();
+                params.set("title", styling.title);
+                params.set("description", styling.description);
+                params.set("backgroundColor", styling.backgroundColor.hex);
+                params.set("logoSize", styling.logoSize);
+                params.set("titleColor", styling.titleColor.hex);
+                params.set("titleSize", styling.titleSize);
+                params.set("descriptionColor", styling.descriptionColor.hex);
+                params.set("descriptionSize", styling.descriptionSize);
+                params.set("logoUrl", styling.logoUrl || defaultLogoUrl);
+                params.set("removeBranding", styling.removeBranding);
+                window.open(`/preview?${params.toString()}`, "_blank");
+                return;
+              }}
+            >
+              Preview Page
+            </Button>
+          </div>
+          <br />
           <Card title="Live Preview" sectioned>
             <BlockedPagePreview />
           </Card>

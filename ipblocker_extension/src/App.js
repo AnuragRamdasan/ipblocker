@@ -140,6 +140,7 @@ const App = () => {
             text-align: center;
             padding: 50px;
             background-color: ${styling.backgroundColor.hex};
+            height: 100vh;
           }
           .ipblocker-body img {
             width: ${styling.logoSize}px;
