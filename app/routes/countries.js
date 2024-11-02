@@ -15,7 +15,7 @@ export const loader = async ({ request }) => {
     },
   });
 
-  const allowed = await getStatusForShop(session[0].accessToken, ip);
+  const allowed = await getStatusForShop(session[0].accessToken, ip, shop);
   const config = await getConfig(session[0].accessToken);
 
   return json(
