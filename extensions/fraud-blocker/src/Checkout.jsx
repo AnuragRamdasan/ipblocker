@@ -26,7 +26,7 @@ const reasons = {
   country: {
     message: "Country not allowed",
     target: "$.cart.deliveryGroups[0].deliveryAddress.countryCode",
-  } 
+  },
 };
 function Extension() {
   const { zip, phone, countryCode } = useShippingAddress();
@@ -38,7 +38,7 @@ function Extension() {
     const checkAllowed = async () => {
       try {
         const response = await fetch(
-          "https://knitting-composed-thailand-quote.trycloudflare.com/checkout",
+          "https://ipblocker.valuecommerce.com/checkout",
           {
             method: "POST",
             headers: {
@@ -71,19 +71,21 @@ function Extension() {
             target: reasons[r].target,
           };
         }),
-      })
+      });
       return {
         behavior: "block",
         reason: "Not allowed",
-        errors: all_reasons.map((r) => {
-          return {
+        errors: [
+          ...all_reasons.map((r) => ({
             message: reasons[r].message,
             target: reasons[r].target,
-          };
-        }).push({
-          message: "This checkout cannot be completed",
-          target: "cart",
-        }),
+          })),
+          {
+            message:
+              "This checkout cannot be completed since your account is blocked. Please contact support.",
+            target: "cart",
+          },
+        ],
       };
     }
 
