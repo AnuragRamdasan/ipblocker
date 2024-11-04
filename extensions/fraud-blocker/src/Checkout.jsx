@@ -4,6 +4,7 @@ import {
   useBuyerJourneyIntercept,
   useShop,
   useEmail,
+  usePhone,
 } from "@shopify/ui-extensions-react/checkout";
 
 export default reactExtension("purchase.checkout.block.render", () => (
@@ -12,12 +13,12 @@ export default reactExtension("purchase.checkout.block.render", () => (
 
 const reasons = {
   email: {
-    message: "Email/Phone not allowed",
+    message: "Email not allowed",
     target: "$.cart.buyerIdentity.email",
   },
   phone: {
     message: "Phone not allowed",
-    target: "$.cart.deliveryGroups[0].deliveryAddress.phone",
+    target: "$.cart.buyerIdentity.phone",
   },
   zip: {
     message: "Zip not allowed",
@@ -29,7 +30,8 @@ const reasons = {
   },
 };
 function Extension() {
-  const { zip, phone, countryCode } = useShippingAddress();
+  const { zip, countryCode } = useShippingAddress();
+  const phone = usePhone();
   const email = useEmail();
 
   const shop = useShop();
