@@ -12,7 +12,7 @@ export default reactExtension("purchase.checkout.block.render", () => (
 
 const reasons = {
   email: {
-    message: "Email not allowed",
+    message: "Email/Phone not allowed",
     target: "$.cart.buyerIdentity.email",
   },
   phone: {
