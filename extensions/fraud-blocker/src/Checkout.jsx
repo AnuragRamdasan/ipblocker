@@ -40,7 +40,7 @@ function Extension() {
     const checkAllowed = async () => {
       try {
         const response = await fetch(
-          "https://ipblocker.valuecommerce.com/checkout",
+          "https://ipblocker.valuecommerce.info/checkout",
           {
             method: "POST",
             headers: {
