@@ -28,6 +28,23 @@ const getStatusForShop = async (token, ip, shop) => {
   return data.allowed;
 };
 
+const getCheckoutStatusForShop = async (token, checkout_config) => {
+  const res = await fetch(
+    import.meta.env.VITE_SERVER_URL + "ipblocker/checkout_allowed.json",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify({ checkout_config: checkout_config }),
+    },
+  );
+  const data = await res.json();
+  return data;
+};
+
 const addWhitelistCountryToShop = async (token, country, countryCode) => {
   return fetch(import.meta.env.VITE_SERVER_URL + "ipblocker/countries.json", {
     method: "POST",
@@ -67,4 +84,5 @@ export {
   addWhitelistCountryToShop,
   getStatusForShop,
   updateBlocklist,
+  getCheckoutStatusForShop,
 };
