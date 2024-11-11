@@ -2,6 +2,10 @@ import { json } from "@remix-run/node";
 import { getCheckoutStatusForShop } from "../models/countries";
 import prisma from "../db.server";
 
+export const loader = async ({ request }) => {
+  return json({});
+};
+
 export const action = async ({ request }) => {
   // Get the request body
   const body = await request.json();
