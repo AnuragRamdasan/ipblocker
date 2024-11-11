@@ -63,7 +63,8 @@ export default function App() {
           <Link to="/app" rel="home">
             Home
           </Link>
-          {shop === "https://03cdb4.myshopify.com/" && (
+          {(shop.myshopify_domain === "03cdb4.myshopify.com" ||
+            shop.myshopify_domain === "vc-checkout-store.myshopify.com") && (
             <Link to="/app/checkout_rules">Checkout Rules</Link>
           )}
           <Link to="/app/billing">Billing</Link>
