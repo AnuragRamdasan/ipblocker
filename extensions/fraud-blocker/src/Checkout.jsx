@@ -60,9 +60,9 @@ function Extension() {
       }
     };
 
-    const { status, reason } = await checkAllowed();
+    const { allowed, reason } = await checkAllowed();
 
-    if (!status) {
+    if (!allowed) {
       const all_reasons = reason.split(", ");
       console.log({
         behavior: "block",
