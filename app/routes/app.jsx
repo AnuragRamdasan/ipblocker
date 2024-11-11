@@ -63,7 +63,9 @@ export default function App() {
           <Link to="/app" rel="home">
             Home
           </Link>
-          {/* <Link to="/app/checkout_rules">Checkout Rules</Link> */}
+          {shop === "https://03cdb4.myshopify.com/" && (
+            <Link to="/app/checkout_rules">Checkout Rules</Link>
+          )}
           <Link to="/app/billing">Billing</Link>
           <Link to="/app/faqs">FAQs</Link>
           <Link to="/app/roadmap">Roadmap</Link>
