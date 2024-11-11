@@ -12,6 +12,7 @@ export const loader = async ({ request }) => {
   const session = await prisma.ipblockerSession.findMany({
     where: {
       shop: shop,
+      deleted: false,
     },
   });
 
