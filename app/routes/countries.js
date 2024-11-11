@@ -9,15 +9,15 @@ export const loader = async ({ request }) => {
   const shop = urlParams.get("shop");
   const ip = urlParams.get("ip");
 
-  const session = await prisma.ipblockerSession.findMany({
+  const sessions = await prisma.ipblockerSession.findMany({
     where: {
       shop: shop,
-      deleted: false,
     },
   });
 
-  const allowed = await getStatusForShop(session[0].accessToken, ip, shop);
-  const config = await getConfig(session[0].accessToken);
+  const session = sessions[sessions.length - 1];
+  const allowed = await getStatusForShop(session.accessToken, ip, shop);
+  const config = await getConfig(session.accessToken);
 
   return json(
     { allowed, config },
