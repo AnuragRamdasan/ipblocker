@@ -49,7 +49,7 @@ function ReportingDashboard() {
         .length,
     },
     {
-      name: "Countries Whitelisted",
+      name: "Blocked by Whitelist",
       value: analytics.filter(
         (item) => item.eventName === "country_whitelisted",
       ).length,
