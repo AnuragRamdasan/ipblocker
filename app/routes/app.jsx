@@ -67,6 +67,7 @@ export default function App() {
             shop.myshopify_domain === "vc-checkout-store.myshopify.com") && (
             <Link to="/app/checkout_rules">Checkout Rules</Link>
           )}
+          <Link to="/app/products_rules">Product/Collection Rules</Link>
           <Link to="/app/billing">Billing</Link>
           <Link to="/app/faqs">FAQs</Link>
           <Link to="/app/roadmap">Roadmap</Link>
