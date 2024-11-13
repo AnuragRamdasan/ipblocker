@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { useLoaderData, Link } from "@remix-run/react";
 import {
   Page,
@@ -7,6 +8,7 @@ import {
   Button,
   Text,
   Banner,
+  Spinner,
 } from "@shopify/polaris";
 import masterCountryList from "./masterCountryList";
 import { useEffect } from "react";
@@ -52,6 +54,22 @@ export const loader = async ({ request }) => {
     cities,
     config,
   };
+};
+
+// 1. Add preload for critical assets
+export const links = () => [
+  {
+    rel: "preload",
+    href: "/fonts/your-main-font.woff2",
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  },
+];
+
+// 2. Add prefetch for tab components
+export const handle = {
+  prefetch: "intent",
 };
 
 export default function CountriesAdmin() {
@@ -148,6 +166,18 @@ export default function CountriesAdmin() {
     );
   }
 
+  // 3. Lazy load non-critical tabs
+  const TabComponents = {
+    0: ReportingDashboard,
+    1: BlocklistDashboard,
+    2: WhitelistDashboard,
+    3: lazy(() => import("../components/Index/BasicPlanDashboard")),
+    4: lazy(() => import("../components/Index/StylingDashboard")),
+  };
+
+  // 4. Optimize initial render
+  const ActiveTabComponent = TabComponents[selected];
+
   return (
     <Page title="Manage Blocked Countries">
       <Layout>
@@ -157,7 +187,8 @@ export default function CountriesAdmin() {
           )}
         </Layout.Section>
         <Layout.Section>
-          <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
+          <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange} />
+          <Suspense fallback={<Spinner />}>
             {selected === 0 && <ReportingDashboard />}
             {selected === 1 && (
               <BlocklistDashboard
@@ -178,21 +209,23 @@ export default function CountriesAdmin() {
                 setWhiteList={setNewWhiteList}
               />
             )}
-            {selected === 3 && <BasicPlanDashboard config={newConfig} />}
+            {selected === 3 && <ActiveTabComponent config={newConfig} />}
             {selected === 4 && (
-              <StylingDashboard config={newConfig} setConfig={setNewConfig} />
+              <ActiveTabComponent config={newConfig} setConfig={setNewConfig} />
             )}
-          </Tabs>
+          </Suspense>
         </Layout.Section>
 
-        <Layout.Section>
-          <Card sectioned>
-            <Text>
-              View our <Link to="/app/roadmap">Roadmap</Link> to see what we are
-              working on to make IPBlocker even more powerful for you.
-            </Text>
-          </Card>
-        </Layout.Section>
+        <Suspense fallback={null}>
+          <Layout.Section>
+            <Card sectioned>
+              <Text>
+                View our <Link to="/app/roadmap">Roadmap</Link> to see what we
+                are working on to make IPBlocker even more powerful for you.
+              </Text>
+            </Card>
+          </Layout.Section>
+        </Suspense>
       </Layout>
     </Page>
   );
