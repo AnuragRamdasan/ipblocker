@@ -3,12 +3,13 @@ import {
   Page,
   Layout,
   Card,
-  FormLayout,
+  CalloutCard,
   TextField,
   Button,
   Select,
   Banner,
   DataTable,
+  EmptyState,
 } from "@shopify/polaris";
 import { SaveBar } from "@shopify/app-bridge-react";
 import { addOrCreateConfig, getConfig } from "../models/configuration";
@@ -54,14 +55,37 @@ export default function CheckoutRules() {
     setNewRule({ ...newRule, value: "" });
   };
 
+  const handleAddRuleRow = () => {
+    setRules([...rules, { id: Date.now(), key: "email", value: "" }]);
+  };
+
   const handleRemoveRule = (id) => {
     setRules(rules.filter((rule) => rule.id !== id));
     shopify.saveBar.show("my-save-bar");
   };
 
   const rows = rules.map((rule) => [
-    rule.key.charAt(0).toUpperCase() + rule.key.slice(1),
-    rule.value,
+    <Select
+      options={ruleTypes}
+      value={rule.key}
+      onChange={(value) => {
+        const updatedRules = rules.map((r) =>
+          r.id === rule.id ? { ...r, key: value } : r,
+        );
+        setRules(updatedRules);
+        shopify.saveBar.show("my-save-bar");
+      }}
+    />,
+    <TextField
+      value={rule.value}
+      onChange={(value) => {
+        const updatedRules = rules.map((r) =>
+          r.id === rule.id ? { ...r, value } : r,
+        );
+        setRules(updatedRules);
+        shopify.saveBar.show("my-save-bar");
+      }}
+    />,
     <Button destructive onClick={() => handleRemoveRule(rule.id)}>
       Remove
     </Button>,
@@ -102,38 +126,22 @@ export default function CheckoutRules() {
   return (
     <Page title="Checkout Rules">
       <Layout>
+        <Layout.Section>
+          <Banner title="Block Unwanted Checkout Attempts" tone="info">
+            <p>
+              Create rules to block checkout attempts based on customer email,
+              phone number, ZIP code, or country. Any checkout matching these
+              rules will be automatically blocked.
+            </p>
+          </Banner>
+        </Layout.Section>
         <form data-save-bar onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <Layout.Section>
-            <Card sectioned>
-              <Select
-                label="Rule Type"
-                options={ruleTypes}
-                value={newRule.key}
-                onChange={(value) => setNewRule({ ...newRule, key: value })}
-              />
-              <TextField
-                label="Value to block"
-                value={newRule.value}
-                onChange={(value) => setNewRule({ ...newRule, value: value })}
-                placeholder={
-                  newRule.key === "email"
-                    ? "example@domain.com"
-                    : newRule.key === "phone"
-                      ? "+1234567890"
-                      : newRule.key === "zip"
-                        ? "123456"
-                        : "Country name"
-                }
-              />
-              <Button primary onClick={handleAddRule}>
-                Add Rule
-              </Button>
-            </Card>
-          </Layout.Section>
-
           <Layout.Section>
             {rules.length > 0 ? (
               <Card>
+                <Button primary onClick={handleAddRuleRow}>
+                  + Add Rule
+                </Button>
                 <DataTable
                   columnContentTypes={["text", "text", "text"]}
                   headings={["Key", "Value", "Actions"]}
@@ -141,10 +149,16 @@ export default function CheckoutRules() {
                 />
               </Card>
             ) : (
-              <Banner status="info">
-                No rules added yet. Add rules above to start blocking checkout
-                attempts.
-              </Banner>
+              <EmptyState
+                heading="Manage your Checkout Page Block Rules"
+                action={{ content: "Add Rule", onAction: handleAddRuleRow }}
+                image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+              >
+                <p>
+                  No rules added yet. Add rules above to start blocking checkout
+                  attempts.
+                </p>
+              </EmptyState>
             )}
           </Layout.Section>
         </form>

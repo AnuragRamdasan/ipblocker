@@ -65,8 +65,8 @@ export default function App() {
           </Link>
           {(shop.myshopify_domain === "03cdb4.myshopify.com" ||
             shop.myshopify_domain === "vc-checkout-store.myshopify.com" ||
-            shop.myshopify_domain === "cholesterol-diet.myshopify.com"
-          ) && (
+            shop.myshopify_domain === "cholesterol-diet.myshopify.com" ||
+            shop.myshopify_domain === "quickstart-da31056d.myshopify.com") && (
             <Link to="/app/checkout_rules">Checkout Rules</Link>
           )}
           {/* <Link to="/app/products_rules">Product/Collection Rules</Link> */}
