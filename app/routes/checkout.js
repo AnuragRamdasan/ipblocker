@@ -4,14 +4,17 @@ import prisma from "../db.server";
 
 export const loader = async ({ request }) => {
   if (request.method === "OPTIONS") {
-    return json({}, {
-      headers: {
-        "Access-Control-Allow-Origin": "*", 
-        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Content-Type": "application/json"
-      }
-    });
+    return json(
+      {},
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Content-Type": "application/json",
+        },
+      },
+    );
   }
   // Get the request body
   const body = await request.json();

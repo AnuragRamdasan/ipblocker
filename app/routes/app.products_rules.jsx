@@ -1,9 +1,5 @@
 import { json } from "@remix-run/node";
-import {
-  useLoaderData,
-  useNavigation,
-  useSubmit,
-} from "@remix-run/react";
+import { useLoaderData, useSubmit } from "@remix-run/react";
 import {
   Card,
   ResourceList,
@@ -14,9 +10,7 @@ import {
   Modal,
   Select,
   TextField,
-  Banner,
   Tabs,
-  InlineStack,
   BlockStack,
   Tag,
 } from "@shopify/polaris";
@@ -27,7 +21,8 @@ export const loader = async ({ request }) => {
   const { admin } = await authenticate.admin(request);
 
   // Fetch products with proper access scope
-  const productsResponse = await admin.graphql(`
+  const productsResponse = await admin.graphql(
+    `
     query {
       products(first: 100) {
         edges {
@@ -56,16 +51,19 @@ export const loader = async ({ request }) => {
         }
       }
     }
-  `, {
-    headers: {
-      "X-Shopify-Access-Token": admin.accessToken,
+  `,
+    {
+      headers: {
+        "X-Shopify-Access-Token": admin.accessToken,
+      },
     },
-  });
+  );
 
-  const products = await productsResponse.json()
+  const products = await productsResponse.json();
 
   // Fetch collections with proper access scope
-  const collectionsResponse = await admin.graphql(`
+  const collectionsResponse = await admin.graphql(
+    `
     query {
       collections(first: 100) {
         edges {
@@ -78,21 +76,29 @@ export const loader = async ({ request }) => {
         }
       }
     }
-  `, {
-    headers: {
-      "X-Shopify-Access-Token": admin.accessToken,
+  `,
+    {
+      headers: {
+        "X-Shopify-Access-Token": admin.accessToken,
+      },
     },
-  });
+  );
 
-  const collections = await collectionsResponse.json()
+  const collections = await collectionsResponse.json();
   // Fetch existing rules from our database
-  const rules = []
+  const rules = [];
 
   return json({
     products: products.data.products.edges,
     collections: collections.data.collections.edges,
-    rules
+    rules,
   });
+};
+
+export const action = async ({ request }) => {
+  const formData = await request.formData();
+  console.log(formData);
+  return json({ success: true });
 };
 
 export default function ProductRules() {
@@ -103,7 +109,7 @@ export default function ProductRules() {
   const [ruleType, setRuleType] = useState("block");
   const [blockingLevel, setBlockingLevel] = useState("country");
   const [value, setValue] = useState("");
-  
+
   const submit = useSubmit();
 
   const handleTabChange = useCallback(
@@ -140,35 +146,37 @@ export default function ProductRules() {
         blockingLevel,
         value,
       },
-      { method: "POST" }
+      { method: "POST" },
     );
     setModalActive(false);
   };
 
   const renderItem = (item) => {
-    const itemRules = rules.filter(
-      (rule) => rule.itemId === item.node.id
-    );
+    const itemRules = rules.filter((rule) => rule.itemId === item.node.id);
 
-    const price = selectedTab === 0 
-      ? `${item.node.priceRangeV2.minVariantPrice.currencyCode} ${item.node.priceRangeV2.minVariantPrice.amount}`
-      : null;
+    const price =
+      selectedTab === 0
+        ? `${item.node.priceRangeV2.minVariantPrice.currencyCode} ${item.node.priceRangeV2.minVariantPrice.amount}`
+        : null;
 
     return (
       <ResourceItem
         id={item.node.id}
         accessibilityLabel={`View details for ${item.node.title}`}
-        media={selectedTab === 0 && item.node.featuredImage 
-          ? <img 
-              src={item.node.featuredImage.url} 
+        media={
+          selectedTab === 0 && item.node.featuredImage ? (
+            <img
+              src={item.node.featuredImage.url}
               alt={item.node.title}
-              style={{width: '200px', height: '200px', objectFit: 'cover'}}
+              style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
-          : <img
+          ) : (
+            <img
               src="https://placehold.co/200x200/white/orange?text=Default+Image"
-              alt="Default product image" 
-              style={{width: '200px', height: '200px', objectFit: 'cover'}}
+              alt="Default product image"
+              style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
+          )
         }
       >
         <BlockStack vertical>
@@ -186,9 +194,7 @@ export default function ProductRules() {
             ))}
           </BlockStack>
           <ButtonGroup>
-            <Button onClick={() => handleAddRule(item.node)}>
-              Add Rule
-            </Button>
+            <Button onClick={() => handleAddRule(item.node)}>Add Rule</Button>
           </ButtonGroup>
         </BlockStack>
       </ResourceItem>
@@ -233,13 +239,15 @@ export default function ProductRules() {
             />
             <Select
               label="Blocking Level"
-              options={ruleType === "whitelist" ? [
-                { label: "Country", value: "country" }
-              ] : [
-                { label: "Country", value: "country" },
-                { label: "City", value: "city" },
-                { label: "IP", value: "ip" },
-              ]}
+              options={
+                ruleType === "whitelist"
+                  ? [{ label: "Country", value: "country" }]
+                  : [
+                      { label: "Country", value: "country" },
+                      { label: "City", value: "city" },
+                      { label: "IP", value: "ip" },
+                    ]
+              }
               value={blockingLevel}
               onChange={setBlockingLevel}
             />
@@ -251,8 +259,8 @@ export default function ProductRules() {
                 blockingLevel === "country"
                   ? "Enter country code (e.g., US)"
                   : blockingLevel === "city"
-                  ? "Enter city name"
-                  : "Enter IP address"
+                    ? "Enter city name"
+                    : "Enter IP address"
               }
             />
           </BlockStack>
@@ -260,4 +268,4 @@ export default function ProductRules() {
       </Modal>
     </>
   );
-} 
+}

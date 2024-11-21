@@ -5,9 +5,7 @@ import {
   Layout,
   Tabs,
   Card,
-  Button,
   Text,
-  Banner,
   Spinner,
 } from "@shopify/polaris";
 import masterCountryList from "./masterCountryList";
@@ -18,12 +16,10 @@ import { authenticate } from "../shopify.server";
 import { getConfig } from "../models/configuration";
 import { actions, analytics } from "../utils/segment_analytics";
 import EmbedEnablePage from "../components/EmbedEnablePage";
-import BasicPlanDashboard from "../components/Index/BasicPlanDashboard";
 import WhitelistDashboard from "../components/Index/WhitelistDashboard";
 import BlocklistDashboard from "../components/Index/BlocklistDashboard";
 import ReportingDashboard from "../components/Index/ReportingDashboard";
 import BasicUpgradeBanner from "../components/Index/BasicUpgradeBanner";
-import StylingDashboard from "../components/Index/StylingDashboard";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -54,22 +50,6 @@ export const loader = async ({ request }) => {
     cities,
     config,
   };
-};
-
-// 1. Add preload for critical assets
-export const links = () => [
-  {
-    rel: "preload",
-    href: "/fonts/your-main-font.woff2",
-    as: "font",
-    type: "font/woff2",
-    crossOrigin: "anonymous",
-  },
-];
-
-// 2. Add prefetch for tab components
-export const handle = {
-  prefetch: "intent",
 };
 
 export default function CountriesAdmin() {

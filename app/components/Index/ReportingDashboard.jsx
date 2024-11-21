@@ -124,7 +124,7 @@ function ReportingDashboard() {
       <Layout.Section>
         <Card sectioned>
           <Text variant="headingMd" as="h6">
-            Overview              
+            Overview
           </Text>
           <br />
           <InlineGrid columns={4} gap="400" background="bg-fill-success">

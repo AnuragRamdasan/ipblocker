@@ -1,5 +1,4 @@
-import { Page, Card, Tabs, Text, Layout, Box } from "@shopify/polaris";
-import { useState } from "react";
+import { Page, Card, Text, Layout, Box } from "@shopify/polaris";
 
 export const loader = async ({ request }) => {
   return {};
