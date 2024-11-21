@@ -198,12 +198,14 @@ export default function CountriesAdmin() {
 
         <Suspense fallback={null}>
           <Layout.Section>
+            <div style={{ paddingBottom: "2em" }}>
             <Card sectioned>
               <Text>
                 View our <Link to="/app/roadmap">Roadmap</Link> to see what we
                 are working on to make IPBlocker even more powerful for you.
               </Text>
             </Card>
+            </div>
           </Layout.Section>
         </Suspense>
       </Layout>
