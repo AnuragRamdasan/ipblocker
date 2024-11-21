@@ -13,6 +13,7 @@ import { addOrCreateConfig } from "../../models/configuration";
 import { useLoaderData } from "@remix-run/react";
 import { actions, analytics } from "../../utils/segment_analytics";
 import { useCallback } from "react";
+import { failedToast, successToast } from "../../utils/toast";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -30,19 +31,16 @@ const BasicPlanDashboard = ({ config }) => {
     return Boolean(value) && value !== "false" && value !== "0";
   };
 
-  const loadToast = (message) =>
-    shopify.toast.show(message, { duration: 4000 });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const res = await addOrCreateConfig(token, conf);
 
     if (!res.ok) {
-      loadToast("Failed to modify configuration. Please try again.");
+      failedToast();
       setConf(config);
     } else {
-      loadToast("Successfully modified configuration.");
+      successToast();
     }
   };
 

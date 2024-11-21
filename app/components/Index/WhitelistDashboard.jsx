@@ -4,6 +4,7 @@ import MultiSelect from "../MultiSelect";
 import { addWhitelistCountryToShop } from "../../models/countries";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+import { failedToast, successToast } from "../../utils/toast";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -16,9 +17,6 @@ const WhitelistDashboard = ({ whiteList, masterCountryList, setWhiteList }) => {
   const [selectedOptionsWhitelist, setSelectedOptionsWhitelist] = useState(
     whiteList.map((c) => c.country),
   );
-
-  const loadToast = (message) =>
-    shopify.toast.show(message, { duration: 4000 });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +33,7 @@ const WhitelistDashboard = ({ whiteList, masterCountryList, setWhiteList }) => {
     );
 
     if (!res.ok) {
-      loadToast("Failed to modify whitelist. Please try again.");
+      failedToast();
       setSelectedOptionsWhitelist(whiteList.map((c) => c.country));
     } else {
       setWhiteList(
@@ -43,7 +41,7 @@ const WhitelistDashboard = ({ whiteList, masterCountryList, setWhiteList }) => {
           selectedOptionsWhitelist.includes(c.country),
         ),
       );
-      loadToast("Successfully modified countries in whitelist.");
+      successToast();
       shopify.saveBar.hide("my-save-bar");
     }
   };

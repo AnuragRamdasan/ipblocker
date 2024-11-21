@@ -15,6 +15,7 @@ import { addOrCreateConfig, getConfig } from "../models/configuration";
 import { authenticate } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 import masterCountryList from "./masterCountryList";
+import { failedToast, successToast } from "../utils/toast";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -43,9 +44,6 @@ export default function CheckoutRules() {
     { label: "ZIP Code", value: "zip" },
     { label: "Country", value: "country" },
   ];
-
-  const loadToast = (message) =>
-    shopify.toast.show(message, { duration: 4000 });
 
   const handleAddRule = () => {
     if (!newRule.value.trim()) return;
@@ -103,10 +101,9 @@ export default function CheckoutRules() {
     const res = await addOrCreateConfig(token, conf);
 
     if (!res.ok) {
-      loadToast("Failed to modify configuration. Please try again.");
+      failedToast();
     } else {
-      console.log(await res.json());
-      loadToast("Successfully modified configuration.");
+      successToast();
       shopify.saveBar.hide("my-save-bar");
     }
   };

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SaveBar } from "@shopify/app-bridge-react";
 import { updateBlocklist } from "../../models/countries";
 import { useLoaderData } from "@remix-run/react";
+import { failedToast, successToast } from "../../utils/toast";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -27,9 +28,6 @@ const BlocklistDashboard = ({
 
   const { token } = useLoaderData();
 
-  const loadToast = (message) =>
-    shopify.toast.show(message, { duration: 4000 });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const countryWithCodes = countries.map((name) => {
@@ -41,12 +39,12 @@ const BlocklistDashboard = ({
 
     const res = await updateBlocklist(token, countryWithCodes, cities, ips);
     if (!res.ok) {
-      loadToast("Failed to modify blocklist. Please try again.");
+      failedToast();
     } else {
       setSelectedCountries(countries);
       setSelectedCities(cities);
       setSelectedIps(ips);
-      loadToast("Successfully modified countries in blocklist.");
+      successToast();
       shopify.saveBar.hide("my-save-bar");
     }
   };

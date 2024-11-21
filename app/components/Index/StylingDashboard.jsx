@@ -20,6 +20,7 @@ import { uploadFile } from "../../models/fileUpload";
 import { SaveBar } from "@shopify/app-bridge-react";
 import { isFeatureAllowed } from "../../models/planGating";
 import { useMantle } from "@heymantle/react";
+import { failedToast, successToast } from "../../utils/toast";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -61,9 +62,6 @@ const Styling = ({ config, setConfig }) => {
     setStyling((prev) => ({ ...prev, [key]: value }));
     shopify.saveBar.show("my-styling-save-bar");
   };
-
-  const loadToast = (message) =>
-    shopify.toast.show(message, { duration: 4000 });
 
   const [colorPickerActive, setColorPickerActive] = useState({
     title: false,
@@ -143,10 +141,10 @@ const Styling = ({ config, setConfig }) => {
     };
     const res = await addOrCreateConfig(token, updatedConfig);
     if (!res.ok) {
-      loadToast("Failed to modify styling configurations. Please try again.");
+      failedToast();
     } else {
       setConfig(updatedConfig);
-      loadToast("Successfully modified styling configurations.");
+      successToast();
       shopify.saveBar.hide("my-styling-save-bar");
     }
   };
