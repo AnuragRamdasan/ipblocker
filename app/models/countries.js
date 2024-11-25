@@ -13,13 +13,15 @@ const getCountriesForShop = async (token) => {
   return data;
 };
 
-const getStatusForShop = async (token, ip, shop) => {
+const getStatusForShop = async (token, ip, shop, referrer) => {
   const res = await fetch(
     import.meta.env.VITE_SERVER_URL +
       "ipblocker/allowed.json?ip=" +
       ip +
       "&shop=" +
-      shop,
+      shop +
+      "&referrer=" +
+      referrer,
     {
       headers: {
         Accept: "application/json",

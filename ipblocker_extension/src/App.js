@@ -229,10 +229,13 @@ const App = () => {
           }
         }
 
+        // Get current page referrer
+        const referrer = document.referrer;
+
         // If data is not in sessionStorage or expired, fetch it
         if (!allowedConfig) {
           allowedConfig = await fetchWithRetry(
-            `${API_ENDPOINTS.COUNTRIES}?shop=${shop}&ip=${currentIP}`,
+            `${API_ENDPOINTS.COUNTRIES}?shop=${shop}&ip=${currentIP}&referrer=${referrer}`,
           );
 
           // Store the fetched data in sessionStorage
