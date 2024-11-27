@@ -106,4 +106,4 @@ const searchUsageByEventName = (customer, eventName) => {
   return null;
 };
 
-export { isFeatureAllowed, featureAllowance };
+export { isFeatureAllowed, featureAllowance, getCurrentPlan };

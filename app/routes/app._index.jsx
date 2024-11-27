@@ -1,11 +1,6 @@
 import { Suspense, lazy } from "react";
 import { useLoaderData } from "@remix-run/react";
-import {
-  Page,
-  Layout,
-  Tabs,
-  Spinner,
-} from "@shopify/polaris";
+import { Page, Layout, Tabs, Spinner } from "@shopify/polaris";
 import masterCountryList from "./masterCountryList";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -18,6 +13,8 @@ import WhitelistDashboard from "../components/Index/WhitelistDashboard";
 import BlocklistDashboard from "../components/Index/BlocklistDashboard";
 import ReportingDashboard from "../components/Index/ReportingDashboard";
 import BasicUpgradeBanner from "../components/Index/BasicUpgradeBanner";
+import { getCurrentPlan } from "../models/planGating";
+import { useMantle } from "@heymantle/react";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -51,6 +48,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function CountriesAdmin() {
+  const { customer } = useMantle();
   const { token, storeId, countries, ips, whiteList, cities, config } =
     useLoaderData();
   const [showBanner, setShowBanner] = useState(config.embed_enabled !== "true");
@@ -160,9 +158,8 @@ export default function CountriesAdmin() {
     <Page title="Manage Blocked Countries">
       <Layout>
         <Layout.Section>
-          {newConfig.basic_upgrade_banner_dismissed !== "1" && (
-            <BasicUpgradeBanner />
-          )}
+          {newConfig.basic_upgrade_banner_dismissed !== "1" &&
+            getCurrentPlan(customer) !== "Free" && <BasicUpgradeBanner />}
         </Layout.Section>
         <Layout.Section>
           <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange} />
