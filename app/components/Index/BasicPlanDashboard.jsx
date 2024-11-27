@@ -9,7 +9,7 @@ import {
 import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../../models/planGating";
 import { useState } from "react";
-import { addOrCreateConfig } from "../../models/configuration";
+import { addOrCreateConfig, getConfig } from "../../models/configuration";
 import { useLoaderData } from "@remix-run/react";
 import { actions, analytics } from "../../utils/segment_analytics";
 import { useCallback } from "react";
@@ -17,15 +17,15 @@ import { failedToast, successToast } from "../../utils/toast";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-
-  return { token: session.accessToken };
+  const token = session.accessToken;
+  return { token };
 };
 
 const BasicPlanDashboard = ({ config }) => {
+  const { token } = useLoaderData();
   const [conf, setConf] = useState(config);
   const [redirectRules, setRedirectRules] = useState(conf.redirectRules);
   const { customer } = useMantle();
-  const { token } = useLoaderData();
 
   const isChecked = (value) => {
     return Boolean(value) && value !== "false" && value !== "0";
@@ -74,7 +74,7 @@ const BasicPlanDashboard = ({ config }) => {
           <br />
         </div>
       )}
-      {isChecked(config.botBlockingEnabled) && (
+      {isChecked(conf.botBlockingEnabled) && (
         <Card sectioned>
           <Text variant="headingMd" as="h5">
             Bot Blocking (this is a deprecated feature, disabling it will make
