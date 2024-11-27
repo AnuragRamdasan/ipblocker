@@ -159,7 +159,8 @@ export default function CountriesAdmin() {
       <Layout>
         <Layout.Section>
           {newConfig.basic_upgrade_banner_dismissed !== "1" &&
-            getCurrentPlan(customer) !== "Free" && <BasicUpgradeBanner />}
+            customer &&
+            getCurrentPlan(customer) === "Free" && <BasicUpgradeBanner />}
         </Layout.Section>
         <Layout.Section>
           <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange} />

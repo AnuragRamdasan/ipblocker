@@ -14,7 +14,7 @@ function BasicUpgradeBanner() {
 
   const handleDismiss = () => {
     setShowBanner(false);
-    addOrCreateConfig(token, { basic_upgrade_banner_dismissed: true });
+    addOrCreateConfig(token, { basic_upgrade_banner_dismissed: 1 });
   };
 
   return (
