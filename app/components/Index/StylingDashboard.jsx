@@ -211,7 +211,7 @@ const Styling = ({ config, token }) => {
 
   const featureEnabled = isFeatureAllowed(customer, "block_page_styling");
   return (
-    <Page>
+    <div>
       {!featureEnabled && (
         <div>
           <Banner
@@ -420,19 +420,22 @@ const Styling = ({ config, token }) => {
       </InlineStack>
       <br />
       <Card>
-        <h5>
-          Need more customizations? Reach out to support to get a free block
-          page customization done with your premium plan.
-        </h5>
-        <Button onClick={handleContactSupport} disabled={!featureEnabled}>
-          Contact Support
-        </Button>
+        <div>
+          <h5>
+            Need more customizations? Reach out to support to get a free block
+            page customization done with your premium plan.
+          </h5>
+          <Button onClick={handleContactSupport} disabled={!featureEnabled}>
+            Contact Support
+          </Button>
+        </div>
       </Card>
+      <br />
       <SaveBar id="my-styling-save-bar">
         <button variant="primary" onClick={handleSave}></button>
         <button onClick={handleDiscard}></button>
       </SaveBar>
-    </Page>
+    </div>
   );
 };
 

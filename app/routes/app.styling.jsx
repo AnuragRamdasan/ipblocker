@@ -14,7 +14,7 @@ export const loader = async ({ request }) => {
 export default function Styling() {
   const { config, token } = useLoaderData();
   return (
-    <Page title="Premium Settings">
+    <Page title="Advanced Styling">
       <StylingDashboard config={config} token={token} />
     </Page>
   );

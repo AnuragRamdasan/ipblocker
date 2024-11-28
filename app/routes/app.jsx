@@ -74,7 +74,6 @@ export default function App() {
           <Link to="/app/styling">Styling</Link>
           <Link to="/app/billing">Billing</Link>
           <Link to="/app/faqs">FAQs</Link>
-          <Link to="/app/roadmap">Roadmap</Link>
         </NavMenu>
         <Outlet />
       </MantleProvider>
