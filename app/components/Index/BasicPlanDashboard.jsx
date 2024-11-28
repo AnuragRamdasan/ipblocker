@@ -165,10 +165,9 @@ const BasicPlanDashboard = ({ config, token }) => {
           config={redirectRules}
           value={redirectRules}
           onChange={handleRedirectRulesUpdate}
-          type="url"
-          pattern="[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+          type="text"
           placeholder="example.com"
-          helpText="Enter the domain to redirect users to when they are blocked (e.g., example.com). Keep it blank to disable."
+          helpText="Enter the domain to redirect users to when they are blocked (e.g., example.com or sub.example.com)"
         />
       </Card>
     </form>
