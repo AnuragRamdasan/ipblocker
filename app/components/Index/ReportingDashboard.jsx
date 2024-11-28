@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Page,
   Layout,
   Card,
   Text,
@@ -118,7 +119,7 @@ function ReportingDashboard() {
   );
 
   return (
-    <div>
+    <Page>
       <Layout.Section>
         <Card sectioned>
           <Text variant="headingMd" as="h6">
@@ -165,7 +166,7 @@ function ReportingDashboard() {
           {!isFeatureAllowed(customer, "reporting") && <UpgradePlanOverlay />}
         </div>
       </Layout.Section>
-    </div>
+    </Page>
   );
 }
 

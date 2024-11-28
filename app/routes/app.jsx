@@ -63,6 +63,7 @@ export default function App() {
           <Link to="/app" rel="home">
             Home
           </Link>
+          <Link to="/app/block_rules">Block Rules</Link>
           {(shop.myshopify_domain === "03cdb4.myshopify.com" ||
             shop.myshopify_domain === "vc-checkout-store.myshopify.com" ||
             shop.myshopify_domain === "cholesterol-diet.myshopify.com" ||
