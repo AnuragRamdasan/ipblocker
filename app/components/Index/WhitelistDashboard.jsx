@@ -1,4 +1,4 @@
-import { Card, Text, Button } from "@shopify/polaris";
+import { Card, Text } from "@shopify/polaris";
 import { SaveBar } from "@shopify/app-bridge-react";
 import MultiSelect from "../MultiSelect";
 import { addWhitelistCountryToShop } from "../../models/countries";
@@ -8,7 +8,6 @@ import { failedToast, successToast } from "../../utils/toast";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-
   return { token: session.accessToken };
 };
 

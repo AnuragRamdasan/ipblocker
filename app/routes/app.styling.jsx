@@ -1,5 +1,5 @@
 import { Page } from "@shopify/polaris";
-import BasicPlanDashboard from "../components/Index/BasicPlanDashboard";
+import StylingDashboard from "../components/Index/StylingDashboard";
 import { useLoaderData } from "@remix-run/react";
 import { authenticate } from "../shopify.server";
 import { getConfig } from "../models/configuration";
@@ -11,11 +11,11 @@ export const loader = async ({ request }) => {
   return { config, token };
 };
 
-export default function Premium() {
+export default function Styling() {
   const { config, token } = useLoaderData();
   return (
     <Page title="Premium Settings">
-      <BasicPlanDashboard config={config} token={token} />
+      <StylingDashboard config={config} token={token} />
     </Page>
   );
 }

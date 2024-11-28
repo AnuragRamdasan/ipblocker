@@ -97,7 +97,6 @@ export const loader = async ({ request }) => {
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
-  console.log(formData);
   return json({ success: true });
 };
 

@@ -7,7 +7,6 @@ const getAnalytics = async (token) => {
     },
   });
   const data = await res.json();
-  console.log(data);
   const analytics = data.map((item, index) => ({
     id: index,
     eventName: item.name,

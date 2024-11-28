@@ -14,7 +14,6 @@ import {
   Banner,
   List,
 } from "@shopify/polaris";
-import { useLoaderData } from "@remix-run/react";
 import { addOrCreateConfig } from "../../models/configuration";
 import { uploadFile } from "../../models/fileUpload";
 import { SaveBar } from "@shopify/app-bridge-react";
@@ -22,15 +21,8 @@ import { isFeatureAllowed } from "../../models/planGating";
 import { useMantle } from "@heymantle/react";
 import { failedToast, successToast } from "../../utils/toast";
 
-export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
-
-  return { token: session.accessToken };
-};
-
-const Styling = ({ config, setConfig }) => {
+const Styling = ({ config, token }) => {
   const { customer } = useMantle();
-  const { token } = useLoaderData();
   const [styling, setStyling] = useState(
     config.blockPageStyling
       ? JSON.parse(config.blockPageStyling)
@@ -143,7 +135,6 @@ const Styling = ({ config, setConfig }) => {
     if (!res.ok) {
       failedToast();
     } else {
-      setConfig(updatedConfig);
       successToast();
       shopify.saveBar.hide("my-styling-save-bar");
     }

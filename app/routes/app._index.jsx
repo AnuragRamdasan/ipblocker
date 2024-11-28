@@ -83,12 +83,6 @@ export default function CountriesAdmin() {
       accessibilityLabel: "Whitelist countries",
       panelID: "whitelist-content",
     },
-    {
-      id: "styling",
-      content: "Styling",
-      accessibilityLabel: "Customize blocked page styling",
-      panelID: "styling-content",
-    },
   ];
 
   const handleTabChange = (selectedTabIndex) => {
@@ -141,7 +135,6 @@ export default function CountriesAdmin() {
     0: ReportingDashboard,
     1: BlocklistDashboard,
     2: WhitelistDashboard,
-    3: lazy(() => import("../components/Index/StylingDashboard")),
   };
 
   // 4. Optimize initial render
@@ -177,9 +170,6 @@ export default function CountriesAdmin() {
                 masterCountryList={masterCountryList}
                 setWhiteList={setNewWhiteList}
               />
-            )}
-            {selected === 3 && (
-              <ActiveTabComponent config={newConfig} setConfig={setNewConfig} />
             )}
           </Suspense>
         </Layout.Section>

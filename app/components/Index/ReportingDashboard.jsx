@@ -5,8 +5,6 @@ import {
   Text,
   IndexTable,
   InlineGrid,
-  Banner,
-  List,
   EmptySearchResult,
 } from "@shopify/polaris";
 import { getAnalytics } from "../../models/analytics";

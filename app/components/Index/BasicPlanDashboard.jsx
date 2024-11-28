@@ -9,20 +9,12 @@ import {
 import { useMantle } from "@heymantle/react";
 import { isFeatureAllowed } from "../../models/planGating";
 import { useState } from "react";
-import { addOrCreateConfig, getConfig } from "../../models/configuration";
-import { useLoaderData } from "@remix-run/react";
+import { addOrCreateConfig } from "../../models/configuration";
 import { actions, analytics } from "../../utils/segment_analytics";
 import { useCallback } from "react";
 import { failedToast, successToast } from "../../utils/toast";
 
-export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
-  const token = session.accessToken;
-  return { token };
-};
-
-const BasicPlanDashboard = ({ config }) => {
-  const { token } = useLoaderData();
+const BasicPlanDashboard = ({ config, token }) => {
   const [conf, setConf] = useState(config);
   const [redirectRules, setRedirectRules] = useState(conf.redirectRules);
   const { customer } = useMantle();
@@ -174,8 +166,9 @@ const BasicPlanDashboard = ({ config }) => {
           value={redirectRules}
           onChange={handleRedirectRulesUpdate}
           type="url"
-          placeholder="https://example.com"
-          helpText="Enter the url to redirect users to when they are blocked. Keep it blank to disable."
+          pattern="[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+          placeholder="example.com"
+          helpText="Enter the domain to redirect users to when they are blocked (e.g., example.com). Keep it blank to disable."
         />
       </Card>
     </form>
