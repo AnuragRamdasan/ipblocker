@@ -109,6 +109,7 @@ export default function CheckoutRules() {
   };
 
   const handleDiscard = () => {
+    setRules(config || []);
     shopify.saveBar.hide("my-save-bar");
   };
 

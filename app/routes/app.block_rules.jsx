@@ -48,9 +48,6 @@ export default function CountriesAdmin() {
         selectedCountries={selectedCountries}
         selectedCities={selectedCities}
         selectedIps={selectedIps}
-        setSelectedCountries={setSelectedCountries}
-        setSelectedCities={setSelectedCities}
-        setSelectedIps={setSelectedIps}
       />
     </Page>
   );

@@ -9,7 +9,6 @@ import {
   InlineStack,
   DropZone,
   Popover,
-  Page,
   Spinner,
   Banner,
   List,
@@ -21,33 +20,35 @@ import { isFeatureAllowed } from "../../models/planGating";
 import { useMantle } from "@heymantle/react";
 import { failedToast, successToast } from "../../utils/toast";
 
+const defaultStyling = {
+  title: "Access Denied",
+  description: "Sorry, this content is not available in your region.",
+  logoUrl: "",
+  logoLink: "",
+  titleColor: { hue: 0, saturation: 0, brightness: 0, hex: "#000000" },
+  descriptionColor: {
+    hue: 0,
+    saturation: 0,
+    brightness: 0,
+    hex: "#000000",
+  },
+  backgroundColor: {
+    hue: 0.4,
+    saturation: 0,
+    brightness: 0.9,
+    hex: "#f5f4f2",
+  },
+  titleSize: 24,
+  descriptionSize: 16,
+  logoSize: 100,
+}
+
 const Styling = ({ config, token }) => {
   const { customer } = useMantle();
   const [styling, setStyling] = useState(
     config.blockPageStyling
       ? JSON.parse(config.blockPageStyling)
-      : {
-          title: "Access Denied",
-          description: "Sorry, this content is not available in your region.",
-          logoUrl: "",
-          logoLink: "",
-          titleColor: { hue: 0, saturation: 0, brightness: 0, hex: "#000000" },
-          descriptionColor: {
-            hue: 0,
-            saturation: 0,
-            brightness: 0,
-            hex: "#000000",
-          },
-          backgroundColor: {
-            hue: 0.4,
-            saturation: 0,
-            brightness: 0.9,
-            hex: "#f5f4f2",
-          },
-          titleSize: 24,
-          descriptionSize: 16,
-          logoSize: 100,
-        },
+      : defaultStyling,
   );
 
   const updateStyling = (key, value) => {
@@ -141,6 +142,9 @@ const Styling = ({ config, token }) => {
   };
 
   const handleDiscard = () => {
+    setStyling(
+      config.blockPageStyling ? JSON.parse(config.blockPageStyling) : defaultStyling,
+    );
     shopify.saveBar.hide("my-styling-save-bar");
   };
 

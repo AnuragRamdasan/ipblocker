@@ -15,9 +15,6 @@ const BlocklistDashboard = ({
   selectedCountries,
   selectedCities,
   selectedIps,
-  setSelectedCountries,
-  setSelectedCities,
-  setSelectedIps,
 }) => {
   const [countries, setCountries] = useState(selectedCountries);
   const [cities, setCities] = useState(selectedCities);
@@ -67,15 +64,16 @@ const BlocklistDashboard = ({
     if (!res.ok) {
       failedToast();
     } else {
-      setSelectedCountries(countries);
-      setSelectedCities(cities);
-      setSelectedIps(ips);
       successToast();
       shopify.saveBar.hide("blocklist-save-bar");
     }
   };
 
   const handleDiscard = () => {
+    setCountries(selectedCountries);
+    setCities(selectedCities);
+    setIps(selectedIps);
+    setSelectedOptionsWhitelist(whiteList.map((c) => c.country));
     shopify.saveBar.hide("blocklist-save-bar");
     shopify.saveBar.hide("whitelist-save-bar");
   };
@@ -102,28 +100,6 @@ const BlocklistDashboard = ({
 
   return (
     <>
-      <Card sectioned gap="20px">
-        <Text variant="headingMd" as="h5">
-          Select the countries that you want to whitelist.
-        </Text>
-        <Text>
-          If you add countries to whitelist, all countries not in whitelist will
-          be blocked. Whitelist supersedes blocklist.
-        </Text>
-        <form onSubmit={handleSubmitWhitelist}>
-          <MultiSelect
-            selectedOptions={selectedOptionsWhitelist}
-            placeholder={"Add countries to whitelist"}
-            options={masterCountryList.map((c) => c.country)}
-            onUpdate={handleWhitelistUpdate}
-          />
-        </form>
-        <SaveBar id="whitelist-save-bar">
-          <button variant="primary" onClick={handleSubmitWhitelist}></button>
-          <button onClick={handleDiscard}></button>
-        </SaveBar>
-      </Card>
-      <br />
       <Card sectioned>
         {selectedOptionsWhitelist.length > 0 && (
           <>
@@ -143,6 +119,7 @@ const BlocklistDashboard = ({
         </Text>
         <form onSubmit={handleSubmitBlocklist}>
           <MultiSelect
+            key={`countries-${countries.length}`}
             selectedOptions={countries}
             placeholder={"Add countries to block"}
             options={masterCountryList.map((c) => c.country)}
@@ -158,6 +135,7 @@ const BlocklistDashboard = ({
             the website inaccessible. City blocklist supersedes ip blocklist.
           </Text>
           <MultiSelect
+            key={`cities-${cities.length}`}
             selectedOptions={cities}
             placeholder={
               "Add city and optionally a zip code (e.g., New York or New York 10001)"
@@ -171,6 +149,7 @@ const BlocklistDashboard = ({
             Select the IPs that you want to block access to.
           </Text>
           <MultiSelect
+            key={`ips-${ips.length}`}
             selectedOptions={ips}
             placeholder={"Add IPs separated by comma to block"}
             options={[]}
@@ -179,8 +158,35 @@ const BlocklistDashboard = ({
           />
         </form>
         <SaveBar id="blocklist-save-bar">
-          <button variant="primary" onClick={handleSubmitBlocklist}></button>
-          <button onClick={handleDiscard}></button>
+          <button variant="primary" submit onClick={handleSubmitBlocklist}>
+            Save
+          </button>
+          <button onClick={handleDiscard}>Discard</button>
+        </SaveBar>
+      </Card>
+      <br />
+      <Card sectioned gap="20px">
+        <Text variant="headingMd" as="h5">
+          Select the countries that you want to whitelist.
+        </Text>
+        <Text>
+          If you add countries to whitelist, all countries not in whitelist will
+          be blocked. Whitelist supersedes blocklist.
+        </Text>
+        <form onSubmit={handleSubmitWhitelist}>
+          <MultiSelect
+            key={`whitelist-${selectedOptionsWhitelist.length}`}
+            selectedOptions={selectedOptionsWhitelist}
+            placeholder={"Add countries to whitelist"}
+            options={masterCountryList.map((c) => c.country)}
+            onUpdate={handleWhitelistUpdate}
+          />
+        </form>
+        <SaveBar id="whitelist-save-bar">
+          <button variant="primary" submit onClick={handleSubmitWhitelist}>
+            Save
+          </button>
+          <button onClick={handleDiscard}>Discard</button>
         </SaveBar>
       </Card>
     </>
