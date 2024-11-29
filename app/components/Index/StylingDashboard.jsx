@@ -233,7 +233,7 @@ const Styling = ({ config, token }) => {
         </div>
       )}
       <br />
-      <InlineStack wrap={false} gap="400">
+      <InlineStack wrap={false}>
         <div style={{ flex: 1 }}>
           <Card title="Customize Blocked Page" sectioned>
             <form>

@@ -126,10 +126,13 @@ function ReportingDashboard() {
             Overview
           </Text>
           <br />
-          <InlineGrid columns={4} gap="400" background="bg-fill-success">
+          <InlineGrid 
+            columns={{ xs: 1, sm: 2, md: 2, lg: 4 }} 
+            gap="400"
+          >
             {stats.map((stat, index) => (
-              <Card key={index}>
-                <div style={{ position: "relative" }}>
+              <Card key={index} padding="400">
+                <div style={{ textAlign: 'center' }}>
                   <Text variant="headingMd" as="h3">
                     {stat.name}
                   </Text>
