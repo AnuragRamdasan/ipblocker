@@ -103,7 +103,7 @@ const BlocklistDashboard = ({
       <Card sectioned>
         {selectedOptionsWhitelist.length > 0 && (
           <>
-            <Banner tone="info">
+            <Banner tone="warning">
               Whitelist is enabled. You can't add countries to blocklist.
             </Banner>
             <br />
