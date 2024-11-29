@@ -40,6 +40,7 @@ export default function App() {
 
   useEffect(() => {
     // Identify the user
+    shop["segments"] = ["ipblocker"];
     analytics.identify(shopName, shop);
 
     // Set up Rollbar person tracking
