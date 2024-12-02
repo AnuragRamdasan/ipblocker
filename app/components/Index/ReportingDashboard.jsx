@@ -123,7 +123,7 @@ function ReportingDashboard() {
       <Layout.Section>
         <Card sectioned>
           <Text variant="headingMd" as="h6">
-            Overview
+            Overview for the Last 30 Days
           </Text>
           <br />
           <InlineGrid 
