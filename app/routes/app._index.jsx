@@ -6,6 +6,7 @@ import { authenticate } from "../shopify.server";
 import { getConfig } from "../models/configuration";
 import EmbedEnablePage from "../components/EmbedEnablePage";
 import ReportingDashboard from "../components/Index/ReportingDashboard";
+import { Onboarding } from "../components/Onboarding";
 
 export const loader = async ({ request }) => {
   const { session, admin } = await authenticate.admin(request);
@@ -33,21 +34,16 @@ export const loader = async ({ request }) => {
 
 export default function CountriesAdmin() {
   const { token, storeId, config } = useLoaderData();
-  const [showBanner, setShowBanner] = useState(config.embed_enabled !== "true");
-
   const [isChecking, setIsChecking] = useState(false);
   const [enabled, setEnabled] = useState(false);
-
+  const [newConfig, setNewConfig] = useState(config);
   useEffect(() => {
     const checkEmbedStatus = async () => {
-      if (enabled && showBanner) {
+      if (enabled) {
         setIsChecking(true);
         try {
           const config = await getConfig(token);
           setNewConfig(config);
-          if (config && config.embed_enabled === "true") {
-            setShowBanner(false);
-          }
         } catch (error) {
           console.error("Error checking embed status:", error);
         } finally {
@@ -59,16 +55,15 @@ export default function CountriesAdmin() {
     const intervalId = setInterval(checkEmbedStatus, 3000); // Check every 3 seconds
 
     return () => clearInterval(intervalId); // Clean up on unmount
-  }, [token, showBanner, enabled]);
+  }, [token, enabled]);
 
-  const themeUrl = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
-
-  if (showBanner) {
+  if (config.rules_setup !== "true" || config.embed_enabled !== "true") {
     return (
-      <EmbedEnablePage
-        url={themeUrl}
+      <Onboarding
+        storeId={storeId}
         loading={isChecking}
         setEnabled={setEnabled}
+        config={newConfig}
       />
     );
   }

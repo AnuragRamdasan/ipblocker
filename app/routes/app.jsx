@@ -9,6 +9,7 @@ import { getMantleCustomer } from "../models/mantleCustomer";
 import { useEffect } from "react";
 import Rollbar from "rollbar";
 import { analytics } from "../utils/segment_analytics";
+import { getConfig } from "../models/configuration";
 
 // Initialize Rollbar
 const rollbar = new Rollbar({
@@ -26,17 +27,18 @@ export const loader = async ({ request }) => {
   const shopInfo = await admin.rest.resources.Shop.all({
     session: session,
   });
-
+  const config = await getConfig(session.accessToken);
   return {
     apiKey: process.env.SHOPIFY_API_KEY || "",
     customerApiToken: token,
     shopName: session.shop,
     shop: shopInfo.data[0],
+    config: config,
   };
 };
 
 export default function App() {
-  const { apiKey, customerApiToken, shop, shopName } = useLoaderData();
+  const { apiKey, customerApiToken, shop, shopName, config } = useLoaderData();
 
   useEffect(() => {
     // Identify the user
@@ -64,16 +66,21 @@ export default function App() {
           <Link to="/app" rel="home">
             Home
           </Link>
-          <Link to="/app/block_rules">Block Rules</Link>
-          {(shop.myshopify_domain === "03cdb4.myshopify.com" ||
-            shop.myshopify_domain === "vc-checkout-store.myshopify.com" ||
-            shop.myshopify_domain === "cholesterol-diet.myshopify.com" ||
-            shop.myshopify_domain === "quickstart-da31056d.myshopify.com") && (
-            <Link to="/app/checkout_rules">Checkout Rules</Link>
+          {config.embed_enabled && (
+            <>
+              <Link to="/app/block_rules">Block Rules</Link>
+              {(shop.myshopify_domain === "03cdb4.myshopify.com" ||
+                shop.myshopify_domain === "vc-checkout-store.myshopify.com" ||
+                shop.myshopify_domain === "cholesterol-diet.myshopify.com" ||
+                shop.myshopify_domain ===
+                  "quickstart-da31056d.myshopify.com") && (
+                <Link to="/app/checkout_rules">Checkout Rules</Link>
+              )}
+              {/* <Link to="/app/products_rules">Product/Collection Rules</Link> */}
+              <Link to="/app/premium">Premium</Link>
+              <Link to="/app/styling">Styling</Link>
+            </>
           )}
-          {/* <Link to="/app/products_rules">Product/Collection Rules</Link> */}
-          <Link to="/app/premium">Premium</Link>
-          <Link to="/app/styling">Styling</Link>
           <Link to="/app/billing">Billing</Link>
           <Link to="/app/faqs">FAQs</Link>
         </NavMenu>
