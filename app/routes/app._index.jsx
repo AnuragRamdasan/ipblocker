@@ -36,7 +36,8 @@ export default function CountriesAdmin() {
   const { token, storeId, config } = useLoaderData();
   const [isChecking, setIsChecking] = useState(false);
   const [enabled, setEnabled] = useState(false);
-  const [newConfig, setNewConfig] = useState(config);
+  const [newConfig, setNewConfig] = useState(config || {});
+
   useEffect(() => {
     const checkEmbedStatus = async () => {
       if (enabled) {
@@ -57,7 +58,7 @@ export default function CountriesAdmin() {
     return () => clearInterval(intervalId); // Clean up on unmount
   }, [token, enabled]);
 
-  if (config.rules_setup !== "true" || config.embed_enabled !== "true") {
+  if (newConfig.rules_setup !== "true" || newConfig.embed_enabled !== "true") {
     return (
       <Onboarding
         storeId={storeId}

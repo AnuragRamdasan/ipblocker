@@ -38,7 +38,7 @@ export function Onboarding({ storeId, loading, setEnabled, config }) {
       buttonText: "Enable App Embed",
     },
     {
-      title: "Setup a rule",
+      title: "Setup Up Blocking Rules",
       completed: config.rules_setup === "true",
       onClick: handleRuleClick,
       description:
@@ -57,38 +57,32 @@ export function Onboarding({ storeId, loading, setEnabled, config }) {
         <Layout.Section>
           <Card>
             <BlockStack gap="5">
-              <Box>
-                <BlockStack gap="4">
-                  <div style={{ padding: "0 20px" }}>
-                    <BlockStack gap="2">
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text variant="headingLg" as="h3">
-                          Setup guide
-                        </Text>
-                        <div style={{ display: "flex", gap: "12px" }}>
-                          <Button variant="plain">...</Button>
-                          <Button variant="plain">^</Button>
-                        </div>
-                      </div>
-                    </BlockStack>
-                  </div>
-
-                  <div style={{ padding: "0 20px" }}>
-                    <BlockStack gap="2">
-                      <Text variant="bodyMd" as="p">
-                        {completedTasks} of {totalTasks} tasks complete
+              <BlockStack gap="4">
+                <div style={{ padding: "0 20px" }}>
+                  <BlockStack gap="2">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text variant="headingLg" as="h3">
+                        Setup guide
                       </Text>
-                      <ProgressBar progress={progress} size="small" />
-                    </BlockStack>
-                  </div>
-                </BlockStack>
-              </Box>
+                    </div>
+                  </BlockStack>
+                </div>
+
+                <div style={{ padding: "0 20px", maxWidth: "25%" }}>
+                  <BlockStack gap="2">
+                    <Text variant="bodyMd" as="p">
+                      {completedTasks} of {totalTasks} tasks complete
+                    </Text>
+                    <ProgressBar progress={progress} size="medium" />
+                  </BlockStack>
+                </div>
+              </BlockStack>
 
               <BlockStack gap="0">
                 {tasks.map((task, index) => (
@@ -96,9 +90,6 @@ export function Onboarding({ storeId, loading, setEnabled, config }) {
                     <div
                       style={{
                         padding: "16px 20px",
-                        borderTop:
-                          index === 0 ? "1px solid #e1e3e5" : undefined,
-                        borderBottom: "1px solid #e1e3e5",
                       }}
                     >
                       <BlockStack gap="3">
