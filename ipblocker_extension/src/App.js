@@ -229,8 +229,8 @@ const App = () => {
           }
         }
 
-        // Get current page referrer
-        const referrer = document.referrer;
+        // Get current page referrer and encode it
+        const referrer = encodeURIComponent(document.referrer || '');
 
         // If data is not in sessionStorage or expired, fetch it
         if (!allowedConfig) {
