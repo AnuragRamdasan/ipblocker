@@ -28,6 +28,7 @@ export const loader = async ({ request }) => {
     session: session,
   });
   const config = await getConfig(session.accessToken);
+  console.log(config);
   return {
     apiKey: process.env.SHOPIFY_API_KEY || "",
     customerApiToken: token,
@@ -39,7 +40,7 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   const { apiKey, customerApiToken, shop, shopName, config } = useLoaderData();
-
+  console.log(config);
   useEffect(() => {
     // Identify the user
     shop["segments"] = ["ipblocker"];
