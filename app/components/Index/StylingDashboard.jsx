@@ -41,7 +41,7 @@ const defaultStyling = {
   titleSize: 24,
   descriptionSize: 16,
   logoSize: 100,
-}
+};
 
 const Styling = ({ config, token }) => {
   const { customer } = useMantle();
@@ -143,7 +143,9 @@ const Styling = ({ config, token }) => {
 
   const handleDiscard = () => {
     setStyling(
-      config.blockPageStyling ? JSON.parse(config.blockPageStyling) : defaultStyling,
+      config.blockPageStyling
+        ? JSON.parse(config.blockPageStyling)
+        : defaultStyling,
     );
     shopify.saveBar.hide("my-styling-save-bar");
   };

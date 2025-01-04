@@ -93,11 +93,14 @@ function ReportingDashboard() {
 
   const paginatedAnalytics = filteredAnalytics.slice(
     (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
+    currentPage * rowsPerPage,
   );
 
   const rowMarkup = paginatedAnalytics.map(
-    ({eventName, id, ip, city, country, zip, blockedAt, latitude, longitude}, index) => (
+    (
+      { eventName, id, ip, city, country, zip, blockedAt, latitude, longitude },
+      index,
+    ) => (
       <IndexTable.Row id={id} key={id} position={index}>
         <IndexTable.Cell>
           <Text variant="bodyMd" fontWeight="bold" as="span">
@@ -112,7 +115,7 @@ function ReportingDashboard() {
         <IndexTable.Cell>{latitude}</IndexTable.Cell>
         <IndexTable.Cell>{longitude}</IndexTable.Cell>
       </IndexTable.Row>
-    )
+    ),
   );
 
   const emptyStateMarkup = (
@@ -133,13 +136,10 @@ function ReportingDashboard() {
             Overview for the Last 30 Days
           </Text>
           <br />
-          <InlineGrid 
-            columns={{ xs: 1, sm: 2, md: 2, lg: 4 }} 
-            gap="400"
-          >
+          <InlineGrid columns={{ xs: 1, sm: 2, md: 2, lg: 4 }} gap="400">
             {stats.map((stat, index) => (
               <Card key={index} padding="400">
-                <div style={{ textAlign: 'center' }}>
+                <div style={{ textAlign: "center" }}>
                   <Text variant="headingMd" as="h3">
                     {stat.name}
                   </Text>
@@ -179,10 +179,16 @@ function ReportingDashboard() {
                 { title: "Longitude" },
               ]}
               selectable={false}
-            > 
+            >
               {rowMarkup}
             </IndexTable>
-            <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                marginTop: "16px",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <Pagination
                 label={`${Math.min((currentPage - 1) * rowsPerPage + 1, filteredAnalytics.length)} - ${Math.min(currentPage * rowsPerPage, filteredAnalytics.length)} of ${filteredAnalytics.length} results`}
                 hasPrevious={currentPage > 1}

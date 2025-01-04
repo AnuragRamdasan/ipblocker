@@ -23,7 +23,6 @@ export const loader = async ({ request }) => {
     referrer,
   );
   const config = await getConfig(session.accessToken);
-
   return json(
     { allowed, config },
     {

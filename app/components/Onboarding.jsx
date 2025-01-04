@@ -13,7 +13,7 @@ import { CheckCircleIcon } from "@shopify/polaris-icons";
 import { actions, analytics } from "../utils/segment_analytics";
 import { useNavigate } from "react-router";
 
-export function Onboarding({ storeId, loading, setEnabled, config }) {
+export function Onboarding({ storeId, loading, setEnabled, config = {}}) {
   const url = `https://admin.shopify.com/store/${storeId}/admin/themes/current/editor?context=apps`;
 
   const navigate = useNavigate();

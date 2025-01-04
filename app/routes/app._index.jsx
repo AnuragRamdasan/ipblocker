@@ -1,10 +1,8 @@
 import { useLoaderData } from "@remix-run/react";
-import { Page } from "@shopify/polaris";
 import { useEffect } from "react";
 import { useState } from "react";
 import { authenticate } from "../shopify.server";
 import { getConfig } from "../models/configuration";
-import EmbedEnablePage from "../components/EmbedEnablePage";
 import ReportingDashboard from "../components/Index/ReportingDashboard";
 import { Onboarding } from "../components/Onboarding";
 
