@@ -50,6 +50,6 @@ export const getConfig = async (token) => {
     },
   );
   const config = await res.json();
-
+  console.log(config);
   return config["configuration"];
 };
