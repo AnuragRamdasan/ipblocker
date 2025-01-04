@@ -28,8 +28,6 @@ export const loader = async ({ request }) => {
     session: session,
   });
   const config = await getConfig(session.accessToken);
-  console.log(config);
-  console.log(session);
   return {
     apiKey: process.env.SHOPIFY_API_KEY || "",
     customerApiToken: token,
