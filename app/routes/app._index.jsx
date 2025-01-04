@@ -21,7 +21,7 @@ export const loader = async ({ request }) => {
     .replace(".myshopify.com", "");
   const token = session.accessToken;
 
-  const config = await getConfig(token).then((result) => result || {});
+  const config = await getConfig(token);
 
   return {
     token,
