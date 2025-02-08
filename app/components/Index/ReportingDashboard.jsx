@@ -40,10 +40,6 @@ function ReportingDashboard() {
 
   const stats = [
     {
-      name: "Total IPs Tracked",
-      value: analytics.filter((item) => item.eventName === "ip_tracked").length,
-    },
-    {
       name: "IPs Blocked",
       value: analytics.filter((item) => item.eventName === "ip_blocked").length,
     },
@@ -136,7 +132,7 @@ function ReportingDashboard() {
             Overview for the Last 30 Days
           </Text>
           <br />
-          <InlineGrid columns={{ xs: 1, sm: 2, md: 2, lg: 4 }} gap="400">
+          <InlineGrid columns={{ xs: 1, sm: 3, md: 3, lg: 3 }} gap="400">
             {stats.map((stat, index) => (
               <Card key={index} padding="400">
                 <div style={{ textAlign: "center" }}>
