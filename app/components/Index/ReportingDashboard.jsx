@@ -134,7 +134,7 @@ function ReportingDashboard() {
               status="critical"
             >
               <p>
-                This app will be discontinued on June 30th, 2024. Please migrate to an alternative WhatsApp integration before this date to ensure uninterrupted service. We recommend exploring other WhatsApp button apps available on the Shopify App Store.
+                This app will be discontinued on June 30th, 2024. Please migrate to an alternative IP based blocker integration before this date to ensure uninterrupted service. We recommend exploring other Blocker apps available on the Shopify App Store.
               </p>
             </Banner>
           </Layout.Section>
