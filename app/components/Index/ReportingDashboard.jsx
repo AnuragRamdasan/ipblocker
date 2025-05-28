@@ -9,6 +9,7 @@ import {
   EmptySearchResult,
   TextField,
   Pagination,
+  Banner,
 } from "@shopify/polaris";
 import { getAnalytics } from "../../models/analytics";
 import { useLoaderData } from "@remix-run/react";
@@ -126,6 +127,17 @@ function ReportingDashboard() {
 
   return (
     <Page>
+       <Layout.Section>
+            <Banner
+              title="Important: App Sunset Notice"
+              tone="critical"
+              status="critical"
+            >
+              <p>
+                This app will be discontinued on June 30th, 2024. Please migrate to an alternative WhatsApp integration before this date to ensure uninterrupted service. We recommend exploring other WhatsApp button apps available on the Shopify App Store.
+              </p>
+            </Banner>
+          </Layout.Section>
       <Layout.Section>
         <Card sectioned>
           <Text variant="headingMd" as="h6">
